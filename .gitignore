@@ -1,0 +1,11 @@
+/nbproject
+/vendor
+.settings
+.settings/
+.buildpath/
+.project/
+/.metadata
+/src/Rebelo/Reports/Config/config.properties
+/src/Rebelo/Reports/Config/logconfig.xml
+/tests/Resources/Generate/*
+/tests/Resources/Tmp/*
