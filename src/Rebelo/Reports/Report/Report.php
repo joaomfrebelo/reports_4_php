@@ -98,7 +98,7 @@ class Report
         $config       = Config::getInstance();
         $this->tmpDir = $config->getTempDirectory()
             . DIRECTORY_SEPARATOR
-            . \uniqid("RReports", true) . \strval(random_int(9, 9999));
+            . \uniqid("RReports", true) . \strval(rand(9, 9999));
         \Logger::getLogger(\get_class($this))
             ->info(sprintf(__METHOD__ . " temp dir '%s'", $this->tmpDir));
     }
