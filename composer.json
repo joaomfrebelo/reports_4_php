@@ -2,7 +2,7 @@
     "name": "joaomfrebelo/reports_4_php",
     "description": "PHP module to Rebelo Reports CLI",
     "homepage": "https://github.com/joaomfrebelo/reports_4_php",
-    "version": "1.0.0-Beta",
+    "version": "1.0.0",
     "keywords": [
         "RebeloReports",
         "JasperReports"
