@@ -40,17 +40,7 @@ class DocxTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $docx = new Docx();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Docx", $docx);
@@ -60,19 +50,23 @@ class DocxTest
 
         $pathJasper = "path jasper file";
         $docx->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $docx->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $docx->getJasperFile()?->getPath());
 
         $pathOut = "path for output file";
         $docx->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $docx->getOutputfile());
 
         $docx->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $docx->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $docx->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $docx->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
         $this->assertEquals($pathOut, $xml->docx->{Docx::NODE_OUT_FILE});
     }
 

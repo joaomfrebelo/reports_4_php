@@ -50,12 +50,21 @@ class RequestType
 
     /**
      *
-     * @param type $value
+     * @param string $value
      * @since 1.0.0
      */
     public function __construct($value)
     {
         parent::__construct($value);
+    }
+
+    /**
+     * Get the enum string value
+     * @return string
+     */
+    public function get()
+    {
+        return (string)parent::get();
     }
 
 }

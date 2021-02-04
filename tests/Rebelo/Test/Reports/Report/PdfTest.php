@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -42,11 +41,10 @@ use Rebelo\Reports\Report\Parameter\Type as ParameterType;
  *
  * @author João Rebelo
  */
-class PdfTest
-    extends TestCase
+class PdfTest extends TestCase
 {
 
-    public function testSetGet()
+    public function testSetGet(): void
     {
         $inst = "Rebelo\Reports\Report\Pdf";
         $pdf  = new Pdf();
@@ -58,45 +56,51 @@ class PdfTest
 
         $ds = new \Rebelo\Reports\Report\Datasource\Database();
         $this->assertInstanceOf($inst, $pdf->setDatasource($ds));
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $pdf->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $pdf->getDatasource()
+        );
 
         $jf = new \Rebelo\Reports\Report\JasperFile("path");
         $this->assertInstanceOf($inst, $pdf->setJasperFile($jf));
-        $this->assertInstanceOf("\Rebelo\Reports\Report\JasperFile",
-                                $pdf->getJasperFile());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\JasperFile",
+            $pdf->getJasperFile()
+        );
 
         $this->assertInstanceOf($inst, $pdf->setOutputfile("path"));
         $this->assertEquals("path", $pdf->getOutputfile());
 
         $sign = new \Rebelo\Reports\Report\Sign\Sign();
         $this->assertInstanceOf($inst, $pdf->setSign($sign));
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Sign\Sign",
-                                $pdf->getSign());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Sign\Sign",
+            $pdf->getSign()
+        );
     }
 
-    public function testXmlNode()
+    public function testXmlNode(): void
     {
-        $resource = __DIR__ . DIRECTORY_SEPARATOR . ".."
-            . DIRECTORY_SEPARATOR . ".."
-            . DIRECTORY_SEPARATOR . ".."
-            . DIRECTORY_SEPARATOR . ".."
-            . DIRECTORY_SEPARATOR . "Resources";
+        $resource = __DIR__.DIRECTORY_SEPARATOR.".."
+            .DIRECTORY_SEPARATOR.".."
+            .DIRECTORY_SEPARATOR.".."
+            .DIRECTORY_SEPARATOR.".."
+            .DIRECTORY_SEPARATOR."Resources";
 
         $dsConStr  = "jdbc:mysql://localhost/sakila";
         $dsDriver  = "com.mysql.jdbc.Driver";
         $dsUser    = "rebelo";
         $dsPwd     = "password";
-        $jsPath    = $resource . DIRECTORY_SEPARATOR . "sakila.jasper";
+        $jsPath    = $resource.DIRECTORY_SEPARATOR."sakila.jasper";
         $jsCopies  = 1;
-        $outFile   = $resource . DIRECTORY_SEPARATOR
-            . "Generate"
-            . DIRECTORY_SEPARATOR
-            . "report_" . uniqid() . ".pdf";
-        $outXml    = $resource . DIRECTORY_SEPARATOR
-            . "Generate"
-            . DIRECTORY_SEPARATOR
-            . uniqid() . ".xml";
+        $outFile   = $resource.DIRECTORY_SEPARATOR
+            ."Generate"
+            .DIRECTORY_SEPARATOR
+            ."report_".uniqid().".pdf";
+        $outXml    = $resource.DIRECTORY_SEPARATOR
+            ."Generate"
+            .DIRECTORY_SEPARATOR
+            .uniqid().".xml";
         $sigLocal  = "Sintra";
         $sigLevel  = Level::CERTIFIED_NO_CHANGES_ALLOWED;
         $sigReazon = "Developer test";
@@ -108,25 +112,25 @@ class PdfTest
         $y         = 100;
         $rot       = 0;
         $ksPwd     = "password";
-        $ksPath    = $resource . DIRECTORY_SEPARATOR . "keystore.ks";
+        $ksPath    = $resource.DIRECTORY_SEPARATOR."keystore.ks";
         $certName  = "rreports";
         $certPwd   = "password";
 
         $parameters = array(
             array(
-                "type"   => "string",
-                "name"   => "P_STRING",
-                "value"  => "Parameter String",
+                "type" => "string",
+                "name" => "P_STRING",
+                "value" => "Parameter String",
                 "format" => null),
             array(
-                "type"   => "bool",
-                "name"   => "P_BOOLEAN",
-                "value"  => "true",
+                "type" => "bool",
+                "name" => "P_BOOLEAN",
+                "value" => "true",
                 "format" => null),
             array(
-                "type"   => "date",
-                "name"   => "P_DATE",
-                "value"  => "1969-10-05",
+                "type" => "date",
+                "name" => "P_DATE",
+                "value" => "1969-10-05",
                 "format" => "yyyy-MM-dd"),
         );
 
@@ -170,78 +174,126 @@ class PdfTest
         $sign->setKeystore($keystore);
 
         $pdf->setSign($sign);
-        foreach ($parameters as $paramProp)
-        {
+        foreach ($parameters as $paramProp) {
             $param = new Parameter(
                 new ParameterType($paramProp["type"]), $paramProp["name"],
-                                  $paramProp["value"], $paramProp["format"]
+                $paramProp["value"], $paramProp["format"]
             );
             $pdf->addToParameter($param);
         }
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $this->assertInstanceOf("\SimpleXMLElement", $pdf->createXmlNode($node));
-        $xml  = simplexml_load_string($node->asXML());
-        $this->assertEquals($outFile, $xml->pdf->{Pdf::NODE_OUT_FILE});
-        $this->assertEquals($ksPath, $xml->pdf->sign->keystore->path);
-        $this->assertEquals($ksPwd, $xml->pdf->sign->keystore->password);
-        $this->assertEquals($certName,
-                            $xml->pdf->sign->keystore->certificate->name);
-        $this->assertEquals($certPwd,
-                            $xml->pdf->sign->keystore->certificate->password);
-        $this->assertEquals($sigLevel, $xml->pdf->sign->level);
-        $this->assertEquals($sigType, $xml->pdf->sign->type);
-        $this->assertEquals($rectVisi
-                ? "true"
-                : "false", $xml->pdf->sign->rectangle->visible);
-        $this->assertEquals(strval($x), $xml->pdf->sign->rectangle->position->x);
-        $this->assertEquals(strval($x), $xml->pdf->sign->rectangle->position->y);
-        $this->assertEquals(strval($width),
-                                   $xml->pdf->sign->rectangle->position->width);
-        $this->assertEquals(strval($height),
-                                   $xml->pdf->sign->rectangle->position->height);
-        $this->assertEquals(strval($rot),
-                                   $xml->pdf->sign->rectangle->position->rotation);
+        if (false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
+        $this->assertEquals($outFile, (string) $xml->pdf->{Pdf::NODE_OUT_FILE});
+        $this->assertEquals($ksPath, (string) $xml->pdf->sign->keystore->path);
+        $this->assertEquals($ksPwd, (string) $xml->pdf->sign->keystore->password);
+        $this->assertEquals(
+            $certName, (string) $xml->pdf->sign->keystore->certificate->name
+        );
+        $this->assertEquals(
+            $certPwd, (string) $xml->pdf->sign->keystore->certificate->password
+        );
+        $this->assertEquals($sigLevel, (string) $xml->pdf->sign->level);
+        $this->assertEquals($sigType, (string) $xml->pdf->sign->type);
+        $this->assertEquals(
+            $rectVisi,
+            (string) $xml->pdf->sign->rectangle->visible === "true"
+        );
+        $this->assertEquals(
+            strval($x), (string) $xml->pdf->sign->rectangle->position->x
+        );
+        $this->assertEquals(
+            strval($x), (string) $xml->pdf->sign->rectangle->position->y
+        );
+        $this->assertEquals(
+            strval($width), (string) $xml->pdf->sign->rectangle->position->width
+        );
+        $this->assertEquals(
+            strval($height),
+            (string) $xml->pdf->sign->rectangle->position->height
+        );
+        $this->assertEquals(
+            strval($rot),
+            (string) $xml->pdf->sign->rectangle->position->rotation
+        );
 
         // Test the full xml report
         $report = $pdf->serializeToSimpleXmlElement();
         $this->assertInstanceOf("\SimpleXMLElement", $report);
 
         $this->assertEquals($jsPath, $report->jasperfile);
-        $this->assertEquals(strval($jsCopies), $report->jasperfile[0]["copies"]);
-        $this->assertEquals($outFile,
-                            $report->reporttype->pdf->{Pdf::NODE_OUT_FILE});
+        $this->assertEquals(
+            strval($jsCopies),
+            (string) $report->jasperfile[0]["copies"]
+        );
+        $this->assertEquals(
+            $outFile, (string) $report->reporttype->pdf->{Pdf::NODE_OUT_FILE}
+        );
 
-        $this->assertEquals($ksPath,
-                            $report->reporttype->pdf->sign->keystore->path);
-        $this->assertEquals($ksPwd,
-                            $report->reporttype->pdf->sign->keystore->password);
-        $this->assertEquals($certName,
-                            $report->reporttype->pdf->sign->keystore->certificate->name);
-        $this->assertEquals($certPwd,
-                            $report->reporttype->pdf->sign->keystore->certificate->password);
-        $this->assertEquals($sigLevel, $report->reporttype->pdf->sign->level);
-        $this->assertEquals($sigType, $report->reporttype->pdf->sign->type);
-        $this->assertEquals($rectVisi
-                ? "true"
-                : "false", $report->reporttype->pdf->sign->rectangle->visible);
-        $this->assertEquals(strval($x),
-                                   $report->reporttype->pdf->sign->rectangle->position->x);
-        $this->assertEquals(strval($x),
-                                   $report->reporttype->pdf->sign->rectangle->position->y);
-        $this->assertEquals(strval($width),
-                                   $report->reporttype->pdf->sign->rectangle->position->width);
-        $this->assertEquals(strval($height),
-                                   $report->reporttype->pdf->sign->rectangle->position->height);
-        $this->assertEquals(strval($rot),
-                                   $report->reporttype->pdf->sign->rectangle->position->rotation);
+        $this->assertEquals(
+            $ksPath, (string) $report->reporttype->pdf->sign->keystore->path
+        );
+        $this->assertEquals(
+            $ksPwd, (string) $report->reporttype->pdf->sign->keystore->password
+        );
+        $this->assertEquals(
+            $certName,
+            (string) $report->reporttype->pdf->sign->keystore->certificate->name
+        );
+        $this->assertEquals(
+            $certPwd,
+            (string) $report->reporttype->pdf->sign->keystore->certificate->password
+        );
+        $this->assertEquals(
+            $sigLevel,
+            (string) $report->reporttype->pdf->sign->level
+        );
+        $this->assertEquals(
+            $sigType,
+            (string) $report->reporttype->pdf->sign->type
+        );
+        $this->assertEquals(
+            $rectVisi,
+            (string)$report->reporttype->pdf->sign->rectangle->visible === "true"
+        );
+        $this->assertEquals(
+            strval($x),
+            (string) $report->reporttype->pdf->sign->rectangle->position->x
+        );
+        $this->assertEquals(
+            strval($x),
+            (string) $report->reporttype->pdf->sign->rectangle->position->y
+        );
+        $this->assertEquals(
+            strval($width),
+            (string) $report->reporttype->pdf->sign->rectangle->position->width
+        );
+        $this->assertEquals(
+            strval($height),
+            (string) $report->reporttype->pdf->sign->rectangle->position->height
+        );
+        $this->assertEquals(
+            strval($rot),
+            (string) $report->reporttype->pdf->sign->rectangle->position->rotation
+        );
 
         // Verify data source
-        $this->assertEquals($dsConStr,
-                            $report->datasource->database->connectionString);
-        $this->assertEquals($dsDriver, $report->datasource->database->driver);
-        $this->assertEquals($dsPwd, $report->datasource->database->password);
-        $this->assertEquals($dsUser, $report->datasource->database->user);
+        $this->assertEquals(
+            $dsConStr,
+            $report->datasource->database->connectionString
+        );
+        $this->assertEquals(
+            $dsDriver,
+            (string) $report->datasource->database->driver
+        );
+        $this->assertEquals(
+            $dsPwd,
+            (string) $report->datasource->database->password
+        );
+        $this->assertEquals($dsUser, (string) $report->datasource->database->user);
 
         // Verify parameters
         $this->assertInstanceOf("\SimpleXMLElement", $report->parameters);
@@ -251,10 +303,8 @@ class PdfTest
         $xmlDoc->load($outXml);
         $valide = $xmlDoc->schemaValidate(\Rebelo\Reports\Report\AReport::SCHEMA_LOCATION);
         $this->assertTrue($valide, "Error validating XML");
-        if ($valide && \is_file($outXml))
-        {
+        if ($valide && \is_file($outXml)) {
             \unlink($outXml);
         }
     }
-
 }

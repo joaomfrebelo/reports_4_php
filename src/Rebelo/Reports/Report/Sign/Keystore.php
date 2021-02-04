@@ -33,7 +33,7 @@ class Keystore
     /**
      * The certificate properties
      *
-     * @var \Rebelo\Reports\Report\Certificate $certificate
+     * @var \Rebelo\Reports\Report\Sign\Certificate $certificate
      * @since 1.0.0
      */
     private $certificate = null;
@@ -98,7 +98,7 @@ class Keystore
     /**
      * Get the certificate properties
      *
-     * @return \Rebelo\Reports\Report\Sign\Certificate
+     * @return \Rebelo\Reports\Report\Sign\Certificate|null
      * @since 1.0.0
      */
     public function getCertificate()
@@ -137,11 +137,12 @@ class Keystore
      *
      * @param \SimpleXMLElement $node
      * @throws SerializeReportException
+     * @return void
      */
     public function createXmlNode(\SimpleXMLElement $node)
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
-        if (!\is_string($this->getPath()) || \trim($this->getPath() === ""))
+        if (!\is_string($this->getPath()) || \trim($this->getPath()) === "")
         {
             $msg = "The path of the keystore must be setted";
             \Logger::getLogger(\get_class($this))

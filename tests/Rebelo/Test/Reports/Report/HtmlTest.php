@@ -40,17 +40,7 @@ class HtmlTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $html = new Html();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Html", $html);
@@ -60,19 +50,23 @@ class HtmlTest
 
         $pathJasper = "path jasper file";
         $html->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $html->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $html->getJasperFile()?->getPath());
 
         $pathOut = "path for output file";
         $html->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $html->getOutputfile());
 
         $html->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $html->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $html->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $html->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
         $this->assertEquals($pathOut, $xml->html->{Html::NODE_OUT_FILE});
     }
 

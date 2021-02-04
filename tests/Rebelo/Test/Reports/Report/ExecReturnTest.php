@@ -39,7 +39,7 @@ class ExecReturnTest
     extends TestCase
 {
 
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $inst     = "\Rebelo\Reports\Report\ExecReturn";
         $code     = 0;
@@ -62,38 +62,6 @@ class ExecReturnTest
         );
         $this->assertInstanceOf($inst, $exret->setMessages($msg));
         $this->assertEquals($msg, $exret->getMessages());
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\ExecException
-     */
-    public function setStringCodeConstruct()
-    {
-        new ExecReturn("", array());
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\ExecException
-     */
-    public function setNullCodeConstruct()
-    {
-        new ExecReturn(null, array());
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\ExecException
-     */
-    public function setEmptyConstruct()
-    {
-        new ExecReturn();
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\ExecException
-     */
-    public function setWrongMessageConstruct()
-    {
-        new ExecReturn(0, "");
     }
 
 }

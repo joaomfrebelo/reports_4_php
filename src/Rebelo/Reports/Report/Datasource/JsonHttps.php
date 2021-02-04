@@ -29,13 +29,15 @@ class JsonHttps
      */
     public function __toString()
     {
-        return sprintf("url: '%s': type: '%s'",
-                       $this->url === null
+        return sprintf(
+            "url: '%s': type: '%s'",
+            $this->url === null
             ? "null"
             : $this->url,
-                       $this->type === null
+            $this->type === null
             ? "null"
-            : $this->type->get());
+            : $this->type->get()
+        );
     }
 
 }

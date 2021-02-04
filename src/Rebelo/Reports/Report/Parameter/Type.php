@@ -46,14 +46,23 @@ class Type
     const P_SHORT      = "short";
     const P_BIGDECIMAL = "bigdecimal";
     const P_DATE       = "date";
-    const P_TIME       = "time";
-    const P_SQL_TIME   = "sqltime";
-    const P_SQL_DATE   = "sqldate";
-    const P_TIMESTAMP  = "timestamp";
 
+    /**
+     * 
+     * @param string $value
+     */
     public function __construct($value)
     {
         parent::__construct($value);
+    }
+
+    /**
+     * get the string value of enum
+     * @return string
+     */
+    public function get()
+    {
+        return (string)parent::get();
     }
 
 }

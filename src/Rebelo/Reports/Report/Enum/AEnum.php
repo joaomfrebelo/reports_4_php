@@ -44,6 +44,11 @@ abstract class AEnum
      */
     protected $value = null;
 
+    /**
+     * 
+     * @param mixed $value
+     * @throws EnumException
+     */
     public function __construct($value)
     {
         \Rebelo\Reports\Config\Config::configLog4Php();
@@ -60,8 +65,10 @@ abstract class AEnum
                 return;
             }
         }
-        throw new EnumException("Value in Enum class " . \get_called_class()
-            . " is not valid");
+        throw new EnumException(
+            "Value in Enum class " . \get_called_class()
+            . " is not valid"
+        );
     }
 
     /**
@@ -74,7 +81,7 @@ abstract class AEnum
      *
      * Get constants
      *
-     * @return string[]
+     * @return array
      */
     protected static function getConstants()
     {
@@ -87,10 +94,10 @@ abstract class AEnum
         if (!\array_key_exists($calledClass, static::$constCacheArray))
         {
             $reflect                               = new \ReflectionClass($calledClass);
-            static::$constCacheArray[$calledClass] = $reflect->getConstants();
+            static::$constCacheArray[$calledClass] = $reflect->getConstants();/** @phpstan-ignore-line */
         }
 
-        return static::$constCacheArray[$calledClass];
+        return static::$constCacheArray[$calledClass];/** @phpstan-ignore-line */
     }
 
     /**
@@ -101,19 +108,8 @@ abstract class AEnum
      * @param  bool  $strict
      * @return bool
      */
-    public static function isValidName($name, $strict = false)
+    public static function isValidName($name, bool $strict = false)
     {
-        if (\is_bool($strict) == false)
-        {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Expecting a scalar boolean , received "%s"',
-                    (is_object($strict)
-                        ? get_class($strict)
-                        : gettype($strict))
-                )
-            );
-        }
         $constants = static::getConstants();
 
         if ($strict)
@@ -132,19 +128,8 @@ abstract class AEnum
      * @param  bool  $strict
      * @return bool
      */
-    public static function isValidValue($value, $strict = true)
+    public static function isValidValue($value, bool $strict = true)
     {
-        if (is_bool($strict) == false)
-        {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Expecting a scalar boolean , received "%s"',
-                    (is_object($strict)
-                        ? get_class($strict)
-                        : gettype($strict))
-                )
-            );
-        }
         $values = \array_values(static::getConstants());
         return \in_array($value, $values, $strict);
     }
@@ -153,8 +138,7 @@ abstract class AEnum
      * Get the value for the name
      * (Value for the constant name)
      *
-     * @param  string  $constName
-     * @param  boolean $strict
+     * @param  mixed  $constName
      * @return mixed
      * @throws \Exception
      */

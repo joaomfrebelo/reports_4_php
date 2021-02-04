@@ -40,17 +40,7 @@ class OdtTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $odt = new Odt();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Odt", $odt);
@@ -60,19 +50,23 @@ class OdtTest
 
         $pathJasper = "path jasper file";
         $odt->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $odt->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $odt->getJasperFile()?->getPath());
 
         $pathOut = "path for output file";
         $odt->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $odt->getOutputfile());
 
         $odt->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $odt->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $odt->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $odt->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
         $this->assertEquals($pathOut, $xml->odt->{Odt::NODE_OUT_FILE});
     }
 

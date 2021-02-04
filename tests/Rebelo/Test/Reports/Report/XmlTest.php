@@ -40,17 +40,7 @@ class XmlTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $inst = "\Rebelo\Reports\Report\Xml";
         $xml  = new Xml();
@@ -58,30 +48,23 @@ class XmlTest
         $this->assertNull($xml->getJasperFile());
         $this->assertNull($xml->getOutputfile());
         $this->assertNull($xml->getDatasource());
-        $this->assertNull($xml->getJasperFileBaseDir());
-        $this->assertNull($xml->getOutputBaseDir());
-
+       
         $pathOut = "path for output file";
         $xml->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $xml->getOutputfile());
 
         $xml->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $xml->getDatasource());
-
-        $jasperFileBaseDir = "jasper File Base Dir";
-        $this->assertInstanceOf($inst,
-                                $xml->setJasperFileBaseDir($jasperFileBaseDir));
-        $this->assertEquals($jasperFileBaseDir, $xml->getJasperFileBaseDir());
-
-        $outputBaseDir = "output File Base Dir";
-        $this->assertInstanceOf($inst, $xml->setOutputBaseDir($outputBaseDir));
-        $this->assertEquals($outputBaseDir, $xml->getOutputBaseDir());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $xml->getDatasource()
+        );
 
         $node   = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $xml->createXmlNode($node);
-        $xmlStr = simplexml_load_string($node->asXML());
-        $this->assertEquals($pathOut, $xmlStr->xml->{Xml::NODE_OUT_FILE});
+        if(false === $xmlStr = simplexml_load_string($node->asXML())){ /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
+        $this->assertEquals($pathOut, (string)$xmlStr->xml->{Xml::NODE_OUT_FILE});
     }
 
 }

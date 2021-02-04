@@ -13,7 +13,7 @@ class Rectangle
     /**
      * Define if the signature is visible or not
      *
-     * @var string $visible
+     * @var bool $visible
      * @since 1.0.0
      */
     private $visible = false;
@@ -78,10 +78,14 @@ class Rectangle
     public function getVisible()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->visible
+            ->info(
+                \sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->visible
                         ? "true"
-                        : "false"));
+                    : "false"
+                )
+            );
         return $this->visible;
     }
 
@@ -95,21 +99,18 @@ class Rectangle
      * @throws SignException
      * @since 1.0.0
      */
-    public function setVisible($visible)
+    public function setVisible(bool $visible)
     {
-        if (\is_bool($visible) === false)
-        {
-            $msg = "visible must be boolean";
-            \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
-            throw new SignException($msg);
-        }
         $this->visible = $visible;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->visible
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    $this->visible
                         ? "true"
-                        : "false"));
+                    : "false"
+                )
+            );
         return $this;
     }
 
@@ -118,16 +119,20 @@ class Rectangle
      *
      * axial coordinate (x)
      *
-     * @return int
+     * @return int|null
      * @since 1.0.0
      */
     public function getX()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->x === null
+            ->info(
+                \sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->x === null
                         ? "null"
-                        : \strval($this->x)));
+                    : \strval($this->x)
+                )
+            );
         return $this->x;
     }
 
@@ -141,9 +146,9 @@ class Rectangle
      * @throws SignException
      * @since 1.0.0
      */
-    public function setX($x)
+    public function setX(int $x)
     {
-        if (\is_int($x) === false || $x < 0)
+        if ($x < 0)
         {
             $msg = "the rectangle cordenate X must be a positive integer";
             \Logger::getLogger(\get_class($this))
@@ -162,16 +167,20 @@ class Rectangle
      *
      * ordinate coordinate (y)
      *
-     * @return int
+     * @return int|null
      * @since 1.0.0
      */
     public function getY()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->y === null
+            ->info(
+                \sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->y === null
                         ? "null"
-                        : \strval($this->y)));
+                    : \strval($this->y)
+                )
+            );
         return $this->y;
     }
 
@@ -185,9 +194,9 @@ class Rectangle
      * @throws SignException
      * @since 1.0.0
      */
-    public function setY($y)
+    public function setY(int $y)
     {
-        if (\is_int($y) === false || $y < 0)
+        if ($y < 0)
         {
             $msg = "the rectangle cordenate Y must be a positive integer";
             \Logger::getLogger(\get_class($this))
@@ -206,16 +215,20 @@ class Rectangle
      *
      * the rectangle with
      *
-     * @return int
+     * @return int|null
      * @since 1.0.0
      */
     public function getWidth()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->width === null
+            ->info(
+                \sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->width === null
                         ? "null"
-                        : \strval($this->width)));
+                    : \strval($this->width)
+                )
+            );
         return $this->width;
     }
 
@@ -229,9 +242,9 @@ class Rectangle
      * @throws SignException
      * @since 1.0.0
      */
-    public function setWidth($width)
+    public function setWidth(int $width)
     {
-        if (\is_int($width) === false || $width < 0)
+        if ($width < 0)
         {
             $msg = "the rectangle width must be a positive integer";
             \Logger::getLogger(\get_class($this))
@@ -241,8 +254,12 @@ class Rectangle
 
         $this->width = $width;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             \strval($this->width)));
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    \strval($this->width)
+                )
+            );
         return $this;
     }
 
@@ -251,16 +268,20 @@ class Rectangle
      *
      * The rectangle height
      *
-     * @return int
+     * @return int|null
      * @since 1.0.0
      */
     public function getHeight()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->height === null
+            ->info(
+                \sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->height === null
                         ? "null"
-                        : \strval($this->height)));
+                    : \strval($this->height)
+                )
+            );
         return $this->height;
     }
 
@@ -274,9 +295,9 @@ class Rectangle
      * @throws SignException
      * @since 1.0.0
      */
-    public function setHeight($height)
+    public function setHeight(int $height)
     {
-        if (\is_int($height) === false || $height < 0)
+        if ($height < 0)
         {
             $msg = "the rectangle height must be a positive integer";
             \Logger::getLogger(\get_class($this))
@@ -286,8 +307,12 @@ class Rectangle
 
         $this->height = $height;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             \strval($this->height)));
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    \strval($this->height)
+                )
+            );
         return $this;
     }
 
@@ -296,7 +321,7 @@ class Rectangle
      *
      * The rectangle rotation: 0 , 90 , 180 or 270
      *
-     * @return int
+     * @return int|null
      * @since 1.0.0
      */
     public function getRotation()
@@ -318,7 +343,7 @@ class Rectangle
      */
     public function setRotation($rotation)
     {
-        if (\is_int($rotation) === false || $rotation < 0)
+        if ($rotation < 0)
         {
             $msg = "the rectangle rotation must be a positive integer";
             \Logger::getLogger(\get_class($this))
@@ -328,8 +353,12 @@ class Rectangle
 
         $this->rotation = $rotation;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             \strval($this->rotation)));
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    \strval($this->rotation)
+                )
+            );
         return $this;
     }
 
@@ -346,40 +375,63 @@ class Rectangle
     /**
      *
      * @param \SimpleXMLElement $node
+     * @return void
      */
     public function createXmlNode(\SimpleXMLElement $node)
     {
         $rectNode = $node->addChild("rectangle");
-        $rectNode->addChild("visible",
-                            $this->getVisible()
+        $rectNode->addChild(
+            "visible",
+            $this->getVisible()
                 ? "true"
-                : "false");
+            : "false"
+        );
         $posNode  = $rectNode->addChild("position");
 
-        $posNode->addChild("x",
-                           strval($this->getX() === null
-                    ? 0
-                    : $this->getX() ));
+        $posNode->addChild(
+            "x",
+            strval(
+                $this->getX() === null
+                            ? 0
+                : $this->getX() 
+            )
+        );
 
-        $posNode->addChild("y",
-                           strval($this->getY() === null
-                    ? 0
-                    : $this->getY() ));
+        $posNode->addChild(
+            "y",
+            strval(
+                $this->getY() === null
+                            ? 0
+                : $this->getY() 
+            )
+        );
 
-        $posNode->addChild("width",
-                           strval($this->getWidth() === null
-                    ? 0
-                    : $this->getWidth()));
+        $posNode->addChild(
+            "width",
+            strval(
+                $this->getWidth() === null
+                            ? 0
+                : $this->getWidth()
+            )
+        );
 
-        $posNode->addChild("height",
-                           strval($this->getHeight() === null
-                    ? 0
-                    : $this->getHeight()));
+        $posNode->addChild(
+            "height",
+            strval(
+                $this->getHeight() === null
+                            ? 0
+                : $this->getHeight()
+            )
+        );
 
-        $posNode->addChild("rotation",
-                           strval($this->getRotation() === null
-                    ? 0
-                    : $this->getRotation()));
+        $posNode->addChild(
+            "rotation",
+            strval(
+                $this->getRotation() === null
+                            ? 0
+                : $this->getRotation()
+            )
+        );
     }
 
 }

@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -34,79 +33,56 @@ use PHPUnit\Framework\TestCase;
  *
  * @author João Rebelo
  */
-class DatabaseTest
-    extends TestCase
+class DatabaseTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGetConnectionString()
+    public function testSetGetConnectionString(): void
     {
         $inst = "\Rebelo\Reports\Report\Datasource\Database";
         $db   = new \Rebelo\Reports\Report\Datasource\Database();
         $this->assertInstanceOf($inst, $db);
         $this->assertNull($db->getConnectionString());
-        $this->assertTrue($db->setConnectionString("conection") instanceof
-            \Rebelo\Reports\Report\Datasource\Database);
+        $this->assertTrue(
+            $db->setConnectionString("conection") instanceof
+            \Rebelo\Reports\Report\Datasource\Database
+        );
         $this->assertEquals("conection", $db->getConnectionString());
-        $db->setConnectionString(null);
-        $this->assertNull($db->getConnectionString());
     }
 
-    public function testSetDriver()
+    public function testSetDriver(): void
     {
         $db = new \Rebelo\Reports\Report\Datasource\Database();
         $this->assertNull($db->getDriver());
-        $this->assertTrue($db->setDriver("driver") instanceof
-            \Rebelo\Reports\Report\Datasource\Database);
+        $this->assertTrue(
+            $db->setDriver("driver") instanceof
+            \Rebelo\Reports\Report\Datasource\Database
+        );
         $this->assertEquals("driver", $db->getDriver());
     }
 
-    public function testSetDriverNull()
-    {
-        $this->expectException("\Rebelo\Reports\Report\Datasource\DatasourceException");
-        $db = new \Rebelo\Reports\Report\Datasource\Database();
-        $db->setDriver(null);
-    }
-
-    public function testSetDriverEmptyString()
-    {
-        $this->expectException("\Rebelo\Reports\Report\Datasource\DatasourceException");
-        $db = new \Rebelo\Reports\Report\Datasource\Database();
-        $db->setDriver(null);
-    }
-
-    public function testSetUser()
+    public function testSetUser(): void
     {
         $db = new \Rebelo\Reports\Report\Datasource\Database();
         $this->assertNull($db->getUser());
-        $this->assertTrue($db->setUser("user") instanceof
-            \Rebelo\Reports\Report\Datasource\Database);
+        $this->assertTrue(
+            $db->setUser("user") instanceof
+            \Rebelo\Reports\Report\Datasource\Database
+        );
         $this->assertEquals("user", $db->getUser());
-        $db->setUser(null);
-        $this->assertNull($db->getUser());
     }
 
-    public function testSetPassword()
+    public function testSetPassword(): void
     {
         $db = new \Rebelo\Reports\Report\Datasource\Database();
         $this->assertNull($db->getPassword());
-        $this->assertTrue($db->setPassword("password") instanceof
-            \Rebelo\Reports\Report\Datasource\Database);
+        $this->assertTrue(
+            $db->setPassword("password") instanceof
+            \Rebelo\Reports\Report\Datasource\Database
+        );
         $this->assertEquals("password", $db->getPassword());
-        $db->setPassword(null);
-        $this->assertNull($db->getPassword());
     }
 
-    public function testCreateXmlNode()
+    public function testCreateXmlNode(): void
     {
         $conStr = "connstr";
         $driver = "MySql";
@@ -122,11 +98,13 @@ class DatabaseTest
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $db->createXmlNode($node);
 
-        $xml = simplexml_load_string($node->asXML());
+        if (false === $xml = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loadinf xml string");
+        }
+
         $this->assertEquals($conStr, $xml->database->connectionString);
         $this->assertEquals($driver, $xml->database->driver);
         $this->assertEquals($pwd, $xml->database->password);
         $this->assertEquals($user, $xml->database->user);
     }
-
 }

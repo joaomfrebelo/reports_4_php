@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -35,21 +34,10 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class JasperFileTest
-    extends TestCase
+class JasperFileTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $copies     = 9;
         $jasperFile = new JasperFile(null, $copies);
@@ -58,7 +46,7 @@ class JasperFileTest
         $this->assertEquals($copies, $jasperFile->getCopies());
     }
 
-    public function testSetGet()
+    public function testSetGet(): void
     {
 
         $jasperFile = new JasperFile();
@@ -76,63 +64,45 @@ class JasperFileTest
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $jasperFile->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
-        $this->assertEquals($path, $xml->jasperfile);
-        $this->assertEquals(strval($copies), $xml->jasperfile[0]["copies"]);
+        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
+        $this->assertEquals($path, (string)$xml->jasperfile);
+        $this->assertEquals(strval($copies), (string)$xml->jasperfile[0]["copies"]);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\ReportException
-     */
-    public function testZeroCopiesConstructor()
+    public function testZeroCopiesConstructor(): void
     {
+        $this->expectException(\Rebelo\Reports\Report\ReportException::class);
         $copies = 0;
         new JasperFile(null, $copies);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\ReportException
-     */
-    public function testNegativeCopiesConstructor()
+    public function testNegativeCopiesConstructor(): void
     {
+        $this->expectException(\Rebelo\Reports\Report\ReportException::class);
         $copies = -9;
         new JasperFile(null, $copies);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\ReportException
-     */
-    public function testSetNegativeCopies()
+    public function testSetNegativeCopies(): void
     {
+        $this->expectException(\Rebelo\Reports\Report\ReportException::class);
         $jasper = new JasperFile();
         $jasper->setCopies(-1);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\ReportException
-     */
-    public function testSetZeroCopies()
+    public function testSetZeroCopies(): void
     {
+        $this->expectException(\Rebelo\Reports\Report\ReportException::class);
         $jasper = new JasperFile();
         $jasper->setCopies(0);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\ReportException
-     */
-    public function testSetPathNull()
+    public function testGetNoodePathNull(): void
     {
-        $jasper = new JasperFile();
-        $jasper->setPath(null);
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\SerializeReportException
-     */
-    public function testGetNoodePathNull()
-    {
+        $this->expectException(\Rebelo\Reports\Report\SerializeReportException::class);
         $jasper = new JasperFile();
         $jasper->createXmlNode(new \SimpleXMLElement("<root></root>"));
     }
-
 }

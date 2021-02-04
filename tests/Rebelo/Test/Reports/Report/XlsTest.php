@@ -40,17 +40,7 @@ class XlsTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $xls = new Xls();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Xls", $xls);
@@ -60,20 +50,24 @@ class XlsTest
 
         $pathJasper = "path jasper file";
         $xls->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $xls->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $xls->getJasperFile()?->getPath());
 
         $pathOut = "path for output file";
         $xls->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $xls->getOutputfile());
 
         $xls->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $xls->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $xls->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $xls->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
-        $this->assertEquals($pathOut, $xml->xls->{Xls::NODE_OUT_FILE});
+        if(false === $xml  = simplexml_load_string($node->asXML())){ /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
+        $this->assertEquals($pathOut, (string)$xml->xls->{Xls::NODE_OUT_FILE});
     }
 
 }

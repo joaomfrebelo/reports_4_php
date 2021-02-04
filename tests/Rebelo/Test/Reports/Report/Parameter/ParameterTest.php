@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -36,58 +35,61 @@ use Rebelo\Reports\Report\Parameter\Type;
  *
  * @author João Rebelo
  */
-class ParameterTest
-    extends TestCase
+class ParameterTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGetAndXmlBigDecimal()
+    public function testSetGetAndXmlBigDecimal(): void
     {
         $typeBigDec  = new Type(Type::P_BIGDECIMAL);
         $BigDecName  = "BIG_DECIMAL";
         $BigDecValue = 0.9;
         $BigDecParam = new Parameter($typeBigDec, $BigDecName, $BigDecValue);
-        $this->assertEquals($typeBigDec->get(), $BigDecParam->getType()->get());
+        $this->assertEquals($typeBigDec->get(), $BigDecParam->getType()?->get());
         $this->assertEquals($BigDecName, $BigDecParam->getName());
         $this->assertEquals(strval($BigDecValue), $BigDecParam->getValue());
 
-        $bigDecNode = new \SimpleXMLElement("<parameters></parameters>",
-                                            LIBXML_NOCDATA);
+        $bigDecNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $BigDecParam->createXmlNode($bigDecNode);
-        $xmlBigDec  = simplexml_load_string($bigDecNode->asXML());
+        if (false === $xmlBigDec  = simplexml_load_string($bigDecNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
         $this->assertEquals($typeBigDec->get(), $xmlBigDec->parameter->type);
         $this->assertEquals($BigDecName, $xmlBigDec->parameter->name);
         $this->assertEquals(strval($BigDecValue), $xmlBigDec->parameter->value);
     }
 
-    public function testSetGetAndXmlBool()
+    public function testSetGetAndXmlBool(): void
     {
         // Type boolean true
         $typebooleanTrue  = new Type(Type::P_BOOLEAN);
         $booleanTrueName  = "booleanTrue";
         $booleanTrueValue = true;
-        $booleanTrueParam = new Parameter($typebooleanTrue, $booleanTrueName,
-                                          $booleanTrueValue);
-        $this->assertEquals($typebooleanTrue->get(),
-                            $booleanTrueParam->getType()->get());
+        $booleanTrueParam = new Parameter(
+            $typebooleanTrue, $booleanTrueName,
+            $booleanTrueValue
+        );
+        $this->assertEquals(
+            $typebooleanTrue->get(),
+            $booleanTrueParam->getType()?->get()
+        );
         $this->assertEquals($booleanTrueName, $booleanTrueParam->getName());
         $this->assertEquals("true", $booleanTrueParam->getValue());
 
-        $booleanTrueNode = new \SimpleXMLElement("<parameters></parameters>",
-                                                 LIBXML_NOCDATA);
+        $booleanTrueNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $booleanTrueParam->createXmlNode($booleanTrueNode);
-        $xmlBooleanTrue  = simplexml_load_string($booleanTrueNode->asXML());
-        $this->assertEquals($typebooleanTrue->get(),
-                            $xmlBooleanTrue->parameter->type);
+        if(false === $xmlBooleanTrue  = simplexml_load_string($booleanTrueNode->asXML())){ /** @phpstan-ignore-line */
+             $this->fail("Fail loading xml string");
+        }
+        $this->assertEquals(
+            $typebooleanTrue->get(),
+            $xmlBooleanTrue->parameter->type
+        );
         $this->assertEquals($booleanTrueName, $xmlBooleanTrue->parameter->name);
         $this->assertEquals("true", $xmlBooleanTrue->parameter->value);
 
@@ -95,19 +97,29 @@ class ParameterTest
         $typebooleanFalse  = new Type(Type::P_BOOLEAN);
         $booleanFalseName  = "booleanFalse";
         $booleanFalseValue = false;
-        $booleanFalseParam = new Parameter($typebooleanFalse, $booleanFalseName,
-                                           $booleanFalseValue);
-        $this->assertEquals($typebooleanFalse->get(),
-                            $booleanFalseParam->getType()->get());
+        $booleanFalseParam = new Parameter(
+            $typebooleanFalse, $booleanFalseName,
+            $booleanFalseValue
+        );
+        $this->assertEquals(
+            $typebooleanFalse->get(),
+            $booleanFalseParam->getType()?->get()
+        );
         $this->assertEquals($booleanFalseName, $booleanFalseParam->getName());
         $this->assertEquals("false", $booleanFalseParam->getValue());
 
-        $booleanFalseNode = new \SimpleXMLElement("<parameters></parameters>",
-                                                  LIBXML_NOCDATA);
+        $booleanFalseNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $booleanFalseParam->createXmlNode($booleanFalseNode);
-        $xmlBooleanFalse  = simplexml_load_string($booleanFalseNode->asXML());
-        $this->assertEquals($typebooleanFalse->get(),
-                            $xmlBooleanFalse->parameter->type);
+        if (false === $xmlBooleanFalse  = simplexml_load_string($booleanFalseNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
+        $this->assertEquals(
+            $typebooleanFalse->get(),
+            $xmlBooleanFalse->parameter->type
+        );
         $this->assertEquals($booleanFalseName, $xmlBooleanFalse->parameter->name);
         $this->assertEquals("false", $xmlBooleanFalse->parameter->value);
 
@@ -115,19 +127,29 @@ class ParameterTest
         $typeboolFalse  = new Type(Type::P_BOOL);
         $boolFalseName  = "boolFalse";
         $boolFalseValue = false;
-        $boolFalseParam = new Parameter($typeboolFalse, $boolFalseName,
-                                        $boolFalseValue);
-        $this->assertEquals($typeboolFalse->get(),
-                            $boolFalseParam->getType()->get());
+        $boolFalseParam = new Parameter(
+            $typeboolFalse, $boolFalseName,
+            $boolFalseValue
+        );
+        $this->assertEquals(
+            $typeboolFalse->get(),
+            $boolFalseParam->getType()?->get()
+        );
         $this->assertEquals($boolFalseName, $boolFalseParam->getName());
         $this->assertEquals("false", $boolFalseParam->getValue());
 
-        $boolFalseNode = new \SimpleXMLElement("<parameters></parameters>",
-                                               LIBXML_NOCDATA);
+        $boolFalseNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $boolFalseParam->createXmlNode($boolFalseNode);
-        $xmlboolFalse  = simplexml_load_string($boolFalseNode->asXML());
-        $this->assertEquals($typeboolFalse->get(),
-                            $xmlboolFalse->parameter->type);
+        if (false === $xmlboolFalse  = simplexml_load_string($boolFalseNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
+        $this->assertEquals(
+            $typeboolFalse->get(),
+            $xmlboolFalse->parameter->type
+        );
         $this->assertEquals($boolFalseName, $xmlboolFalse->parameter->name);
         $this->assertEquals("false", $xmlboolFalse->parameter->value);
 
@@ -135,276 +157,210 @@ class ParameterTest
         $typeboolTrue  = new Type(Type::P_BOOL);
         $boolTrueName  = "boolTrue";
         $boolTrueValue = true;
-        $boolTrueParam = new Parameter($typeboolTrue, $boolTrueName,
-                                       $boolTrueValue);
-        $this->assertEquals($typeboolTrue->get(),
-                            $boolTrueParam->getType()->get());
+        $boolTrueParam = new Parameter(
+            $typeboolTrue, $boolTrueName,
+            $boolTrueValue
+        );
+        $this->assertEquals(
+            $typeboolTrue->get(),
+            $boolTrueParam->getType()?->get()
+        );
         $this->assertEquals($boolTrueName, $boolTrueParam->getName());
         $this->assertEquals("true", $boolTrueParam->getValue());
 
-        $boolTrueNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
+        $boolTrueNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $boolTrueParam->createXmlNode($boolTrueNode);
-        $xmlboolTrue  = simplexml_load_string($boolTrueNode->asXML());
+        if (false === $xmlboolTrue  = simplexml_load_string($boolTrueNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
         $this->assertEquals($typeboolTrue->get(), $xmlboolTrue->parameter->type);
         $this->assertEquals($boolTrueName, $xmlboolTrue->parameter->name);
         $this->assertEquals("true", $xmlboolTrue->parameter->value);
     }
 
-    public function testSetGetAndXmlString()
+    public function testSetGetAndXmlString(): void
     {
         $typestr  = new Type(Type::P_STRING);
         $strName  = "STRING";
         $strValue = "str";
         $strParam = new Parameter($typestr, $strName, $strValue);
-        $this->assertEquals($typestr->get(), $strParam->getType()->get());
+        $this->assertEquals($typestr->get(), $strParam->getType()?->get());
         $this->assertEquals($strName, $strParam->getName());
         $this->assertEquals(strval($strValue), $strParam->getValue());
 
-        $strNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                             LIBXML_NOCDATA);
+        $strNameNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $strParam->createXmlNode($strNameNode);
-        $xmlStr      = simplexml_load_string($strNameNode->asXML());
+        if (false === $xmlStr      = simplexml_load_string($strNameNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
         $this->assertEquals($typestr->get(), $xmlStr->parameter->type);
         $this->assertEquals($strName, $xmlStr->parameter->name);
         $this->assertEquals($strValue, $xmlStr->parameter->value);
     }
 
-    public function testSetGetAndXmlDate()
+    public function testSetGetAndXmlDate(): void
     {
         $typedate   = new Type(Type::P_DATE);
         $dateName   = "date";
         $dateValue  = "1969-10-05";
         $dateFormat = "yyyy-MM-dd";
-        $dateParam  = new Parameter($typedate, $dateName, $dateValue,
-                                    $dateFormat);
-        $this->assertEquals($typedate->get(), $dateParam->getType()->get());
+        $dateParam  = new Parameter(
+            $typedate, $dateName, $dateValue,
+            $dateFormat
+        );
+        $this->assertEquals($typedate->get(), $dateParam->getType()?->get());
         $this->assertEquals($dateName, $dateParam->getName());
         $this->assertEquals($dateValue, $dateParam->getValue());
         $this->assertEquals($dateFormat, $dateParam->getFormat());
 
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
+        $dateNameNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $dateParam->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
+        if (false === $xmlStr       = simplexml_load_string($dateNameNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
         $this->assertEquals($typedate->get(), $xmlStr->parameter->type);
         $this->assertEquals($dateName, $xmlStr->parameter->name);
         $this->assertEquals($dateValue, $xmlStr->parameter->value);
         $this->assertEquals($dateFormat, $xmlStr->parameter->value[0]["format"]);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Parameter\ParameterException
-     */
-    public function testSetGetAndXmlDateNoFormat()
+    public function testSetGetAndXmlDateNoFormat(): void
     {
+        $this->expectException(\Rebelo\Reports\Report\Parameter\ParameterException::class);
         $typedate  = new Type(Type::P_DATE);
         $dateName  = "date";
         $dateValue = "1969-10-05";
         new Parameter($typedate, $dateName, $dateValue);
     }
 
-    public function testSetGetAndXmlFloat()
+    public function testSetGetAndXmlFloat(): void
     {
         $type  = new Type(Type::P_FLOAT);
         $name  = "float name";
         $value = floatval(0.999);
         $param = new Parameter($type, $name, $value);
-        $this->assertEquals($type->get(), $param->getType()->get());
+        $this->assertEquals($type->get(), $param->getType()?->get());
         $this->assertEquals($name, $param->getName());
         $this->assertEquals(strval($value), $param->getValue());
 
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
+        $dateNameNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $param->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
+        if (false === $xmlStr       = simplexml_load_string($dateNameNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
         $this->assertEquals($type->get(), $xmlStr->parameter->type);
         $this->assertEquals($name, $xmlStr->parameter->name);
         $this->assertEquals(strval($value), $xmlStr->parameter->value);
     }
 
-    public function testSetGetAndXmlDouble()
+    public function testSetGetAndXmlDouble(): void
     {
         $type  = new Type(Type::P_DOUBLE);
         $name  = "double name";
         $value = doubleval(0.999);
         $param = new Parameter($type, $name, $value);
-        $this->assertEquals($type->get(), $param->getType()->get());
+        $this->assertEquals($type->get(), $param->getType()?->get());
         $this->assertEquals($name, $param->getName());
         $this->assertEquals(strval($value), $param->getValue());
 
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
+        $dateNameNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $param->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
+        if (false === $xmlStr       = simplexml_load_string($dateNameNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
         $this->assertEquals($type->get(), $xmlStr->parameter->type);
         $this->assertEquals($name, $xmlStr->parameter->name);
         $this->assertEquals(strval($value), $xmlStr->parameter->value);
     }
 
-    public function testSetGetAndXmlInteger()
+    public function testSetGetAndXmlInteger(): void
     {
         $type  = new Type(Type::P_INTEGER);
         $name  = "integer name";
         $value = 999;
         $param = new Parameter($type, $name, $value);
-        $this->assertEquals($type->get(), $param->getType()->get());
+        $this->assertEquals($type->get(), $param->getType()?->get());
         $this->assertEquals($name, $param->getName());
         $this->assertEquals(strval($value), $param->getValue());
 
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
+        $dateNameNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $param->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
+        if (false === $xmlStr       = simplexml_load_string($dateNameNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
         $this->assertEquals($type->get(), $xmlStr->parameter->type);
         $this->assertEquals($name, $xmlStr->parameter->name);
         $this->assertEquals(strval($value), $xmlStr->parameter->value);
     }
 
-    public function testSetGetAndXmlLong()
+    public function testSetGetAndXmlLong(): void
     {
         $type  = new Type(Type::P_LONG);
         $name  = "long name";
         $value = 999;
         $param = new Parameter($type, $name, $value);
-        $this->assertEquals($type->get(), $param->getType()->get());
+        $this->assertEquals($type->get(), $param->getType()?->get());
         $this->assertEquals($name, $param->getName());
         $this->assertEquals(strval($value), $param->getValue());
 
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
+        $dateNameNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $param->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
+        if (false === $xmlStr       = simplexml_load_string($dateNameNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
         $this->assertEquals($type->get(), $xmlStr->parameter->type);
         $this->assertEquals($name, $xmlStr->parameter->name);
         $this->assertEquals(strval($value), $xmlStr->parameter->value);
     }
 
-    public function testSetGetAndXmlShort()
+    public function testSetGetAndXmlShort(): void
     {
         $type  = new Type(Type::P_SHORT);
         $name  = "short name";
         $value = 9;
         $param = new Parameter($type, $name, $value);
-        $this->assertEquals($type->get(), $param->getType()->get());
+        $this->assertEquals($type->get(), $param->getType()?->get());
         $this->assertEquals($name, $param->getName());
         $this->assertEquals(strval($value), $param->getValue());
 
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
+        $dateNameNode = new \SimpleXMLElement(
+            "<parameters></parameters>",
+            LIBXML_NOCDATA
+        );
         $param->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
+        if (false === $xmlStr       = simplexml_load_string($dateNameNode->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail loading xml string");
+        }
         $this->assertEquals($type->get(), $xmlStr->parameter->type);
         $this->assertEquals($name, $xmlStr->parameter->name);
         $this->assertEquals(strval($value), $xmlStr->parameter->value);
     }
 
-    public function testSetGetAndXmlSqlDate()
+    public function testEmptyName(): void
     {
-        $type   = new Type(Type::P_SQL_DATE);
-        $name   = "sql date name";
-        $value  = "1969-10-05";
-        $format = "yyyy-MM-dd";
-        $param  = new Parameter($type, $name, $value, $format);
-        $this->assertEquals($type->get(), $param->getType()->get());
-        $this->assertEquals($name, $param->getName());
-        $this->assertEquals(strval($value), $param->getValue());
-        $this->assertEquals($format, $param->getFormat());
-
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
-        $param->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
-        $this->assertEquals($type->get(), $xmlStr->parameter->type);
-        $this->assertEquals($name, $xmlStr->parameter->name);
-        $this->assertEquals(strval($value), $xmlStr->parameter->value);
-        $this->assertEquals($format, $xmlStr->parameter->value[0]["format"]);
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\Parameter\ParameterException
-     */
-    public function testSetGetAndXmlSqlDateNoFormat()
-    {
-        $type  = new Type(Type::P_SQL_DATE);
-        $name  = "sql date name";
-        $value = "1969-10-05";
-        new Parameter($type, $name, $value);
-    }
-
-    public function testSetGetAndXmlSqlTime()
-    {
-        $type  = new Type(Type::P_SQL_TIME);
-        $name  = "sql time name";
-        $value = 123456789;
-        $param = new Parameter($type, $name, $value);
-        $this->assertEquals($type->get(), $param->getType()->get());
-        $this->assertEquals($name, $param->getName());
-        $this->assertEquals(strval($value), $param->getValue());
-
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
-        $param->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
-        $this->assertEquals($type->get(), $xmlStr->parameter->type);
-        $this->assertEquals($name, $xmlStr->parameter->name);
-        $this->assertEquals(strval($value), $xmlStr->parameter->value);
-    }
-
-    public function testSetGetAndXmlTime()
-    {
-        $type  = new Type(Type::P_TIME);
-        $name  = "time name";
-        $value = 123456789;
-        $param = new Parameter($type, $name, $value);
-        $this->assertEquals($type->get(), $param->getType()->get());
-        $this->assertEquals($name, $param->getName());
-        $this->assertEquals(strval($value), $param->getValue());
-
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
-        $param->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
-        $this->assertEquals($type->get(), $xmlStr->parameter->type);
-        $this->assertEquals($name, $xmlStr->parameter->name);
-        $this->assertEquals(strval($value), $xmlStr->parameter->value);
-    }
-
-    public function testSetGetAndXmlTimestamp()
-    {
-        $type  = new Type(Type::P_TIMESTAMP);
-        $name  = "timestamp name";
-        $value = 123456789;
-        $param = new Parameter($type, $name, $value);
-        $this->assertEquals($type->get(), $param->getType()->get());
-        $this->assertEquals($name, $param->getName());
-        $this->assertEquals(strval($value), $param->getValue());
-
-        $dateNameNode = new \SimpleXMLElement("<parameters></parameters>",
-                                              LIBXML_NOCDATA);
-        $param->createXmlNode($dateNameNode);
-        $xmlStr       = simplexml_load_string($dateNameNode->asXML());
-        $this->assertEquals($type->get(), $xmlStr->parameter->type);
-        $this->assertEquals($name, $xmlStr->parameter->name);
-        $this->assertEquals(strval($value), $xmlStr->parameter->value);
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\Parameter\ParameterException
-     */
-    public function testEmptyName()
-    {
+        $this->expectException(\Rebelo\Reports\Report\Parameter\ParameterException::class);
         $type = new Type(Type::P_STRING);
         new Parameter($type, "", "value");
     }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\Parameter\ParameterException
-     */
-    public function testNullName()
-    {
-        $type = new Type(Type::P_STRING);
-        new Parameter($type, null, "value");
-    }
-
 }

@@ -96,10 +96,10 @@ class Config
      *
      * Self instance
      *
-     * Config
+     * Config|null
      * @since 1.0.0
      */
-    protected static $config = null;
+    protected static ?Config $config = null;
 
     /**
      *
@@ -135,7 +135,8 @@ class Config
             throw new ConfigException(
                 sprintf(
                     "ini file '%s' is not a file or is not readable",
-                    static::$iniPath)
+                    static::$iniPath
+                )
             );
         }
 
@@ -144,7 +145,8 @@ class Config
         {
             throw new ConfigException(
                 sprintf(
-                    "Error parsing ini file '%s'", static::$iniPath)
+                    "Error parsing ini file '%s'", static::$iniPath
+                )
             );
         }
         $this->ini = $ini;
@@ -179,8 +181,10 @@ class Config
     {
         if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
         {
-            if (\array_key_exists(static::KEY_JAVA_PATH,
-                                  $this->ini[static::BLOCK_JAVA])
+            if (\array_key_exists(
+                static::KEY_JAVA_PATH,
+                $this->ini[static::BLOCK_JAVA]
+            )
             )
             {
                 $path = $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH];
@@ -211,8 +215,12 @@ class Config
         }
         $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH] = $path;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH]));
+            ->debug(
+                sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH]
+                )
+            );
         return $this;
     }
 
@@ -228,8 +236,10 @@ class Config
     {
         if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
         {
-            if (\array_key_exists(static::KEY_JAR_PATH,
-                                  $this->ini[static::BLOCK_JAVA])
+            if (\array_key_exists(
+                static::KEY_JAR_PATH,
+                $this->ini[static::BLOCK_JAVA]
+            )
             )
             {
                 $path = $this->ini[static::BLOCK_JAVA][static::KEY_JAR_PATH];
@@ -246,15 +256,17 @@ class Config
      *
      * Get the java Xshareclasses name
      *
-     * @return string the Xshareclasses name or null if not configurated
+     * @return string|null the Xshareclasses name or null if not configurated
      * @since 1.0.0
      *      */
     public function getJavaXsharedClassesName()
     {
         if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
         {
-            if (\array_key_exists(static::KEY_X_SHARECLASSE_NAME,
-                                  $this->ini[static::BLOCK_JAVA]))
+            if (\array_key_exists(
+                static::KEY_X_SHARECLASSE_NAME,
+                $this->ini[static::BLOCK_JAVA]
+            ))
             {
                 if (empty($this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_NAME]) === false)
                 {
@@ -269,20 +281,22 @@ class Config
      *
      * Get the java Xshareclasses dir cache
      *
-     * @return string the Xshareclasses dir or null if not configurated
+     * @return string|null the Xshareclasses dir or null if not configurated
      * @since 1.0.0
      */
     public function getJavaXsharedClassesDir()
     {
         if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
         {
-            if (\array_key_exists(static::KEY_X_SHARECLASSE_DIR,
-                                  $this->ini[static::BLOCK_JAVA]))
+            if (\array_key_exists(
+                static::KEY_X_SHARECLASSE_DIR,
+                $this->ini[static::BLOCK_JAVA]
+            ))
             {
                 if (empty($this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_DIR]) === false)
                 {
                     return static::cleanLastSlash(
-                            $this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_DIR]
+                        $this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_DIR]
                     );
                 }
             }
@@ -302,8 +316,10 @@ class Config
     {
         if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
         {
-            if (\array_key_exists(static::KEY_VERBOSE,
-                                  $this->ini[static::BLOCK_JAVA])
+            if (\array_key_exists(
+                static::KEY_VERBOSE,
+                $this->ini[static::BLOCK_JAVA]
+            )
             )
             {
                 $path = $this->ini[static::BLOCK_JAVA][static::KEY_VERBOSE];
@@ -335,8 +351,12 @@ class Config
         }
         $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP] = $path;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP]));
+            ->debug(
+                sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP]
+                )
+            );
         return $this;
     }
 
@@ -351,8 +371,10 @@ class Config
     {
         if (\array_key_exists(static::BLOCK_SYSTEM, $this->ini))
         {
-            if (\array_key_exists(static::KEY_TMP,
-                                  $this->ini[static::BLOCK_SYSTEM]))
+            if (\array_key_exists(
+                static::KEY_TMP,
+                $this->ini[static::BLOCK_SYSTEM]
+            ))
             {
                 $tmp = $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP];
                 if (empty($tmp) === false)
@@ -391,7 +413,7 @@ class Config
 
     /**
      * Configures the Log4php with the logconfig.xml in the Config folder
-     * @return
+     * @return void
      */
     public static function configLog4Php()
     {
@@ -409,8 +431,12 @@ class Config
             return;
         }
 
-        \Logger::getLogger(__CLASS__)->warn(sprintf(__METHOD__
-                . " log4php log dosen't exist '%s'", $logxml));
+        \Logger::getLogger(__CLASS__)->warn(
+            sprintf(
+                __METHOD__
+                . " log4php log dosen't exist '%s'", $logxml
+            )
+        );
     }
 
 }

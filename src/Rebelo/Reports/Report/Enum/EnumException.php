@@ -32,6 +32,12 @@ class EnumException
     extends \Exception
 {
 
+    /**
+     * 
+     * @param string $message
+     * @param int $code
+     * @param \Throwable $previous
+     */
     public function __construct($message = "", $code = 0,
                                 \Throwable $previous = NULL)
     {

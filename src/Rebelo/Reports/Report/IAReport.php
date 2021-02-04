@@ -45,7 +45,7 @@ interface IAReport
      *
      * @since 1.0.0
      * @param \SimpleXMLElement $node
-     * @return \SimpleXMLElement The child node
+     * @return void
      */
     public function createXmlNode(\SimpleXMLElement $node);
 

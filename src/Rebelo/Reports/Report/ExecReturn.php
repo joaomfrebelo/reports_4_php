@@ -154,7 +154,7 @@ class ExecReturn
      * @param array $messages
      * @since 1.0.0
      */
-    public function __construct($code, $messages)
+    public function __construct(int $code, array $messages)
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
         $this->setCode($code);
@@ -169,10 +169,14 @@ class ExecReturn
     public function getCode()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " getted '%s'",
-                           $this->code === null
+            ->info(
+                sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->code === null
                         ? "null"
-                        : $this->code));
+                    : $this->code
+                )
+            );
 
         return $this->code;
     }
@@ -228,10 +232,14 @@ class ExecReturn
         }
         $this->messages = $messages;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            \count($this->messages) === 0
+            ->debug(
+                sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    \count($this->messages) === 0
                         ? "empty array"
-                        : "...string"));
+                    : "...string"
+                )
+            );
         return $this;
     }
 

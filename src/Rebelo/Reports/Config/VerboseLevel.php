@@ -47,7 +47,7 @@ class VerboseLevel
 
     /**
      * Verbose Level to pass as argument to jar Rebelo reports CLI
-     * @param type $value
+     * @param string $value
      * @since 1.0.0
      */
     public function __construct($value)

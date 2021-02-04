@@ -39,7 +39,7 @@ abstract class AServerHttp
 
     /**
      *
-     * @param type $url The server url
+     * @param string $url The server url
      * @param \Rebelo\Reports\Report\Datasource\RequestType $type
      * @since 1.0.0
      */
@@ -49,10 +49,14 @@ abstract class AServerHttp
 
         $this->setUrl($url);
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf("Url setted to '%s' in construct",
-                            $this->url === null
+            ->debug(
+                \sprintf(
+                    "Url setted to '%s' in construct",
+                    $this->url === null
                         ? "null"
-                        : $this->url));
+                    : $this->url
+                )
+            );
     }
 
     /**
@@ -60,7 +64,7 @@ abstract class AServerHttp
      *
      * The server URL
      *
-     * @param string $url
+     * @param string|null $url
      * @return self
      * @throws DatasourceException
      * @since 1.0.0
@@ -69,10 +73,12 @@ abstract class AServerHttp
     {
         if ($url !== null)
         {
-            if (strtolower(parse_url($url, PHP_URL_SCHEME)) !== "http")
+            if (strtolower(parse_url($url, PHP_URL_SCHEME)) !== "http")/** @phpstan-ignore-line */
             {
-                $msg = sprintf(__METHOD__ . " url must be http but '%s' was passed",
-                               parse_url($url, PHP_URL_SCHEME));
+                $msg = sprintf(
+                    __METHOD__ . " url must be http but '%s' was passed",
+                    parse_url($url, PHP_URL_SCHEME)
+                );
                 \Logger::getLogger(\get_class($this))
                     ->error($msg);
                 throw new DatasourceException($msg);
@@ -81,10 +87,14 @@ abstract class AServerHttp
 
         $this->url = $url;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                            $this->url === null
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    $this->url === null
                         ? "null"
-                        : $this->url));
+                    : $this->url
+                )
+            );
         return $this;
     }
 

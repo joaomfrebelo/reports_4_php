@@ -40,17 +40,7 @@ class PrinterTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $inst    = "\Rebelo\Reports\Report\Printer";
         $printer = new Printer();
@@ -58,23 +48,26 @@ class PrinterTest
         $this->assertNull($printer->getJasperFile());
         $this->assertEquals("", $printer->getPrinter());
         $this->assertNull($printer->getDatasource());
-        $this->assertNull($printer->getJasperFileBaseDir());
 
         $pathJasper = "path jasper file";
         $printer->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $printer->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $printer->getJasperFile()?->getPath());
 
         $printerName = "printer name";
         $printer->setPrinter($printerName);
         $this->assertEquals($printerName, $printer->getPrinter());
 
         $printer->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $printer->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $printer->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $printer->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if(false === $xml  = simplexml_load_string($node->asXML())){ /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
         $this->assertEquals($printerName, $xml->print->printer);
     }
 

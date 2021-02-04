@@ -48,25 +48,25 @@ class ReportTest
     extends TestCase
 {
 
-    static $resource = null;
+    static string $resource = "";
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         static::$resource = __DIR__ . DIRECTORY_SEPARATOR . ".."
             . DIRECTORY_SEPARATOR . ".."
             . DIRECTORY_SEPARATOR . ".."
             . DIRECTORY_SEPARATOR . ".."
             . DIRECTORY_SEPARATOR . "Resources";
-        return parent::setUpBeforeClass();
+        parent::setUpBeforeClass();
     }
 
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $resource = static::$resource;
 
         \Rebelo\Reports\Config\Config::getInstance()->setTempDirectory($resource);
 
-        $inst   = "\Rebelo\Reports\Report\Report";
+        $inst   = \Rebelo\Reports\Report\Report::class;
         $report = new Report();
         $this->assertInstanceOf($inst, $report);
         $this->assertTrue(\is_string($report->getTmpDir()));
@@ -99,22 +99,84 @@ class ReportTest
         $this->assertInstanceOf($inst, $report->setOutputBaseDir($jasBaseDir));
         $this->assertEquals($jasBaseDir, $report->getOutputBaseDir());
 
-        $this->assertInstanceOf($inst,
-                                $report->setPathType(
-                new ReportPathType(ReportPathType::PATH_DIR)));
-        $this->assertEquals(ReportPathType::PATH_DIR,
-                            $report->getPathType()->get());
+        $this->assertInstanceOf(
+            $inst,
+            $report->setPathType(
+                new ReportPathType(ReportPathType::PATH_DIR)
+            )
+        );
+        $this->assertEquals(
+            ReportPathType::PATH_DIR,
+            $report->getPathType()->get()
+        );
 
-        $this->assertInstanceOf($inst,
-                                $report->setPathType(
-                new ReportPathType(ReportPathType::PATH_FILE)));
-        $this->assertEquals(ReportPathType::PATH_FILE,
-                            $report->getPathType()->get());
+        $this->assertInstanceOf(
+            $inst,
+            $report->setPathType(
+                new ReportPathType(ReportPathType::PATH_FILE)
+            )
+        );
+        $this->assertEquals(
+            ReportPathType::PATH_FILE,
+            $report->getPathType()->get()
+        );
 
         $this->assertTrue(\is_string($report->getBaseCmd()));
     }
 
-    public function testGenerate()
+    public function getParameters() : array
+    {
+        return array(
+            array(
+                "type"   => "string",
+                "name"   => "P_STRING",
+                "value"  => "Parameter String",
+                "format" => null),
+            array(
+                "type"   => "bool",
+                "name"   => "P_BOOLEAN",
+                "value"  => "true",
+                "format" => null),
+            array(
+                "type"   => "date",
+                "name"   => "P_DATE",
+                "value"  => "1969-10-05",
+                "format" => "yyyy-MM-dd"),
+            array(
+                "type"   => "double",
+                "name"   => "P_DOUBLE",
+                "value"  => "9.99",
+                "format" => null),
+            array(
+                "type"   => "float",
+                "name"   => "P_FLOAT",
+                "value"  => "99.49",
+                "format" => null),
+            array(
+                "type"   => "integer",
+                "name"   => "P_INTEGER",
+                "value"  => "999",
+                "format" => null),
+            array(
+                "type"   => "long",
+                "name"   => "P_LONG",
+                "value"  => "99",
+                "format" => null),
+            array(
+                "type"   => "short",
+                "name"   => "P_SHORT",
+                "value"  => "9",
+                "format" => null),
+            array(
+                "type"   => "bigdecimal",
+                "name"   => "P_BIG_DECIMAL",
+                "value"  => "9.99",
+                "format" => null),
+        );
+    }
+
+
+    public function testGenerate() :void
     {
         $genDir    = static::$resource . DIRECTORY_SEPARATOR . "Generate";
         $outFile   = $genDir . DIRECTORY_SEPARATOR . "report_" . date("Ymd\THis") . ".pdf";
@@ -139,23 +201,7 @@ class ReportTest
         $certName  = "rreports";
         $certPwd   = "password";
 
-        $parameters = array(
-            array(
-                "type"   => "string",
-                "name"   => "P_STRING",
-                "value"  => "Parameter String",
-                "format" => null),
-            array(
-                "type"   => "bool",
-                "name"   => "P_BOOLEAN",
-                "value"  => "true",
-                "format" => null),
-            array(
-                "type"   => "date",
-                "name"   => "P_DATE",
-                "value"  => "1969-10-05",
-                "format" => "yyyy-MM-dd"),
-        );
+        $parameters = $this->getParameters();
 
         $pdf = new Pdf();
 
@@ -201,7 +247,7 @@ class ReportTest
         {
             $param = new Parameter(
                 new ParameterType($paramProp["type"]), $paramProp["name"],
-                                  $paramProp["value"], $paramProp["format"]
+                $paramProp["value"], $paramProp["format"]
             );
             $pdf->addToParameter($param);
         }
@@ -224,7 +270,7 @@ class ReportTest
         }
     }
 
-    public function testMultipeInOne()
+    public function testMultipeInOne() : void
     {
         $genDir    = static::$resource . DIRECTORY_SEPARATOR . "Generate";
         $outFile   = $genDir . DIRECTORY_SEPARATOR . "report_" . date("Ymd\THis") . ".pdf";
@@ -249,23 +295,7 @@ class ReportTest
         $certName  = "rreports";
         $certPwd   = "password";
 
-        $parameters = array(
-            array(
-                "type"   => "string",
-                "name"   => "P_STRING",
-                "value"  => "Parameter String",
-                "format" => null),
-            array(
-                "type"   => "bool",
-                "name"   => "P_BOOLEAN",
-                "value"  => "true",
-                "format" => null),
-            array(
-                "type"   => "date",
-                "name"   => "P_DATE",
-                "value"  => "1969-10-05",
-                "format" => "yyyy-MM-dd"),
-        );
+        $parameters = $this->getParameters();
 
         $pdf = new Pdf();
 
@@ -311,7 +341,7 @@ class ReportTest
         {
             $param = new Parameter(
                 new ParameterType($paramProp["type"]), $paramProp["name"],
-                                  $paramProp["value"], $paramProp["format"]
+                $paramProp["value"], $paramProp["format"]
             );
             $pdf->addToParameter($param);
         }
@@ -319,7 +349,7 @@ class ReportTest
         $pdf_2 = clone $pdf;
         foreach ($pdf_2->getParameters() as $key => $param2)
         {
-            if ($param2->getType()->get() === "string")
+            if ($param2->getType()?->get() === "string")
             {
                 $parmCl = clone $param2;
                 $parmCl->setValue("Report 2 cloned from 1");
@@ -330,7 +360,8 @@ class ReportTest
 
         $report = new Report();
         $report->setTmpDir($genDir . DIRECTORY_SEPARATOR . uniqid());
-        $exit   = $report->generateMultipeInOne([
+        $exit   = $report->generateMultipeInOne(
+            [
             $pdf,
             $pdf_2]
         );
@@ -350,4 +381,24 @@ class ReportTest
         }
     }
 
+    public function testWrongSchemaValidation() : void
+    {
+        $report  = new class extends \Rebelo\Reports\Report\AReport
+        {
+            
+            public function __toString() : string
+            {
+                return "";
+            }
+
+            public function createXmlNode(\SimpleXMLElement $node): void
+            {
+                
+            }
+        };
+        
+        $this->expectException(\Rebelo\Reports\Report\SerializeReportException::class);
+        $report->validateXml(new \SimpleXMLElement("<root></root>"));        
+    }
+    
 }

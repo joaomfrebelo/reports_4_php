@@ -12,7 +12,6 @@ use Rebelo\Reports\Report\AReport;
  */
 class Parameter
 {
-
     /**
      * The type of the parameter (java class)
      *
@@ -35,7 +34,7 @@ class Parameter
      *  for SimpleDateFormat, and only where the parameter type
      *  is "date", for other types must be empty
      *
-     * @var mixed
+     * @var string|null
      * @since 1.0.0
      */
     protected $value = null;
@@ -53,42 +52,32 @@ class Parameter
      * @param \Rebelo\Reports\Report\Parameter\Type $type The data type of the parameter
      * @param string $name the name of the parameter
      * @param mixed $value the prefered type is string, if is object the __toString() will be called
-     * @param type $format
+     * @param string|null $format
      * @since 1.0.0
      */
-    public function __construct(Type $type, $name, $value, $format = null)
+    public function __construct(Type $type, string $name, mixed $value, ?string $format = null)
     {
         \Rebelo\Reports\Config\Config::configLog4Php();
         \Logger::getLogger(\get_class($this))->debug("Class initialization");
         $this->setType($type);
         $this->setName($name);
         $this->setValue($value);
-        $isDate = \in_array($type->get(),
-                            array(
-                Type::P_SQL_DATE,
-                Type::P_DATE));
+        $isDate = \in_array($type->get(), array(Type::P_DATE));
 
-        if ($format == null)
-        {
-            if ($isDate)
-            {
+        if ($format == null) {
+            if ($isDate) {
                 $msg = "For type DATE or SQL_DATE must have format defined";
                 \Logger::getLogger(\get_class($this))
-                    ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                    ->error(\sprintf(__METHOD__." '%s'", $msg));
                 throw new ParameterException($msg);
             }
-        }
-        else
-        {
-            if ($isDate)
-            {
+        } else {
+            if ($isDate) {
                 $this->setFormat($format);
-            }
-            else
-            {
+            } else {
                 $msg = "Format property is only for DATE and SQL_DATE";
                 \Logger::getLogger(\get_class($this))
-                    ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                    ->error(\sprintf(__METHOD__." '%s'", $msg));
                 throw new ParameterException($msg);
             }
         }
@@ -98,13 +87,18 @@ class Parameter
      *
      * Get parameter type
      *
-     * @return \Rebelo\Reports\Report\Parameter\Type
+     * @return \Rebelo\Reports\Report\Parameter\Type|null
      * @since 1.0.0
      */
     public function getType()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'", $this->type->get()));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->type === null ? "null" : $this->type->get()
+                )
+            );
         return $this->type;
     }
 
@@ -117,20 +111,20 @@ class Parameter
     public function getName()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'", $this->name));
+            ->info(\sprintf(__METHOD__." getted '%s'", $this->name));
         return $this->name;
     }
 
     /**
      * Get the parameter value
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
     public function getValue()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'", $this->value));
+            ->info(\sprintf(__METHOD__." getted '%s'", $this->value ?? "null"));
         return $this->value;
     }
 
@@ -144,7 +138,7 @@ class Parameter
     {
         $this->type = $type;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'", $this->type->get()));
+            ->debug(\sprintf(__METHOD__." setted to '%s'", $this->type->get()));
         return $this;
     }
 
@@ -159,16 +153,15 @@ class Parameter
      */
     public function setName($name)
     {
-        if (!\is_string($name) || \trim($name) === "")
-        {
+        if (!\is_string($name) || \trim($name) === "") {
             $msg = "The name must be a non empty string";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
             throw new ParameterException($msg);
         }
         $this->name = $name;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'", $this->name));
+            ->debug(\sprintf(__METHOD__." setted to '%s'", $this->name));
         return $this;
     }
 
@@ -185,45 +178,38 @@ class Parameter
      */
     public function setValue($value)
     {
-        if ($value === null)
-        {
+        if ($value === null) {
             $msg = "Parameter value can not be null";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
             throw new ParameterException($msg);
         }
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " value is of type '%s', it will converted to string",
-                            gettype($value) === "object"
-                        ? get_class($value)
-                        : gettype($value)));
-        if (\is_scalar($value))
-        {
-            switch (true)
-            {
+            ->info(
+                \sprintf(
+                    __METHOD__." value is of type '%s', it will converted to string",
+                    gettype($value) === "object" ? get_class($value) : gettype($value)
+                )
+            );
+        if (\is_scalar($value)) {
+            switch (true) {
                 case \is_bool($value):
-                    $this->value = $value
-                        ? "true"
-                        : "false";
+                    $this->value = $value ? "true" : "false";
                     break;
                 default :
                     $this->value = strval($value);
             }
-        }
-        elseif (is_object($value))
-        {
-            $this->value = $value->__toString();
-        }
-        else
-        {
+        } elseif (is_object($value)) {
+            $this->value = $value->__toString();/** @phpstan-ignore-line */
+        } else {
             $msg = sprintf("unknow type to be converted");
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
             throw new ParameterException($msg);
         }
 
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'", $this->value));
+            ->debug(\sprintf(__METHOD__." setted to '%s'", $this->value));
 
         return $this;
     }
@@ -237,7 +223,7 @@ class Parameter
     public function getFormat()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'", $this->format));
+            ->info(\sprintf(__METHOD__." getted '%s'", $this->format));
         return $this->format;
     }
 
@@ -249,13 +235,12 @@ class Parameter
      * @return self
      * @since 1.0.0
      */
-    public function setFormat($format)
+    public function setFormat(string $format)
     {
-        if (!\is_string($format) || $format === null || trim($format) === "")
-        {
+        if (trim($format) === "") {
             $msg = "The format must be a non empty string";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
             throw new ParameterException($msg);
         }
         $this->format = $format;
@@ -270,59 +255,53 @@ class Parameter
      */
     public function __toString()
     {
-        return sprintf("{type: '%s', value: '%s', format: '%s'}",
-                       $this->type == null
-            ? "null"
-            : $this->type->get(),
-                       $this->value == null
-            ? "null"
-            : $this->value,
-                       $this->format == null
-            ? "null"
-            : $this->format);
+        return sprintf(
+            "{type: '%s', value: '%s', format: '%s'}",
+            $this->type == null ? "null" : $this->type->get(),
+            $this->value == null ? "null" : $this->value,
+            $this->format == null ? "null" : $this->format
+        );
     }
 
     /**
      * Create the xml node
      * @param \SimpleXMLElement $node
+     * @return void
      */
     public function createXmlNode(\SimpleXMLElement $node)
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
 
-        if ($this->getType() === null)
-        {
+        if ($this->getType() === null) {
             $msg = "The parameter data type must be setted";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
-            throw new SerializeReportException($msg);
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
+            throw new \Rebelo\Reports\Report\SerializeReportException($msg);
         }
 
-        if (!\is_string($this->getName()) || \trim($this->getName()) === "")
-        {
+        if (!\is_string($this->getName()) || \trim($this->getName()) === "") {
             $msg = "The parameter name must be setted";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
-            throw new SerializeReportException($msg);
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
+            throw new \Rebelo\Reports\Report\SerializeReportException($msg);
         }
 
-        if ($this->getValue() === null)
-        {
+        if ($this->getValue() === null) {
             $msg = "The parameter value must be setted";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
-            throw new SerializeReportException($msg);
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
+            throw new \Rebelo\Reports\Report\SerializeReportException($msg);
         }
 
         $paramNode = $node->addChild("parameter");
         $paramNode->addChild("type", $this->getType()->get());
         AReport::cdata($paramNode->addChild("name"), $this->getName());
-        $valueNode = AReport::cdata($paramNode->addChild("value"),
-                                                         $this->getValue());
-        if ($this->getFormat() != null)
-        {
+        $valueNode = AReport::cdata(
+            $paramNode->addChild("value"),
+            $this->getValue()
+        );
+        if ($this->getFormat() != null) {
             $valueNode->addAttribute("format", $this->getFormat());
         }
     }
-
 }

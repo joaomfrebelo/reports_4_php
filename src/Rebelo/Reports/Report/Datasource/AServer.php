@@ -8,17 +8,15 @@ use Rebelo\Reports\Report\AReport;
  * AServer
  * @since 1.0.0
  */
-abstract class AServer
-    extends ADatasource
+abstract class AServer extends ADatasource
 {
-
     /**
      * The server URL
      *
-     * @var string $url
+     * @var string|null $url
      * @since 1.0.0
      */
-    protected $url = null;
+    protected ?string $url = null;
 
     /**
      * The type of the request POST or GET
@@ -52,12 +50,14 @@ abstract class AServer
     public function __construct(RequestType $type = null)
     {
         parent::__construct();
-        $this->setType($type === null
-                ? new RequestType(RequestType::GET)
-                : $type);
+        $this->setType($type === null ? new RequestType(RequestType::GET) : $type);
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf("Type setted to '%s' in construct",
-                            $this->type->get()));
+            ->debug(
+                \sprintf(
+                    "Type setted to '%s' in construct",
+                    $this->type->get()
+                )
+            );
     }
 
     /**
@@ -65,13 +65,13 @@ abstract class AServer
      *
      * The server URL
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
     public function getUrl()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'", $this->url));
+            ->info(\sprintf(__METHOD__." getted '%s'", $this->url));
         return $this->url;
     }
 
@@ -80,16 +80,18 @@ abstract class AServer
      *
      * The type of the request POST or GET
      *
-     * @return \Rebelo\Reports\Report\Datasource\RequestType
+     * @return \Rebelo\Reports\Report\Datasource\RequestType|null
      * @since 1.0.0
      */
     public function getType()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted to '%s'",
-                           $this->type === null
-                        ? "null"
-                        : $this->type->get()));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted to '%s'",
+                    $this->type === null ? "null" : $this->type->get()
+                )
+            );
         return $this->type;
     }
 
@@ -97,6 +99,8 @@ abstract class AServer
      * Set URL in child class must check if
      * the url schema is http or https and if is
      * correct
+     * @param string $url
+     * @return $this
      * @since 1.0.0
      */
     abstract public function setUrl($url);
@@ -114,7 +118,7 @@ abstract class AServer
     {
         $this->type = $type;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'", $this->type->get()));
+            ->debug(\sprintf(__METHOD__." setted to '%s'", $this->type->get()));
         return $this;
     }
 
@@ -129,10 +133,12 @@ abstract class AServer
     public function getDatePattern()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted to '%s'",
-                           $this->datePattern === null
-                        ? "null"
-                        : $this->datePattern));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted to '%s'",
+                    $this->datePattern === null ? "null" : $this->datePattern
+                )
+            );
         return $this->datePattern;
     }
 
@@ -148,10 +154,12 @@ abstract class AServer
     public function setDatePattern($datePattern)
     {
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                            $this->datePattern === null
-                        ? "null"
-                        : $this->datePattern));
+            ->debug(
+                \sprintf(
+                    __METHOD__." setted to '%s'",
+                    $this->datePattern === null ? "null" : $this->datePattern
+                )
+            );
         $this->datePattern = $datePattern;
         return $this;
     }
@@ -167,10 +175,12 @@ abstract class AServer
     public function getNumberPattern()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted to '%s'",
-                           $this->numberPattern === null
-                        ? "null"
-                        : $this->numberPattern));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted to '%s'",
+                    $this->numberPattern === null ? "null" : $this->numberPattern
+                )
+            );
         return $this->numberPattern;
     }
 
@@ -186,10 +196,12 @@ abstract class AServer
     public function setNumberPattern($numberPattern)
     {
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                            $this->numberPattern === null
-                        ? "null"
-                        : $this->numberPattern));
+            ->debug(
+                \sprintf(
+                    __METHOD__." setted to '%s'",
+                    $this->numberPattern === null ? "null" : $this->numberPattern
+                )
+            );
         $this->numberPattern = $numberPattern;
         return $this;
     }
@@ -201,11 +213,9 @@ abstract class AServer
      */
     public function __toString()
     {
-        $str = "{" . $this->url === null
-            ? "null"
-            : $this->url . "}";
+        $str = "{".$this->url === null ? "null" : $this->url."}";/** @phpstan-ignore-line */
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " getted to '%s'", $str));
+            ->debug(\sprintf(__METHOD__." getted to '%s'", $str));
         return $str;
     }
 
@@ -214,41 +224,39 @@ abstract class AServer
      * Sreialize the node
      *
      * @param \SimpleXMLElement $node
-     * @throws SerializeReportException
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @return void
      */
     public function createXmlNode(\SimpleXMLElement $node)
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
 
-        if (!\is_string($this->getUrl()) || \trim($this->getUrl()) === "")
-        {
+        if (!\is_string($this->getUrl()) || \trim($this->getUrl()) === "") {
             $msg = "Url must be setted";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
-            throw new SerializeReportException($msg);
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
+            throw new \Rebelo\Reports\Report\SerializeReportException($msg);
         }
 
-        if ($this->getType() === null)
-        {
+        if ($this->getType() === null) {
             $msg = "Request type must be setted";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
-            throw new SerializeReportException($msg);
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
+            throw new \Rebelo\Reports\Report\SerializeReportException($msg);
         }
 
         $serverNode = $node->addChild(strtolower(get_class($this)));
-        $serverNode->addChild("url", AReport::cdata($this->getUrl()));
+        AReport::cdata($serverNode->addChild("url"), $this->getUrl());
         $serverNode->addChild("type", $this->getType()->get());
-        if ($this->getDatePattern() !== null)
-        {
-            $serverNode->addChild("datePattern",
-                                  AReport::cdata($this->getDatePattern()));
+        if ($this->getDatePattern() !== null) {
+            AReport::cdata(
+                $serverNode->addChild("datePattern"), $this->getDatePattern()
+            );
         }
-        if ($this->getNumberPattern() !== null)
-        {
-            $serverNode->addChild("numberPattern",
-                                  AReport::cdata($this->getDatePattern()));
+        if ($this->getNumberPattern() !== null) {
+            AReport::cdata(
+                $serverNode->addChild("numberPattern"), $this->getDatePattern()
+            );
         }
     }
-
 }

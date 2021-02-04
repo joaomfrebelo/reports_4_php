@@ -40,17 +40,7 @@ class RtfTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() :void
     {
         $rtf = new Rtf();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Rtf", $rtf);
@@ -60,19 +50,23 @@ class RtfTest
 
         $pathJasper = "path jasper file";
         $rtf->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $rtf->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $rtf->getJasperFile()?->getPath());
 
         $pathOut = "path for output file";
         $rtf->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $rtf->getOutputfile());
 
         $rtf->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $rtf->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $rtf->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $rtf->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if(false === $xml  = simplexml_load_string($node->asXML())){ /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
         $this->assertEquals($pathOut, $xml->rtf->{Rtf::NODE_OUT_FILE});
     }
 

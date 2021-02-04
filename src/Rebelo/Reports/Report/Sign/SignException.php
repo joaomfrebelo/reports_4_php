@@ -39,6 +39,8 @@ class SignException
     /**
      *
      * @param string $message
+     * @param int $code
+     * @param \Throwable $previous
      * @since 1.0.0
      */
     function __construct($message, $code = 0, \Throwable $previous = null)

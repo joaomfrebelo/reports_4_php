@@ -56,9 +56,9 @@ class Certificate
      * @throws SignException
      * @since 1.0.0
      */
-    public function setName($name)
+    public function setName(string $name)
     {
-        if (\is_string($name) === false || \trim($name) === "")
+        if (\trim($name) === "")
         {
             $msg = "Certificate name must be a non empty string";
             \Logger::getLogger(\get_class($this))
@@ -67,10 +67,14 @@ class Certificate
         }
         $this->name = $name;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->name === null
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    $this->name === null
                         ? "null"
-                        : $this->name));
+                    : $this->name
+                )
+            );
         return $this;
     }
 
@@ -83,10 +87,14 @@ class Certificate
     public function getPassword()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->password === null
+            ->info(
+                \sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->password === null
                         ? "null"
-                        : md5($this->password)));
+                    : md5($this->password)
+                )
+            );
         return $this->password;
     }
 
@@ -99,31 +107,38 @@ class Certificate
      * @return self
      * @since 1.0.0
      */
-    public function setPassword($password)
+    public function setPassword(string $password)
     {
         $this->password = $password;
         //The passord taht is passed to the log is a md5 hash in order of the
         //password no be not knowed, how ever in memory is the password that
         //has been setted
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s' (MD5) ",
-                             md5($password)));
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s' (MD5) ",
+                    md5($password)
+                )
+            );
         return $this;
     }
 
     /**
      * Create the xml node
      * @param \SimpleXMLElement $node
+     * @return void
      * @since 1.0.0
      */
     public function createXmlNode(\SimpleXMLElement $node)
     {
         $certNode = $node->addChild("certificate");
         AReport::cdata($certNode->addChild("name"), $this->getName());
-        AReport::cdata($certNode->addChild("password"),
-                                           $this->getPassword() == null
+        AReport::cdata(
+            $certNode->addChild("password"),
+            $this->getPassword() == null
                 ? ""
-                : $this->getPassword());
+            : $this->getPassword()
+        );
     }
 
     /**

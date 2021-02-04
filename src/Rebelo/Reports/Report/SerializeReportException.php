@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -32,18 +31,18 @@ namespace Rebelo\Reports\Report;
  *
  * @author João Rebelo
  */
-class SerializeReportException
-    extends \Exception
+class SerializeReportException extends \Exception
 {
 
     /**
-     *
+     * 
      * @param string $message
+     * @param int $code
+     * @param \Throwable $previous
      * @since 1.0.0
      */
     function __construct($message, $code = 0, \Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
-
 }

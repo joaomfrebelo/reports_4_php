@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -36,32 +35,17 @@ use Rebelo\Reports\Report\Datasource\RequestType;
  *
  * @author João Rebelo
  */
-class XmlHttpTest
-    extends TestCase
+class XmlHttpTest extends TestCase
 {
-
-    protected $_object;
-
-    protected function setUp()
-    {
-
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetSetGet()
+    
+    public function testSetSetGet(): void
     {
         $xmlHttp = new XmlHttp();
 
-        $this->assertInstanceOf("Rebelo\Reports\Report\Datasource\XmlHttp",
-                                $xmlHttp);
+        $this->assertInstanceOf(
+            "Rebelo\Reports\Report\Datasource\XmlHttp",
+            $xmlHttp
+        );
 
         $this->assertNull($xmlHttp->getDatePattern());
         $datePattern = "yyyy-MM-dd";
@@ -81,40 +65,35 @@ class XmlHttpTest
         $this->assertInstanceOf(get_class($xmlHttp), $selfUrl);
         $this->assertEquals($url, $xmlHttp->getUrl());
 
-        $this->assertEquals(RequestType::GET, $xmlHttp->getType()->get());
+        $this->assertEquals(RequestType::GET, $xmlHttp->getType()?->get());
         $typePost = new RequestType(RequestType::POST);
         $selfType = $xmlHttp->setType($typePost);
         $this->assertInstanceOf(get_class($xmlHttp), $selfType);
-        $this->assertEquals($typePost->get(), $xmlHttp->getType()->get());
+        $this->assertEquals($typePost->get(), $xmlHttp->getType()?->get());
         $typeGet  = new RequestType(RequestType::GET);
         $xmlHttp->setType($typeGet);
-        $this->assertEquals($typeGet->get(), $xmlHttp->getType()->get());
+        $this->assertEquals($typeGet->get(), $xmlHttp->getType()?->get());
     }
 
-    public function testInstance()
+    public function testInstance(): void
     {
         $url      = "http://test.example";
         $typePost = new RequestType(RequestType::POST);
         $xmlHttp  = new XmlHttp($url, $typePost);
         $this->assertEquals($url, $xmlHttp->getUrl());
-        $this->assertEquals($typePost->get(), $xmlHttp->getType()->get());
+        $this->assertEquals($typePost->get(), $xmlHttp->getType()?->get());
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Datasource\DatasourceException
-     */
-    public function testWrongSchema()
+    public function testWrongSchema(): void
     {
+        $this->expectException(\Rebelo\Reports\Report\Datasource\DatasourceException::class);
         new XmlHttp("https://test.example");
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Datasource\DatasourceException
-     */
-    public function testWrongSetSchema()
+    public function testWrongSetSchema(): void
     {
+        $this->expectException(\Rebelo\Reports\Report\Datasource\DatasourceException::class);
         $xmlHttp = new XmlHttp();
         $xmlHttp->setUrl("https://test.example");
     }
-
 }

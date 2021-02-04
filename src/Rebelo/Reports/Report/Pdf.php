@@ -17,7 +17,7 @@ class Pdf
     /**
      * The PDF digital signature properties
      *
-     * @var \Rebelo\Reports\Report\Sign\Sign $sign
+     * @var \Rebelo\Reports\Report\Sign\Sign|null $sign
      * @since 1.0.0
      */
     private $sign = null;
@@ -38,16 +38,20 @@ class Pdf
      *
      * The PDF digital signature properties
      *
-     * @return \Rebelo\Reports\Report\Sign\Sign
+     * @return \Rebelo\Reports\Report\Sign\Sign|null
      * @since 1.0.0
      */
     public function getSign()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->sign === null
+            ->info(
+                \sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->sign === null
                         ? "null"
-                        : $this->sign->__toString()));
+                    : $this->sign->__toString()
+                )
+            );
         return $this->sign;
     }
 
@@ -64,10 +68,14 @@ class Pdf
     {
         $this->sign = $sign;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->sign === null
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    $this->sign === null
                         ? "null"
-                        : $this->sign->__toString()));
+                    : $this->sign->__toString()
+                )
+            );
         return $this;
     }
 
@@ -93,7 +101,7 @@ class Pdf
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
         $pdfNode = parent::createXmlNode($node);
-        if ($this->getSign() instanceof Sign)
+        if ($this->sign !== null)
         {
             $this->sign->createXmlNode($pdfNode);
         }

@@ -13,14 +13,12 @@ use Rebelo\Reports\Report\SerializeReportException;
  *
  * The pdf digital signature properties
  */
-class Sign
-    implements \Rebelo\Reports\Report\IAReport
+class Sign implements \Rebelo\Reports\Report\IAReport
 {
-
     /**
      * The java key store where the certificates are
      *
-     * @var \Rebelo\Reports\Report\Sign\Keystore $keystore
+     * @var \Rebelo\Reports\Report\Sign\Keystore|null $keystore
      */
     private $keystore = null;
 
@@ -74,16 +72,18 @@ class Sign
      *
      * The java key store where the certificates are
      *
-     * @return \Rebelo\Reports\Report\Sign\Keystore
+     * @return \Rebelo\Reports\Report\Sign\Keystore|null
      * @since 1.0.0
      */
     public function getKeystore()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->keystore === null
-                        ? "null"
-                        : $this->keystore->__toString()));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->keystore === null ? "null" : $this->keystore->__toString()
+                )
+            );
         return $this->keystore;
     }
 
@@ -100,10 +100,12 @@ class Sign
     {
         $this->keystore = $keystore;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->keystore === null
-                        ? "null"
-                        : $this->keystore));
+            ->debug(
+                \sprintf(
+                    __METHOD__." setted to '%s'",
+                    $this->keystore === null ? "null" : $this->keystore
+                )
+            );
         return $this;
     }
 
@@ -118,10 +120,12 @@ class Sign
     public function getLevel()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->level == null
-                        ? "null"
-                        : $this->level->get()));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->level == null ? "null" : $this->level->get()
+                )
+            );
         return $this->level;
     }
 
@@ -138,7 +142,7 @@ class Sign
     {
         $this->level = $level;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'", $this->level->get()));
+            ->debug(\sprintf(__METHOD__." setted to '%s'", $this->level->get()));
         return $this;
     }
 
@@ -153,7 +157,7 @@ class Sign
     public function getType()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'", $this->type->get()));
+            ->info(\sprintf(__METHOD__." getted '%s'", $this->type->get()));
         return $this->type;
     }
 
@@ -170,7 +174,7 @@ class Sign
     {
         $this->type = $type;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'", $this->type->get()));
+            ->debug(\sprintf(__METHOD__." setted to '%s'", $this->type->get()));
         return $this;
     }
 
@@ -185,10 +189,12 @@ class Sign
     public function getRectangle()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->rectangle === null
-                        ? "null"
-                        : $this->rectangle->__toString()));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->rectangle === null ? "null" : $this->rectangle->__toString()
+                )
+            );
         return $this->rectangle;
     }
 
@@ -205,10 +211,12 @@ class Sign
     {
         $this->rectangle = $rectangle;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->rectangle === null
-                        ? "null"
-                        : $this->rectangle->__toString()));
+            ->debug(
+                \sprintf(
+                    __METHOD__." setted to '%s'",
+                    $this->rectangle === null ? "null" : $this->rectangle->__toString()
+                )
+            );
         return $this;
     }
 
@@ -223,10 +231,12 @@ class Sign
     public function getLocation()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->location === null
-                        ? "null"
-                        : $this->location));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->location === null ? "null" : $this->location
+                )
+            );
         return $this->location;
     }
 
@@ -241,10 +251,12 @@ class Sign
     {
         $this->location = $location;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->location === null
-                        ? "null"
-                        : $this->location));
+            ->debug(
+                \sprintf(
+                    __METHOD__." setted to '%s'",
+                    $this->location === null ? "null" : $this->location
+                )
+            );
         return $this;
     }
 
@@ -259,10 +271,12 @@ class Sign
     public function getReazon()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->reazon === null
-                        ? "null"
-                        : $this->reazon));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->reazon === null ? "null" : $this->reazon
+                )
+            );
         return $this->reazon;
     }
 
@@ -279,10 +293,12 @@ class Sign
     {
         $this->reazon = $reazon;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->reazon === null
-                        ? "null"
-                        : $this->reazon));
+            ->debug(
+                \sprintf(
+                    __METHOD__." setted to '%s'",
+                    $this->reazon === null ? "null" : $this->reazon
+                )
+            );
         return $this;
     }
 
@@ -303,6 +319,7 @@ class Sign
      *
      * @param \SimpleXMLElement $node
      * @throws SerializeReportException
+     * @return void
      */
     public function createXmlNode(\SimpleXMLElement $node)
     {
@@ -311,22 +328,19 @@ class Sign
         $lastPos  = \strrpos($class, "\\");
         $nodeName = \substr($class, $lastPos + 1, \strlen($class));
         $signNode = $node->addChild($nodeName);
-        if ($this->getKeystore() === null)
-        {
+        if ($this->getKeystore() === null) {
             $msg = "To have a sign pdf the keystore must be setted";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
             throw new SerializeReportException($msg);
         }
         $this->getKeystore()->createXmlNode($signNode);
         $signNode->addChild("level", $this->getLevel()->get());
         $signNode->addChild("type", $this->getType()->get());
-        if ($this->getRectangle() !== null)
-        {
+        if ($this->getRectangle() !== null) {
             $this->getRectangle()->createXmlNode($signNode);
         }
         AReport::cdata($signNode->addChild("location"), $this->getLocation());
         AReport::cdata($signNode->addChild("reazon"), $this->getReazon());
     }
-
 }

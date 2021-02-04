@@ -33,16 +33,20 @@ class Printer
      *
      * The printer name.
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
-    public function getPrinter()
+    public function getPrinter() : ?string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->printer === "null"
+            ->info(
+                \sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->printer === "null"
                         ? "null"
-                        : $this->printer));
+                    : $this->printer
+                )
+            );
         return $this->printer;
     }
 
@@ -58,10 +62,14 @@ class Printer
     {
         $this->printer = $printer;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->printer === null
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    $this->printer === null
                         ? "null"
-                        : $this->printer));
+                    : $this->printer
+                )
+            );
         return $this;
     }
 
@@ -80,6 +88,7 @@ class Printer
      * Create the xml node for printer exporter
      *
      * @param \SimpleXMLElement $node
+     * @return void
      */
     public function createXmlNode(\SimpleXMLElement $node)
     {
@@ -88,7 +97,7 @@ class Printer
 
         AReport::cdata(
             $printNode->addChild("printer"),
-                                 $this->getPrinter() === null
+            $this->getPrinter() === null
                 ? ""
                 : $this->getPrinter()
         );

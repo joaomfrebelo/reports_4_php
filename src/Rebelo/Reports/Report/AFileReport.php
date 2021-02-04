@@ -53,7 +53,7 @@ abstract class AFileReport
     /**
      * The full or relative path of the output file.
      *
-     * @var string $outputfile
+     * @var string|null $outputfile
      * @since 1.0.0
      */
     private $outputfile = null;
@@ -61,7 +61,7 @@ abstract class AFileReport
     /**
      * Gets the full or relative path of the output file.
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
     public function getOutputfile()
@@ -116,8 +116,10 @@ abstract class AFileReport
         $lastPos   = \strrpos($class, "\\");
         $nodeName  = \substr($class, $lastPos + 1, \strlen($class));
         $AFileNode = $node->addChild($nodeName);
-        AReport::cdata($AFileNode->addChild(static::NODE_OUT_FILE),
-                                            $this->getOutputfile());
+        AReport::cdata(
+            $AFileNode->addChild(static::NODE_OUT_FILE),
+            $this->getOutputfile()
+        );
         return $AFileNode;
     }
 

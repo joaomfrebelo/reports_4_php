@@ -39,9 +39,9 @@ class ParameterException
 
     /**
      *
-     * @param type $message
-     * @param type $code
-     * @param \Throwable $previous     *
+     * @param string $message
+     * @param int $code
+     * @param \Throwable $previous
      * @since 1.0.0
      */
     public function __construct($message = "", $code = 0,

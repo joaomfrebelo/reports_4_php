@@ -43,9 +43,23 @@ class Type
      */
     const SELF_SIGNED = "SELF";
 
+    /**
+     * 
+     * @param string $value
+     */
     public function __construct($value)
     {
         parent::__construct($value);
     }
 
+    /**
+     * Get the enum string value
+     * @return string
+     */
+    public function get()
+    {
+        return (string)parent::get();
+    }
+
+    
 }

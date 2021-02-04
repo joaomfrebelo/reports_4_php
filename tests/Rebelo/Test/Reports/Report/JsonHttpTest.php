@@ -40,28 +40,14 @@ class JsonHttpTest
     extends TestCase
 {
 
-    protected $_object;
-
-    protected function setUp()
-    {
-
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetSetGet()
+    public function testSetSetGet() : void
     {
         $jsonHttp = new JsonHttp();
 
-        $this->assertInstanceOf("Rebelo\Reports\Report\Datasource\JsonHttp",
-                                $jsonHttp);
+        $this->assertInstanceOf(
+            "Rebelo\Reports\Report\Datasource\JsonHttp",
+            $jsonHttp
+        );
 
         $this->assertNull($jsonHttp->getDatePattern());
         $datePattern = "yyyy-MM-dd";
@@ -81,38 +67,34 @@ class JsonHttpTest
         $this->assertInstanceOf(get_class($jsonHttp), $selfUrl);
         $this->assertEquals($url, $jsonHttp->getUrl());
 
-        $this->assertEquals(RequestType::GET, $jsonHttp->getType()->get());
+        $this->assertEquals(RequestType::GET, $jsonHttp->getType()?->get());
         $typePost = new RequestType(RequestType::POST);
         $selfType = $jsonHttp->setType($typePost);
         $this->assertInstanceOf(get_class($jsonHttp), $selfType);
-        $this->assertEquals($typePost->get(), $jsonHttp->getType()->get());
+        $this->assertEquals($typePost->get(), $jsonHttp->getType()?->get());
         $typeGet  = new RequestType(RequestType::GET);
         $jsonHttp->setType($typeGet);
-        $this->assertEquals($typeGet->get(), $jsonHttp->getType()->get());
+        $this->assertEquals($typeGet->get(), $jsonHttp->getType()?->get());
     }
 
-    public function testInstance()
+    public function testInstance() : void
     {
         $url      = "http://test.example";
         $typePost = new RequestType(RequestType::POST);
         $jsonHttp = new JsonHttp($url, $typePost);
         $this->assertEquals($url, $jsonHttp->getUrl());
-        $this->assertEquals($typePost->get(), $jsonHttp->getType()->get());
+        $this->assertEquals($typePost->get(), $jsonHttp->getType()?->get());
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Datasource\DatasourceException
-     */
-    public function testWrongSchema()
+    public function testWrongSchema() : void
     {
+        $this->expectException(\Rebelo\Reports\Report\Datasource\DatasourceException::class);
         new JsonHttp("https://test.example");
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Datasource\DatasourceException
-     */
-    public function testWrongSetSchema()
+    public function testWrongSetSchema() :void
     {
+        $this->expectException(\Rebelo\Reports\Report\Datasource\DatasourceException::class);
         $jsonHttp = new JsonHttp();
         $jsonHttp->setUrl("https://test.example");
     }

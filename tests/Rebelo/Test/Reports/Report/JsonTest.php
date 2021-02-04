@@ -40,17 +40,7 @@ class JsonTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $json = new Json();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Json", $json);
@@ -60,19 +50,23 @@ class JsonTest
 
         $pathJasper = "path jasper file";
         $json->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $json->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $json->getJasperFile()?->getPath());
 
         $pathOut = "path for output file";
         $json->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $json->getOutputfile());
 
         $json->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $json->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $json->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $json->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
         $this->assertEquals($pathOut, $xml->json->{Json::NODE_OUT_FILE});
     }
 

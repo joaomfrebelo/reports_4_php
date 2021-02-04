@@ -65,4 +65,13 @@ class Level
         parent::__construct($level);
     }
 
+    /**
+     * Get the string value
+     * @return string
+     */
+    public function get()
+    {
+        return (string) parent::get();
+    }
+
 }

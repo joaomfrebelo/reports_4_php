@@ -9,3 +9,4 @@
 /src/Rebelo/Reports/Config/logconfig.xml
 /tests/Resources/Generate/*
 /tests/Resources/Tmp/*
+.phpunit.result.cache

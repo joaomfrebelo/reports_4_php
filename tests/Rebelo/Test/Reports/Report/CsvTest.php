@@ -40,17 +40,7 @@ class CsvTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $csv = new Csv();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Csv", $csv);
@@ -60,19 +50,23 @@ class CsvTest
 
         $pathJasper = "path jasper file";
         $csv->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $csv->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $csv->getJasperFile()?->getPath());
 
         $pathOut = "path for output file";
         $csv->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $csv->getOutputfile());
 
         $csv->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $csv->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $csv->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $csv->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
         $this->assertEquals($pathOut, $xml->csv->{Csv::NODE_OUT_FILE});
     }
 

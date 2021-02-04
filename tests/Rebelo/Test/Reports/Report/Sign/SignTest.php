@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -40,11 +39,10 @@ use Rebelo\Reports\Report\Sign\Sign;
  *
  * @author João Rebelo
  */
-class SignTest
-    extends TestCase
+class SignTest extends TestCase
 {
 
-    public function testSetGet()
+    public function testSetGet(): void
     {
         $inst = "\Rebelo\Reports\Report\Sign\Sign";
         $sign = new Sign();
@@ -70,7 +68,7 @@ class SignTest
         $key->setPath($keyPath);
 
         $this->assertInstanceOf($inst, $sign->setKeystore($key));
-        $this->assertEquals($keyPath, $sign->getKeystore()->getPath());
+        $this->assertEquals($keyPath, $sign->getKeystore()?->getPath());
         $level  = Level::CERTIFIED_NO_CHANGES_ALLOWED;
         $this->assertInstanceOf($inst, $sign->setLevel(new Level($level)));
         $this->assertEquals($level, $sign->getLevel()->get());
@@ -89,7 +87,9 @@ class SignTest
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $sign->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if (false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("Fail load xml string");
+        }
         $this->assertEquals(strval(0), $xml->sign->rectangle->position->x);
         $this->assertEquals($keyPath, $xml->sign->keystore->path);
         $this->assertEquals($type, $xml->sign->type);
@@ -97,13 +97,10 @@ class SignTest
         $this->assertEquals($reazon, $xml->sign->reazon);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\SerializeReportException
-     */
-    public function testGetNodeKeystoreNull()
+    public function testGetNodeKeystoreNull(): void
     {
+        $this->expectException(\Rebelo\Reports\Report\SerializeReportException::class);
         $sign = new Sign();
         $sign->createXmlNode(new \SimpleXMLElement("<root></root>"));
     }
-
 }

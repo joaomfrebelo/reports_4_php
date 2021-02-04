@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -36,21 +35,10 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class PptxTest
-    extends TestCase
+class PptxTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet(): void
     {
         $pptx = new Pptx();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Pptx", $pptx);
@@ -60,20 +48,23 @@ class PptxTest
 
         $pathJasper = "path jasper file";
         $pptx->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $pptx->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $pptx->getJasperFile()?->getPath());
 
         $pathOut = "path for output file";
         $pptx->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $pptx->getOutputfile());
 
         $pptx->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $pptx->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $pptx->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $pptx->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if (false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
         $this->assertEquals($pathOut, $xml->pptx->{Pptx::NODE_OUT_FILE});
     }
-
 }

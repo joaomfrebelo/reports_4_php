@@ -46,9 +46,22 @@ class ReportPathType
      */
     const PATH_FILE = "f";
 
+    /**
+     * 
+     * @param string $value
+     */
     public function __construct($value)
     {
         parent::__construct($value);
+    }
+    
+    /**
+     * Get the enum value string
+     * @return string
+     */
+    public function get()
+    {
+        return (string)parent::get();
     }
 
 }

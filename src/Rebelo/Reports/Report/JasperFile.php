@@ -29,7 +29,7 @@ class JasperFile
      * @param int $copies
      * @since 1.0.0
      */
-    public function __construct($path = null, $copies = 1)
+    public function __construct(?string $path = null, $copies = 1)
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
         if ($path !== null)
@@ -44,16 +44,20 @@ class JasperFile
      * The jasper file full path or a
      * relative path to the jasperFileBaseDir
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
     function getPath()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->path === null
+            ->info(
+                \sprintf(
+                    __METHOD__ . " getted '%s'",
+                    $this->path === null
                         ? "null"
-                        : $this->path));
+                    : $this->path
+                )
+            );
         return $this->path;
     }
 
@@ -66,15 +70,8 @@ class JasperFile
      * @return $this
      * @since 1.0.0
      */
-    function setPath($path)
+    function setPath(string $path)
     {
-        if (is_string($path) === false)
-        {
-            $msg = "path must be a string";
-            \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
-            throw new ReportException($msg);
-        }
         $this->path = $path;
 
         \Logger::getLogger(\get_class($this))
@@ -116,8 +113,12 @@ class JasperFile
         $this->copies = $copies;
 
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             (string) $this->copies));
+            ->debug(
+                \sprintf(
+                    __METHOD__ . " setted to '%s'",
+                    (string) $this->copies
+                )
+            );
 
         return $this;
     }

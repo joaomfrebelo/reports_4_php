@@ -40,17 +40,7 @@ class OdsTest
     extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
-    public function testSetGet()
+    public function testSetGet() : void
     {
         $ods = new Ods();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Ods", $ods);
@@ -60,19 +50,23 @@ class OdsTest
 
         $pathJasper = "path jasper file";
         $ods->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $ods->getJasperFile()->getPath());
+        $this->assertEquals($pathJasper, $ods->getJasperFile()?->getPath());
 
         $pathOut = "path for output file";
         $ods->setOutputfile($pathOut);
         $this->assertEquals($pathOut, $ods->getOutputfile());
 
         $ods->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $ods->getDatasource());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $ods->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $ods->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
+            $this->fail("fail load xml string");
+        }
         $this->assertEquals($pathOut, $xml->ods->{Ods::NODE_OUT_FILE});
     }
 

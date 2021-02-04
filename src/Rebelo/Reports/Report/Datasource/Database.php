@@ -11,10 +11,8 @@ use Rebelo\Reports\Report\SerializeReportException;
  * Use database as report datasource
  * @since 1.0.0
  */
-class Database
-    extends ADatasource
+class Database extends ADatasource
 {
-
     /**
      * The connection string to be used to the driver connect with the database
      * <br>
@@ -64,10 +62,12 @@ class Database
     public function getConnectionString()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                           $this->connectionString === null
-                        ? "null"
-                        : $this->connectionString));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->connectionString === null ? "null" : $this->connectionString
+                )
+            );
         return $this->connectionString;
     }
 
@@ -82,14 +82,11 @@ class Database
      * @return self
      * @since 1.0.0
      */
-    public function setConnectionString($connectionString)
+    public function setConnectionString(string $connectionString)
     {
         $this->connectionString = $connectionString;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                            $this->connectionString === null
-                        ? "null"
-                        : $this->connectionString));
+            ->debug(\sprintf(__METHOD__." setted to '%s'", $this->connectionString));
         return $this;
     }
 
@@ -106,10 +103,12 @@ class Database
     public function getDriver()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                           $this->driver === null
-                        ? "null"
-                        : $this->driver));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->driver === null ? "null" : $this->driver
+                )
+            );
         return $this->driver;
     }
 
@@ -125,22 +124,23 @@ class Database
      * @throws DatasourceException
      * @since 1.0.0
      */
-    public function setDriver($driver)
+    public function setDriver(string $driver)
     {
-        if (!\is_string($driver) || \trim($driver) === "")
-        {
+        if (\trim($driver) === "") {
             $msg = "driver must be a non empty string";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
             throw new DatasourceException($msg);
         }
 
         $this->driver = $driver;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                            $this->driver === null
-                        ? "null"
-                        : $this->driver));
+            ->debug(
+                \sprintf(
+                    __METHOD__." setted to '%s'",
+                    $this->driver === null ? "null" : $this->driver
+                )
+            );
         return $this;
     }
 
@@ -149,16 +149,18 @@ class Database
      *
      * The username to connect to the database
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
     public function getUser()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                           $this->user === null
-                        ? "null"
-                        : $this->user));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->user === null ? "null" : $this->user
+                )
+            );
         return $this->user;
     }
 
@@ -171,14 +173,11 @@ class Database
      * @return self
      * @since 1.0.0
      */
-    public function setUser($user)
+    public function setUser(string $user)
     {
         $this->user = $user;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                            $this->user === null
-                        ? "null"
-                        : $this->user));
+            ->debug(\sprintf(__METHOD__." setted to '%s'", $this->user));
         return $this;
     }
 
@@ -187,16 +186,18 @@ class Database
      *
      * The password to connect to the database
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
     public function getPassword()
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                           $this->password === null
-                        ? "null"
-                        : $this->password));
+            ->info(
+                \sprintf(
+                    __METHOD__." getted '%s'",
+                    $this->password === null ? "null" : $this->password
+                )
+            );
         return $this->password;
     }
 
@@ -209,14 +210,11 @@ class Database
      * @return self
      * @since 1.0.0
      */
-    public function setPassword($password)
+    public function setPassword(string $password)
     {
         $this->password = $password;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                            $this->password === null
-                        ? "null"
-                        : $this->password));
+            ->debug(\sprintf(__METHOD__." setted to '%s'", $this->password));
         return $this;
     }
 
@@ -226,16 +224,12 @@ class Database
      */
     public function __toString()
     {
-        return sprintf("driver: '%s', user: '%s', conn: '%s'",
-                       $this->driver === null
-            ? "null"
-            : $this->driver,
-                       $this->user === null
-            ? "null"
-            : $this->user,
-                       $this->connectionString === null
-            ? "null"
-            : $this->connectionString);
+        return sprintf(
+            "driver: '%s', user: '%s', conn: '%s'",
+            $this->driver === null ? "null" : $this->driver,
+            $this->user === null ? "null" : $this->user,
+            $this->connectionString === null ? "null" : $this->connectionString
+        );
     }
 
     /**
@@ -248,37 +242,37 @@ class Database
     public function createXmlNode(\SimpleXMLElement $node)
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
-        if (!\is_string($this->getDriver()) || \trim($this->getDriver()) === "")
-        {
+        if (!\is_string($this->getDriver()) || \trim($this->getDriver()) === "") {
             $msg = "Database driver must be setted";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
             throw new SerializeReportException($msg);
         }
-        if (!\is_string($this->getConnectionString()) || \trim($this->getConnectionString()) === "")
-        {
+        if (!\is_string($this->getConnectionString()) || \trim($this->getConnectionString())
+            === "") {
             $msg = "Database connection string must be setted";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                ->error(\sprintf(__METHOD__." '%s'", $msg));
             throw new SerializeReportException($msg);
         }
 
 
         $databaseNode = $node->addChild("database");
-        AReport::cdata($databaseNode->addChild("connectionString"),
-                                               $this->getConnectionString());
+        AReport::cdata(
+            $databaseNode->addChild("connectionString"),
+            $this->getConnectionString()
+        );
 
         AReport::cdata($databaseNode->addChild("driver"), $this->getDriver());
 
-        AReport::cdata($databaseNode->addChild("user"),
-                                               $this->getUser() === null
-                ? ""
-                : $this->getUser());
+        AReport::cdata(
+            $databaseNode->addChild("user"),
+            $this->getUser() === null ? "" : $this->getUser()
+        );
 
-        AReport::cdata($databaseNode->addChild("password"),
-                                               $this->getPassword() === null
-                ? ""
-                : $this->getPassword() );
+        AReport::cdata(
+            $databaseNode->addChild("password"),
+            $this->getPassword() === null ? "" : $this->getPassword() 
+        );
     }
-
 }
