@@ -20,7 +20,7 @@ https://jitpack.io/#joaomfrebelo/reports_cli
 Via Composer
 
 ```bash
-$ composer require joaomfrebelo/enum
+$ composer require joaomfrebelo/reports_4_php
 ```  
 
 The java jar files of Rebelo Reports CLI should be compiled and instaled from github or jitpack.io
