@@ -281,7 +281,6 @@ abstract class AReport
             }
         }
 
-        $this->validateXml($rreportNode);
         return $rreportNode;
     }
 
@@ -301,7 +300,12 @@ abstract class AReport
         $xmlDoc->loadXML($xml);
         if ($xmlDoc->schemaValidate(static::SCHEMA_LOCATION) === false)
         {
-            $msg = \join("; ", libxml_get_errors());
+            $errorStack = libxml_get_errors();
+            $msg = "";
+            foreach ($errorStack as $error){
+                $msg .= $error->message .";";
+            }
+
             \Logger::getLogger(\get_class($this))
                 ->error(\sprintf(__METHOD__ . " Errors '%s'", $msg));
             throw new SerializeReportException($msg);
