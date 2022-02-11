@@ -42,8 +42,7 @@ class Config
      * @var string
      * @since 1.0.0
      */
-    public static $iniPath = "/config.properties";
-//    public static $iniPath = __DIR__ . "/config.properties";
+    public static $iniPath = __DIR__ . "/config.properties";
 
     /**
      * The java block name in the ini file
