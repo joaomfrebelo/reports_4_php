@@ -29,16 +29,19 @@ namespace Rebelo\Test\Reports\Report\Sign;
 
 use PHPUnit\Framework\TestCase;
 use Rebelo\Reports\Report\Sign\Certificate;
+use Rebelo\Reports\Report\Sign\SignException;
 
 /**
  * Class CertificateTest
  *
  * @author João Rebelo
  */
-class CertificateTest
-    extends TestCase
+class CertificateTest extends TestCase
 {
 
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
     public function testSetGet()
     {
         $cert = new Certificate();
@@ -61,26 +64,18 @@ class CertificateTest
         $this->assertEquals($pwd, $xml->certificate->password);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Sign\SignException
-     */
-    public function testCertNameNull()
-    {
-        $cert = new Certificate();
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Sign\Certificate", $cert);
-        $cert->setName(null);
-    }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Sign\SignException
-     */
     public function testCertNameEmpty()
     {
+        $this->expectException(SignException::class);
         $cert = new Certificate();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Sign\Certificate", $cert);
         $cert->setName("");
     }
 
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
     public function testSetPwdNull()
     {
         $cert = new Certificate();
@@ -102,5 +97,4 @@ class CertificateTest
         $this->assertEquals($name, $xml->certificate->name);
         $this->assertEquals("", $xml->certificate->password);
     }
-
 }

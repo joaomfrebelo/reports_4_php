@@ -5,6 +5,7 @@
 .buildpath/
 .project/
 /.metadata
+.phpunit.result.cache
 /src/Rebelo/Reports/Config/config.properties
 /src/Rebelo/Reports/Config/logconfig.xml
 /tests/Resources/Generate/*

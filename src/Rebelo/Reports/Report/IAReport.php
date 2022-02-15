@@ -23,12 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
 
 /**
- * Commun interface
+ * Common interface
  * @author João Rebelo
  * @since 1.0.0
  */
@@ -47,7 +48,7 @@ interface IAReport
      * @param \SimpleXMLElement $node
      * @return \SimpleXMLElement The child node
      */
-    public function createXmlNode(\SimpleXMLElement $node);
+    public function createXmlNode(\SimpleXMLElement $node): \SimpleXMLElement;
 
     /**
      *

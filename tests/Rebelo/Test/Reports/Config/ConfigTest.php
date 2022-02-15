@@ -1,125 +1,118 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Rebelo\Test\Reports\Config;
 
+use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Config\Config;
+use Rebelo\Reports\Config\ConfigException;
+use Rebelo\Reports\Config\VerboseLevel;
+
 /**
- * 
+ *
  *
  * @backupStaticAttributes enabled
  */
-class ConfigTest
-    extends \PHPUnit\Framework\TestCase
+class ConfigTest extends TestCase
 {
 
-    public static $ini_win   = __DIR__ . "/testconfigwin.properties";
-    public static $ini_linux = __DIR__ . "/testconfiglinux.properties";
-    public static $iniempty  = __DIR__ . "/testconfigempty.properties";
+    public static string $ini_win   = __DIR__ . "/testconfigwin.properties";
+    public static string $ini_linux = __DIR__ . "/testconfiglinux.properties";
+    public static string $iniempty  = __DIR__ . "/testconfigempty.properties";
 
-    /**
-     * @expectedException \Error
-     */
-    public function testNewInstance()
+    protected function setUp(): void
     {
-        new \Rebelo\Reports\Config\Config();
-        $this->assertTrue(false, "Shoud not allow to create a instance");
+        Config::$iniPath = static::$ini_win;
+        $refClass = new \ReflectionClass(Config::class);
+        $refProp = $refClass->getProperty("config");
+        $refProp->setAccessible(true);
+        $refProp->setValue(null);
     }
 
     /**
-     * @covers Rebelo\Reports\Report\Config::getInstance
+     * @covers \Rebelo\Reports\Config\Config::getInstance
      */
     public function testGetInstance()
     {
-        $this->assertTrue(
-            \Rebelo\Reports\Config\Config::getInstance()
-            instanceof
-            \Rebelo\Reports\Config\Config
-        );
+        $this->assertTrue(Config::getInstance() instanceof Config);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Config\ConfigException
-     */
     public function testNoIniFile()
     {
-        \Rebelo\Reports\Config\Config::$iniPath = "NO_FILE";
-        \Rebelo\Reports\Config\Config::getInstance();
+        $this->expectException(ConfigException::class);
+        Config::$iniPath = "NO_FILE";
+        Config::getInstance();
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Config\ConfigException
-     */
     public function testGetEmptyJavaPath()
     {
-        \Rebelo\Reports\Config\Config::$iniPath = static::$iniempty;
-        \Rebelo\Reports\Config\Config::getInstance()->getJavaPath();
+        $this->expectException(ConfigException::class);
+        Config::$iniPath = static::$iniempty;
+        Config::getInstance()->getJavaPath();
     }
 
     public function testGetEmptyXsharedClasses()
     {
-        \Rebelo\Reports\Config\Config::$iniPath = static::$iniempty;
-        $shared                                 = \Rebelo\Reports\Config\Config::getInstance()->getJavaXsharedClassesName();
+        Config::$iniPath = static::$iniempty;
+        $shared                                 = Config::getInstance()->getJavaXsharedClassesName();
         $this->assertNull($shared);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Config\ConfigException
-     */
     public function testGetEmptyTempDir()
     {
-        \Rebelo\Reports\Config\Config::$iniPath = static::$iniempty;
-        \Rebelo\Reports\Config\Config::getInstance()->getTempDirectory();
+        $this->expectException(ConfigException::class);
+        Config::$iniPath = static::$iniempty;
+        Config::getInstance()->getTempDirectory();
     }
+
 
     public function setIni4Os()
     {
-        if (\strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
-        {
-            \Rebelo\Reports\Config\Config::$iniPath = static::$ini_win;
-        }
-        else
-        {
-            \Rebelo\Reports\Config\Config::$iniPath = static::$ini_linux;
+        if (\strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            Config::$iniPath = static::$ini_win;
+        } else {
+            Config::$iniPath = static::$ini_linux;
         }
     }
 
+    /**
+     * @throws \Rebelo\Reports\Config\ConfigException
+     */
     public function testGetJavaPath()
     {
         $this->setIni4Os();
         $this->assertEquals(
-            "java", \Rebelo\Reports\Config\Config::getInstance()->getJavaPath()
+            "java",
+            Config::getInstance()->getJavaPath()
         );
         $path = "/path/to/java";
-        $this->assertInstanceOf("\Rebelo\Reports\Config\Config",
-                                \Rebelo\Reports\Config\Config::getInstance()->setJavaPath($path));
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Config\Config",
+            Config::getInstance()->setJavaPath($path)
+        );
         $this->assertEquals(
-            $path, \Rebelo\Reports\Config\Config::getInstance()->getJavaPath()
+            $path,
+            Config::getInstance()->getJavaPath()
         );
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Config\ConfigException
-     */
-    public function testJavaPathNull()
-    {
-        $this->setIni4Os();
-        \Rebelo\Reports\Config\Config::getInstance()->setJavaPath(null);
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Config\ConfigException
-     */
     public function testJavaPathEmpty()
     {
+        $this->expectException(ConfigException::class);
         $this->setIni4Os();
-        \Rebelo\Reports\Config\Config::getInstance()->setJavaPath("");
+        Config::getInstance()->setJavaPath("");
     }
 
+    /**
+     * @throws \Rebelo\Reports\Config\ConfigException
+     */
     public function testGetJarPath()
     {
         $this->setIni4Os();
         $this->assertEquals(
             "jar_path",
-            \Rebelo\Reports\Config\Config::getInstance()->getJarPath()
+            Config::getInstance()->getJarPath()
         );
     }
 
@@ -128,7 +121,7 @@ class ConfigTest
         $this->setIni4Os();
         $this->assertEquals(
             "reports4php",
-            \Rebelo\Reports\Config\Config::getInstance()->getJavaXsharedClassesName()
+            Config::getInstance()->getJavaXsharedClassesName()
         );
     }
 
@@ -137,21 +130,20 @@ class ConfigTest
         $this->setIni4Os();
         $this->assertEquals(
             "DirReports4php",
-            \Rebelo\Reports\Config\Config::getInstance()->getJavaXsharedClassesDir()
+            Config::getInstance()->getJavaXsharedClassesDir()
         );
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Config\ConfigException
-     */
     public function testGetTempDirectory()
     {
+        $this->expectException(ConfigException::class);
         $this->setIni4Os();
-        \Rebelo\Reports\Config\Config::getInstance()->getTempDirectory();
+        Config::getInstance()->getTempDirectory();
     }
 
     /**
      *
+     * @throws \Rebelo\Reports\Config\ConfigException
      */
     public function testSetTempDirectory()
     {
@@ -161,24 +153,35 @@ class ConfigTest
             . DIRECTORY_SEPARATOR . ".."
             . DIRECTORY_SEPARATOR . "Resources";
         $this->setIni4Os();
-        \Rebelo\Reports\Config\Config::getInstance()->setTempDirectory($resource);
-        $this->assertEquals($resource,
-                            \Rebelo\Reports\Config\Config::getInstance()->getTempDirectory());
+        Config::getInstance()->setTempDirectory($resource);
+        $this->assertEquals(
+            $resource,
+            Config::getInstance()->getTempDirectory()
+        );
     }
 
+    /**
+     * @throws \Rebelo\Enum\EnumException
+     * @throws \Rebelo\Reports\Config\ConfigException
+     */
     public function testGetVerboseLevel()
     {
         $this->setIni4Os();
-        $this->assertEquals(\Rebelo\Reports\Config\VerboseLevel::ALL,
-                            \Rebelo\Reports\Config\Config::getInstance()->getVerboseLevel()->get());
+        $this->assertEquals(
+            VerboseLevel::ALL,
+            Config::getInstance()->getVerboseLevel()->get()
+        );
     }
 
     public function testCleanLastSlash()
     {
-        $this->assertEquals("/tmp",
-                            \Rebelo\Reports\Config\Config::cleanLastSlash("/tmp/"));
-        $this->assertEquals("c:\tmp",
-                            \Rebelo\Reports\Config\Config::cleanLastSlash("c:\tmp\\"));
+        $this->assertEquals(
+            "/tmp",
+            Config::cleanLastSlash("/tmp/")
+        );
+        $this->assertEquals(
+            "c:\tmp",
+            Config::cleanLastSlash("c:\tmp\\")
+        );
     }
-
 }

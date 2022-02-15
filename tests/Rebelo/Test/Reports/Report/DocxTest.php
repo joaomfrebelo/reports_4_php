@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Docx;
 use Rebelo\Reports\Report\JasperFile;
 
@@ -36,26 +38,19 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class DocxTest
-    extends TestCase
+class DocxTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
     public function testSetGet()
     {
         $docx = new Docx();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Docx", $docx);
         $this->assertNull($docx->getJasperFile());
-        $this->assertNull($docx->getOutputfile());
+        $this->assertNull($docx->getOutputFile());
         $this->assertNull($docx->getDatasource());
 
         $pathJasper = "path jasper file";
@@ -63,17 +58,18 @@ class DocxTest
         $this->assertEquals($pathJasper, $docx->getJasperFile()->getPath());
 
         $pathOut = "path for output file";
-        $docx->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $docx->getOutputfile());
+        $docx->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $docx->getOutputFile());
 
-        $docx->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $docx->getDatasource());
+        $docx->setDatasource(new Database());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $docx->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $docx->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
-        $this->assertEquals($pathOut, $xml->docx->{Docx::NODE_OUT_FILE});
+        $xml = simplexml_load_string($node->asXML());
+        $this->assertEquals($pathOut, $xml->docx->{AReport::NODE_OUT_FILE});
     }
-
 }

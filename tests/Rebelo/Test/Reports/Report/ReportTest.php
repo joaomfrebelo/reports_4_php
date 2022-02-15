@@ -23,15 +23,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Config\Config;
+use Rebelo\Reports\Report\Datasource\Database;
+use Rebelo\Reports\Report\JasperFile;
 use Rebelo\Reports\Report\Report;
 use Rebelo\Reports\Report\Pdf;
 use Rebelo\Reports\Report\ReportPathType;
 use Rebelo\Reports\Report\Sign\Level;
+use Rebelo\Reports\Report\Sign\Sign;
 use Rebelo\Reports\Report\Sign\Type;
 use Rebelo\Reports\Report\Sign\Rectangle;
 use Rebelo\Reports\Report\Sign\Keystore;
@@ -44,27 +49,28 @@ use Rebelo\Reports\Report\Parameter\Type as ParameterType;
  *
  * @author João Rebelo
  */
-class ReportTest
-    extends TestCase
+class ReportTest extends TestCase
 {
 
-    static $resource = null;
-
-    public static function setUpBeforeClass()
+    protected function setUp(): void
     {
-        static::$resource = __DIR__ . DIRECTORY_SEPARATOR . ".."
-            . DIRECTORY_SEPARATOR . ".."
-            . DIRECTORY_SEPARATOR . ".."
-            . DIRECTORY_SEPARATOR . ".."
-            . DIRECTORY_SEPARATOR . "Resources";
-        return parent::setUpBeforeClass();
+        Config::$iniPath = TEST_CONFIG_PROP;
+        $refClass = new \ReflectionClass(Config::class);
+        $refProp = $refClass->getProperty("config");
+        $refProp->setAccessible(true);
+        $refProp->setValue(null);
     }
 
+    /**
+     * @throws \Rebelo\Enum\EnumException
+     * @throws \Rebelo\Reports\Config\ConfigException
+     * @throws \Rebelo\Reports\Report\ExecException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
     public function testSetGet()
     {
-        $resource = static::$resource;
 
-        \Rebelo\Reports\Config\Config::getInstance()->setTempDirectory($resource);
+        Config::getInstance()->setTempDirectory(TEST_RESOURCES_DIR);
 
         $inst   = "\Rebelo\Reports\Report\Report";
         $report = new Report();
@@ -80,11 +86,10 @@ class ReportTest
         $this->assertInstanceOf($inst, $report->setTmpDir($tmpDir));
         $this->assertEquals($tmpDir, $report->getTmpDir());
 
-        $boolStk = array(
+        $boolStk = [
             true,
-            false);
-        foreach ($boolStk as $bool)
-        {
+            false];
+        foreach ($boolStk as $bool) {
             $this->assertInstanceOf($inst, $report->setDeleteFile($bool));
             $this->assertEquals($bool, $report->getDeleteFile());
             $this->assertInstanceOf($inst, $report->setDeleteDirectory($bool));
@@ -99,86 +104,103 @@ class ReportTest
         $this->assertInstanceOf($inst, $report->setOutputBaseDir($jasBaseDir));
         $this->assertEquals($jasBaseDir, $report->getOutputBaseDir());
 
-        $this->assertInstanceOf($inst,
-                                $report->setPathType(
-                new ReportPathType(ReportPathType::PATH_DIR)));
-        $this->assertEquals(ReportPathType::PATH_DIR,
-                            $report->getPathType()->get());
+        $this->assertInstanceOf(
+            $inst,
+            $report->setPathType(
+                new ReportPathType(ReportPathType::PATH_DIR)
+            )
+        );
+        $this->assertEquals(
+            ReportPathType::PATH_DIR,
+            $report->getPathType()->get()
+        );
 
-        $this->assertInstanceOf($inst,
-                                $report->setPathType(
-                new ReportPathType(ReportPathType::PATH_FILE)));
-        $this->assertEquals(ReportPathType::PATH_FILE,
-                            $report->getPathType()->get());
+        $this->assertInstanceOf(
+            $inst,
+            $report->setPathType(
+                new ReportPathType(ReportPathType::PATH_FILE)
+            )
+        );
+        $this->assertEquals(
+            ReportPathType::PATH_FILE,
+            $report->getPathType()->get()
+        );
 
         $this->assertTrue(\is_string($report->getBaseCmd()));
     }
 
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     * @throws \Rebelo\Enum\EnumException
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     * @throws \Rebelo\Reports\Report\ExecException
+     * @throws \Rebelo\Reports\Report\ReportException
+     * @throws \Rebelo\Reports\Report\Parameter\ParameterException
+     */
     public function testGenerate()
     {
-        $genDir    = static::$resource . DIRECTORY_SEPARATOR . "Generate";
+        $genDir    = TEST_RESOURCES_DIR . DIRECTORY_SEPARATOR . "Generate";
         $outFile   = $genDir . DIRECTORY_SEPARATOR . "report_" . date("Ymd\THis") . ".pdf";
         $dsConStr  = "jdbc:mysql://localhost/sakila";
         $dsDriver  = "com.mysql.jdbc.Driver";
         $dsUser    = "rebelo";
         $dsPwd     = "password";
-        $jsPath    = static::$resource . DIRECTORY_SEPARATOR . "sakila.jasper";
+        $jsPath    = TEST_RESOURCES_DIR . DIRECTORY_SEPARATOR . "sakila.jasper";
         $jsCopies  = 1;
         $sigLocal  = "Sintra";
         $sigLevel  = Level::CERTIFIED_NO_CHANGES_ALLOWED;
-        $sigReazon = "Developer test";
+        $sigReason = "Developer test";
         $sigType   = Type::SELF_SIGNED;
-        $rectVisi  = true;
         $height    = 100;
         $width     = 100;
         $x         = 100;
         $y         = 100;
         $rot       = 0;
         $ksPwd     = "password";
-        $ksPath    = static::$resource . DIRECTORY_SEPARATOR . "keystore.ks";
+        $ksPath    = TEST_RESOURCES_DIR . DIRECTORY_SEPARATOR . "keystore.ks";
         $certName  = "rreports";
         $certPwd   = "password";
 
-        $parameters = array(
-            array(
-                "type"   => "string",
-                "name"   => "P_STRING",
-                "value"  => "Parameter String",
-                "format" => null),
-            array(
-                "type"   => "bool",
-                "name"   => "P_BOOLEAN",
-                "value"  => "true",
-                "format" => null),
-            array(
-                "type"   => "date",
-                "name"   => "P_DATE",
-                "value"  => "1969-10-05",
-                "format" => "yyyy-MM-dd"),
-        );
+        $parameters = [
+            [
+                "type" => "string",
+                "name" => "P_STRING",
+                "value" => "Parameter String",
+                "format" => null],
+            [
+                "type" => "bool",
+                "name" => "P_BOOLEAN",
+                "value" => "true",
+                "format" => null],
+            [
+                "type" => "date",
+                "name" => "P_DATE",
+                "value" => "1969-10-05",
+                "format" => "yyyy-MM-dd"],
+        ];
 
         $pdf = new Pdf();
 
-        $ds = new \Rebelo\Reports\Report\Datasource\Database();
+        $ds = new Database();
         $ds->setConnectionString($dsConStr);
         $ds->setDriver($dsDriver);
         $ds->setUser($dsUser);
         $ds->setPassword($dsPwd);
         $pdf->setDatasource($ds);
 
-        $jf = new \Rebelo\Reports\Report\JasperFile($jsPath, $jsCopies);
+        $jf = new JasperFile($jsPath, $jsCopies);
         $pdf->setJasperFile($jf);
 
-        $pdf->setOutputfile($outFile);
+        $pdf->setOutputFile($outFile);
 
-        $sign = new \Rebelo\Reports\Report\Sign\Sign();
+        $sign = new Sign();
         $sign->setLocation($sigLocal);
         $sign->setLevel(new Level($sigLevel));
-        $sign->setReazon($sigReazon);
+        $sign->setReason($sigReason);
         $sign->setType(new Type($sigType));
 
         $rectangle = new Rectangle();
-        $rectangle->setVisible($rectVisi);
+        $rectangle->setVisible(true);
         $rectangle->setHeight($height);
         $rectangle->setWidth($width);
         $rectangle->setX($x);
@@ -197,98 +219,105 @@ class ReportTest
         $sign->setKeystore($keystore);
 
         $pdf->setSign($sign);
-        foreach ($parameters as $paramProp)
-        {
+        foreach ($parameters as $paramProp) {
             $param = new Parameter(
-                new ParameterType($paramProp["type"]), $paramProp["name"],
-                                  $paramProp["value"], $paramProp["format"]
+                new ParameterType($paramProp["type"]),
+                $paramProp["name"],
+                $paramProp["value"],
+                $paramProp["format"]
             );
             $pdf->addToParameter($param);
         }
 
         $report = new Report();
         $report->setTmpDir($genDir . DIRECTORY_SEPARATOR . uniqid());
-        $exit   = $report->generate($pdf);
+        $exit = $report->generate($pdf);
         $this->assertEquals(0, $exit->getCode());
-        \rmdir($report->getTmpDir());
+        if (\is_dir($report->getTmpDir())) {
+            \rmdir($report->getTmpDir());
+        }
         $this->assertTrue(\is_file($outFile));
-        if (extension_loaded("fileinfo"))
-        {
+        if (\extension_loaded("fileinfo")) {
             $mime = \mime_content_type($outFile);
             $this->assertEquals("application/pdf", $mime);
-        }
-        else
-        {
+        } else {
             \Logger::getLogger(\get_class($this))
-                ->warn(__METHOD__ . " mime type not checked in the the test because fileinfo ext is not active");
+                   ->warn(__METHOD__ . " mime type not checked in the the test because fileinfo ext is not active");
         }
     }
 
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     * @throws \Rebelo\Enum\EnumException
+     * @throws \Rebelo\Reports\Report\ReportException
+     * @throws \Rebelo\Reports\Report\Parameter\ParameterException
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     * @throws \Rebelo\Reports\Report\ExecException
+     */
     public function testMultipeInOne()
     {
-        $genDir    = static::$resource . DIRECTORY_SEPARATOR . "Generate";
+        $genDir    = TEST_RESOURCES_DIR . DIRECTORY_SEPARATOR . "Generate";
         $outFile   = $genDir . DIRECTORY_SEPARATOR . "report_" . date("Ymd\THis") . ".pdf";
         $dsConStr  = "jdbc:mysql://localhost/sakila";
         $dsDriver  = "com.mysql.jdbc.Driver";
         $dsUser    = "rebelo";
         $dsPwd     = "password";
-        $jsPath    = static::$resource . DIRECTORY_SEPARATOR . "sakila.jasper";
+        $jsPath    = TEST_RESOURCES_DIR . DIRECTORY_SEPARATOR . "sakila.jasper";
         $jsCopies  = 1;
         $sigLocal  = "Sintra";
         $sigLevel  = Level::CERTIFIED_NO_CHANGES_ALLOWED;
-        $sigReazon = "Developer test";
+        $sigReason = "Developer test";
         $sigType   = Type::SELF_SIGNED;
-        $rectVisi  = true;
         $height    = 100;
         $width     = 100;
         $x         = 100;
         $y         = 100;
         $rot       = 0;
         $ksPwd     = "password";
-        $ksPath    = static::$resource . DIRECTORY_SEPARATOR . "keystore.ks";
+        $ksPath    = TEST_RESOURCES_DIR . DIRECTORY_SEPARATOR . "keystore.ks";
         $certName  = "rreports";
         $certPwd   = "password";
 
-        $parameters = array(
-            array(
-                "type"   => "string",
-                "name"   => "P_STRING",
-                "value"  => "Parameter String",
-                "format" => null),
-            array(
-                "type"   => "bool",
-                "name"   => "P_BOOLEAN",
-                "value"  => "true",
-                "format" => null),
-            array(
-                "type"   => "date",
-                "name"   => "P_DATE",
-                "value"  => "1969-10-05",
-                "format" => "yyyy-MM-dd"),
-        );
+        $parameters = [
+            [
+                "type" => "string",
+                "name" => "P_STRING",
+                "value" => "Parameter String",
+                "format" => null],
+            [
+                "type" => "bool",
+                "name" => "P_BOOLEAN",
+                "value" => "true",
+                "format" => null],
+            [
+                "type" => "date",
+                "name" => "P_DATE",
+                "value" => "1969-10-05",
+                "format" => "yyyy-MM-dd"],
+        ];
 
         $pdf = new Pdf();
 
-        $ds = new \Rebelo\Reports\Report\Datasource\Database();
+        $ds = new Database();
         $ds->setConnectionString($dsConStr);
         $ds->setDriver($dsDriver);
         $ds->setUser($dsUser);
         $ds->setPassword($dsPwd);
         $pdf->setDatasource($ds);
 
-        $jf = new \Rebelo\Reports\Report\JasperFile($jsPath, $jsCopies);
+        $jf = new JasperFile($jsPath, $jsCopies);
         $pdf->setJasperFile($jf);
 
-        $pdf->setOutputfile($outFile);
+        $pdf->setOutputFile($outFile);
 
-        $sign = new \Rebelo\Reports\Report\Sign\Sign();
+        $sign = new Sign();
         $sign->setLocation($sigLocal);
         $sign->setLevel(new Level($sigLevel));
-        $sign->setReazon($sigReazon);
+        $sign->setReason($sigReason);
         $sign->setType(new Type($sigType));
 
         $rectangle = new Rectangle();
-        $rectangle->setVisible($rectVisi);
+        $rectangle->setVisible(true);
         $rectangle->setHeight($height);
         $rectangle->setWidth($width);
         $rectangle->setX($x);
@@ -307,20 +336,19 @@ class ReportTest
         $sign->setKeystore($keystore);
 
         $pdf->setSign($sign);
-        foreach ($parameters as $paramProp)
-        {
+        foreach ($parameters as $paramProp) {
             $param = new Parameter(
-                new ParameterType($paramProp["type"]), $paramProp["name"],
-                                  $paramProp["value"], $paramProp["format"]
+                new ParameterType($paramProp["type"]),
+                $paramProp["name"],
+                $paramProp["value"],
+                $paramProp["format"]
             );
             $pdf->addToParameter($param);
         }
 
         $pdf_2 = clone $pdf;
-        foreach ($pdf_2->getParameters() as $key => $param2)
-        {
-            if ($param2->getType()->get() === "string")
-            {
+        foreach ($pdf_2->getParameters() as $key => $param2) {
+            if ($param2->getType()->get() === "string") {
                 $parmCl = clone $param2;
                 $parmCl->setValue("Report 2 cloned from 1");
                 $pdf_2->unsetParameters($key);
@@ -330,24 +358,19 @@ class ReportTest
 
         $report = new Report();
         $report->setTmpDir($genDir . DIRECTORY_SEPARATOR . uniqid());
-        $exit   = $report->generateMultipeInOne([
-            $pdf,
-            $pdf_2]
-        );
+        $exit = $report->generateMultipleInOne([
+                                                   $pdf,
+                                                   $pdf_2]);
 
         $this->assertEquals(0, $exit->getCode());
 
         $this->assertTrue(\is_file($outFile));
-        if (extension_loaded("fileinfo"))
-        {
+        if (extension_loaded("fileinfo")) {
             $mime = \mime_content_type($outFile);
             $this->assertEquals("application/pdf", $mime);
-        }
-        else
-        {
+        } else {
             \Logger::getLogger(\get_class($this))
-                ->warn(__METHOD__ . " mime type not checked in the the test because fileinfo ext is not active");
+                   ->warn(__METHOD__ . " mime type not checked in the the test because fileinfo ext is not active");
         }
     }
-
 }

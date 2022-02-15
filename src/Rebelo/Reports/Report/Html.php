@@ -7,8 +7,7 @@ namespace Rebelo\Reports\Report;
  *
  * Properties file to export the report to a Html file
  */
-class Html
-    extends AFileReport
+class Html extends AFileReport
 {
 
     /**
@@ -28,5 +27,4 @@ class Html
     {
         return serialize($this);
     }
-
 }

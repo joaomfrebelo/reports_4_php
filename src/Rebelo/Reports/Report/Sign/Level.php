@@ -23,18 +23,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Report\Sign;
 
+use Rebelo\Enum\AEnum;
+
 /**
  * Signature Level
- *
+ * @method static Level CERTIFIED_NO_CHANGES_ALLOWED()
+ * @method static Level CERTIFIED_FORM_FILLING()
+ * @method static Level CERTIFIED_FORM_FILLING_AND_ANNOTATIONS()
  * @author João Rebelo
  * @since 1.0.0
  */
-class Level
-    extends \Rebelo\Reports\Report\Enum\AEnum
+class Level extends AEnum
 {
 
     /**
@@ -57,12 +61,12 @@ class Level
 
     /**
      *
-     * @param String $level One of the constantes of Level
+     * @param String $level One of the constants of Level
+     * @throws \Rebelo\Enum\EnumException
      * @since 1.0.0
      */
-    public function __construct($level)
+    public function __construct(string $level)
     {
         parent::__construct($level);
     }
-
 }

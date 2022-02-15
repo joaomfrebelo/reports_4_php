@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rebelo\Reports\Report\Sign;
 
-use Rebelo\Reports\Report\Sign\Type;
-use Rebelo\Reports\Report\Sign\Keystore;
-use Rebelo\Reports\Report\Sign\Level;
+use Rebelo\Reports\Config\Config;
+use Rebelo\Reports\Report\IAReport;
 use Rebelo\Reports\Report\AReport;
 use Rebelo\Reports\Report\SerializeReportException;
 
@@ -13,58 +14,57 @@ use Rebelo\Reports\Report\SerializeReportException;
  *
  * The pdf digital signature properties
  */
-class Sign
-    implements \Rebelo\Reports\Report\IAReport
+class Sign implements IAReport
 {
 
     /**
      * The java key store where the certificates are
      *
-     * @var \Rebelo\Reports\Report\Sign\Keystore $keystore
+     * @var \Rebelo\Reports\Report\Sign\Keystore|null $keystore
      */
-    private $keystore = null;
+    private ?Keystore $keystore = null;
 
     /**
-     * The siganute certification level
+     * The signature certification level
      *
-     * @var Level $level
+     * @var Level|null $level
      */
-    private $level = null;
+    private ?Level $level = null;
 
     /**
      * The type of certificate
      *
-     * @var \Rebelo\Reports\Report\Sign\Type $type
+     * @var \Rebelo\Reports\Report\Sign\Type|null $type
      */
-    private $type = null;
+    private ?Type $type = null;
 
     /**
      * The visibility and position of the signature image rectangle
      *
-     * @var \Rebelo\Reports\Report\Sign\Rectangle $rectangle
+     * @var \Rebelo\Reports\Report\Sign\Rectangle|null $rectangle
      */
-    private $rectangle = null;
+    private ?Rectangle $rectangle = null;
 
     /**
-     * The legend 'Location' to be write in the signaute
+     * The legend 'Location' to be write in the signature
      *
-     * @var string $location
+     * @var string|null $location
      */
-    private $location = null;
+    private ?string $location = null;
 
     /**
-     * The legend 'Reazon' to be write in the signaute
+     * The legend 'Reason' to be write in the signature
      *
-     * @var string $reazon
+     * @var string|null $reason
      */
-    private $reazon = null;
+    private ?string $reason = null;
 
     /**
      * @since 1.0.0
      */
     public function __construct()
     {
-        \Rebelo\Reports\Config\Config::configLog4Php();
+        Config::configLog4Php();
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
         $this->setType(new Type(Type::SELF_SIGNED));
     }
@@ -74,16 +74,18 @@ class Sign
      *
      * The java key store where the certificates are
      *
-     * @return \Rebelo\Reports\Report\Sign\Keystore
+     * @return \Rebelo\Reports\Report\Sign\Keystore|null
      * @since 1.0.0
      */
-    public function getKeystore()
+    public function getKeystore(): ?Keystore
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->keystore === null
+            ->info(\sprintf(
+                __METHOD__ . " get '%s'",
+                $this->keystore === null
                         ? "null"
-                        : $this->keystore->__toString()));
+                : $this->keystore->__toString()
+            ));
         return $this->keystore;
     }
 
@@ -92,53 +94,57 @@ class Sign
      *
      * The java key store where the certificates are
      *
-     * @param \Rebelo\Reports\Report\Sign\Keystore $keystore
-     * @return self
+     * @param \Rebelo\Reports\Report\Sign\Keystore|null $keystore
+     * @return static
      * @since 1.0.0
      */
-    public function setKeystore(Keystore $keystore)
+    public function setKeystore(?Keystore $keystore): static
     {
         $this->keystore = $keystore;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->keystore === null
+            ->debug(\sprintf(
+                __METHOD__ . " set to '%s'",
+                $this->keystore === null
                         ? "null"
-                        : $this->keystore));
+                : $this->keystore
+            ));
         return $this;
     }
 
     /**
      * Gets as level
      *
-     * The siganute certification level
+     * The signature certification level
      *
-     * @return Level
+     * @return Level|null
      * @since 1.0.0
      */
-    public function getLevel()
+    public function getLevel(): ?Level
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->level == null
+            ->info(\sprintf(
+                __METHOD__ . " get '%s'",
+                $this->level == null
                         ? "null"
-                        : $this->level->get()));
+                : $this->level->get()
+            ));
         return $this->level;
     }
 
     /**
      * Sets a new level
      *
-     * The siganute certification level
+     * The signature certification level
      *
      * @param Level $level
-     * @return self
+     * @return static
      * @since 1.0.0
      */
-    public function setLevel(Level $level)
+    public function setLevel(Level $level): static
     {
         $this->level = $level;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'", $this->level->get()));
+            ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->level->get()));
         return $this;
     }
 
@@ -147,13 +153,13 @@ class Sign
      *
      * The type of certificate
      *
-     * @return Type
+     * @return \Rebelo\Reports\Report\Sign\Type|null
      * @since 1.0.0
      */
-    public function getType()
+    public function getType(): ?Type
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'", $this->type->get()));
+            ->info(\sprintf(__METHOD__ . " get '%s'", $this->type?->get() ?? "null"));
         return $this->type;
     }
 
@@ -162,15 +168,15 @@ class Sign
      *
      * The type of certificate
      *
-     * @param Type $type
-     * @return self
+     * @param \Rebelo\Reports\Report\Sign\Type $type
+     * @return static
      * @since 1.0.0
      */
-    public function setType(Type $type)
+    public function setType(Type $type): static
     {
         $this->type = $type;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'", $this->type->get()));
+            ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->type->get()));
         return $this;
     }
 
@@ -179,16 +185,18 @@ class Sign
      *
      * The visibility and position of the signature image rectangle
      *
-     * @return \Rebelo\Reports\Report\Sign\Rectangle
+     * @return \Rebelo\Reports\Report\Sign\Rectangle|null
      * @since 1.0.0
      */
-    public function getRectangle()
+    public function getRectangle(): ?Rectangle
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->rectangle === null
+            ->info(\sprintf(
+                __METHOD__ . " get '%s'",
+                $this->rectangle === null
                         ? "null"
-                        : $this->rectangle->__toString()));
+                : $this->rectangle->__toString()
+            ));
         return $this->rectangle;
     }
 
@@ -198,91 +206,101 @@ class Sign
      * The visibility and position of the signature image rectangle
      *
      * @param \Rebelo\Reports\Report\Sign\Rectangle $rectangle
-     * @return self
+     * @return static
      * @since 1.0.0
      */
-    public function setRectangle(Rectangle $rectangle)
+    public function setRectangle(Rectangle $rectangle): static
     {
         $this->rectangle = $rectangle;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->rectangle === null
+            ->debug(\sprintf(
+                __METHOD__ . " set to '%s'",
+                $this->rectangle === null
                         ? "null"
-                        : $this->rectangle->__toString()));
+                : $this->rectangle->__toString()
+            ));
         return $this;
     }
 
     /**
      * Gets as location
      *
-     * The legend 'Location' to be write in the signaute
+     * The legend 'Location' to be write in the signature
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
-    public function getLocation()
+    public function getLocation(): ?string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->location === null
+            ->info(\sprintf(
+                __METHOD__ . " get '%s'",
+                $this->location === null
                         ? "null"
-                        : $this->location));
+                : $this->location
+            ));
         return $this->location;
     }
 
     /**
-     * Set the legend 'Location' to be write in the signaute
+     * Set the legend 'Location' to be write in the signature
      *
-     * @param string $location
-     * @return self
+     * @param string|null $location
+     * @return static
      * @since 1.0.0
      */
-    public function setLocation($location)
+    public function setLocation(?string $location): static
     {
         $this->location = $location;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->location === null
+            ->debug(\sprintf(
+                __METHOD__ . " set to '%s'",
+                $this->location === null
                         ? "null"
-                        : $this->location));
+                : $this->location
+            ));
         return $this;
     }
 
     /**
-     * Gets as reazon
+     * Gets as reason
      *
-     * The legend 'Reazon' to be write in the signaute
+     * The legend 'Reason' to be write in the signature
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
-    public function getReazon()
+    public function getReason(): ?string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'",
-                            $this->reazon === null
+            ->info(\sprintf(
+                __METHOD__ . " get '%s'",
+                $this->reason === null
                         ? "null"
-                        : $this->reazon));
-        return $this->reazon;
+                : $this->reason
+            ));
+        return $this->reason;
     }
 
     /**
-     * Sets a new reazon
+     * Sets a new reason
      *
-     * The legend 'Reazon' to be write in the signaute
+     * The legend 'Reason' to be write in the signature
      *
-     * @param string $reazon
-     * @return self
+     * @param string|null $reason
+     * @return static
      * @since 1.0.0
      */
-    public function setReazon($reazon)
+    public function setReason(?string $reason): static
     {
-        $this->reazon = $reazon;
+        $this->reason = $reason;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'",
-                             $this->reazon === null
+            ->debug(\sprintf(
+                __METHOD__ . " set to '%s'",
+                $this->reason === null
                         ? "null"
-                        : $this->reazon));
+                : $this->reason
+            ));
         return $this;
     }
 
@@ -302,18 +320,18 @@ class Sign
      * Serialize the xml node
      *
      * @param \SimpleXMLElement $node
+     * @return \SimpleXMLElement
      * @throws SerializeReportException
      */
-    public function createXmlNode(\SimpleXMLElement $node)
+    public function createXmlNode(\SimpleXMLElement $node): \SimpleXMLElement
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
         $class    = \strtolower(get_class($this));
         $lastPos  = \strrpos($class, "\\");
         $nodeName = \substr($class, $lastPos + 1, \strlen($class));
         $signNode = $node->addChild($nodeName);
-        if ($this->getKeystore() === null)
-        {
-            $msg = "To have a sign pdf the keystore must be setted";
+        if ($this->getKeystore() === null) {
+            $msg = "To have a sign pdf the keystore must be set";
             \Logger::getLogger(\get_class($this))
                 ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new SerializeReportException($msg);
@@ -321,12 +339,12 @@ class Sign
         $this->getKeystore()->createXmlNode($signNode);
         $signNode->addChild("level", $this->getLevel()->get());
         $signNode->addChild("type", $this->getType()->get());
-        if ($this->getRectangle() !== null)
-        {
+        if ($this->getRectangle() !== null) {
             $this->getRectangle()->createXmlNode($signNode);
         }
         AReport::cdata($signNode->addChild("location"), $this->getLocation());
-        AReport::cdata($signNode->addChild("reazon"), $this->getReazon());
-    }
+        AReport::cdata($signNode->addChild("reazon"), $this->getReason());
 
+        return $signNode;
+    }
 }

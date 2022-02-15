@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rebelo\Reports\Report;
 
 /**
@@ -7,8 +9,7 @@ namespace Rebelo\Reports\Report;
  *
  * Properties file to export the report to a Docx file
  */
-class Docx
-    extends AFileReport
+class Docx extends AFileReport
 {
 
     /**
@@ -28,5 +29,4 @@ class Docx
     {
         return serialize($this);
     }
-
 }

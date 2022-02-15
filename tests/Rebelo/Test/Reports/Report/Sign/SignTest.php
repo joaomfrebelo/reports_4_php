@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report\Sign;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\SerializeReportException;
 use Rebelo\Reports\Report\Sign\Rectangle;
 use Rebelo\Reports\Report\Sign\Keystore;
 use Rebelo\Reports\Report\Sign\Certificate;
@@ -40,10 +41,14 @@ use Rebelo\Reports\Report\Sign\Sign;
  *
  * @author João Rebelo
  */
-class SignTest
-    extends TestCase
+class SignTest extends TestCase
 {
 
+    /**
+     * @throws \Rebelo\Enum\EnumException
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
     public function testSetGet()
     {
         $inst = "\Rebelo\Reports\Report\Sign\Sign";
@@ -52,7 +57,7 @@ class SignTest
         $this->assertNull($sign->getKeystore());
         $this->assertNull($sign->getLevel());
         $this->assertNull($sign->getLocation());
-        $this->assertNull($sign->getReazon());
+        $this->assertNull($sign->getReason());
         $this->assertNull($sign->getRectangle());
         $this->assertEquals(Type::SELF_SIGNED, $sign->getType()->get());
 
@@ -80,9 +85,9 @@ class SignTest
         $local  = "sign location";
         $this->assertInstanceOf($inst, $sign->setLocation($local));
         $this->assertEquals($local, $sign->getLocation());
-        $reazon = "sign reazon";
-        $this->assertInstanceOf($inst, $sign->setReazon($reazon));
-        $this->assertEquals($reazon, $sign->getReazon());
+        $reason = "sign reason";
+        $this->assertInstanceOf($inst, $sign->setReason($reason));
+        $this->assertEquals($reason, $sign->getReason());
         $this->assertInstanceOf($inst, $sign->setRectangle(new Rectangle()));
         $this->assertEquals(0, $sign->getRectangle()->getRotation());
 
@@ -94,16 +99,13 @@ class SignTest
         $this->assertEquals($keyPath, $xml->sign->keystore->path);
         $this->assertEquals($type, $xml->sign->type);
         $this->assertEquals($local, $xml->sign->location);
-        $this->assertEquals($reazon, $xml->sign->reazon);
+        $this->assertEquals($reason, $xml->sign->reazon);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\SerializeReportException
-     */
     public function testGetNodeKeystoreNull()
     {
+        $this->expectException(SerializeReportException::class);
         $sign = new Sign();
         $sign->createXmlNode(new \SimpleXMLElement("<root></root>"));
     }
-
 }

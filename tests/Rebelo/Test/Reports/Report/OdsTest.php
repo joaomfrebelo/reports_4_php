@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Ods;
 use Rebelo\Reports\Report\JasperFile;
 
@@ -36,26 +38,19 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class OdsTest
-    extends TestCase
+class OdsTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
     public function testSetGet()
     {
         $ods = new Ods();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Ods", $ods);
         $this->assertNull($ods->getJasperFile());
-        $this->assertNull($ods->getOutputfile());
+        $this->assertNull($ods->getOutputFile());
         $this->assertNull($ods->getDatasource());
 
         $pathJasper = "path jasper file";
@@ -63,17 +58,18 @@ class OdsTest
         $this->assertEquals($pathJasper, $ods->getJasperFile()->getPath());
 
         $pathOut = "path for output file";
-        $ods->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $ods->getOutputfile());
+        $ods->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $ods->getOutputFile());
 
-        $ods->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $ods->getDatasource());
+        $ods->setDatasource(new Database());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $ods->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $ods->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
-        $this->assertEquals($pathOut, $xml->ods->{Ods::NODE_OUT_FILE});
+        $xml = simplexml_load_string($node->asXML());
+        $this->assertEquals($pathOut, $xml->ods->{AReport::NODE_OUT_FILE});
     }
-
 }

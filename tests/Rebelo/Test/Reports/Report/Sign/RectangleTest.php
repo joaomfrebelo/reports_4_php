@@ -29,16 +29,19 @@ namespace Rebelo\Test\Reports\Report\Sign;
 
 use PHPUnit\Framework\TestCase;
 use Rebelo\Reports\Report\Sign\Rectangle;
+use Rebelo\Reports\Report\Sign\SignException;
 
 /**
  * Class KeystoreTest
  *
  * @author João Rebelo
  */
-class RectangleTest
-    extends TestCase
+class RectangleTest extends TestCase
 {
 
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
     public function testSetGet()
     {
         $inst = "\Rebelo\Reports\Report\Sign\Rectangle";
@@ -56,7 +59,6 @@ class RectangleTest
         $x   = 99;
         $y   = 999;
         $rot = 45;
-        $vis = true;
 
         $this->assertInstanceOf($inst, $rect->setHeight($h));
         $this->assertEquals($h, $rect->getHeight());
@@ -77,40 +79,23 @@ class RectangleTest
         $this->assertTrue($rect->getVisible());
         $rect->setVisible(false);
         $this->assertFalse($rect->getVisible());
-        $this->assertInstanceOf($inst, $rect->setVisible($vis));
-        $this->assertEquals($vis, $rect->getVisible());
+        $this->assertInstanceOf($inst, $rect->setVisible(true));
+        $this->assertTrue($rect->getVisible());
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $rect->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        $xml = simplexml_load_string($node->asXML());
         $this->assertEquals(strval($x), $xml->rectangle->position->x);
         $this->assertEquals(strval($y), $xml->rectangle->position->y);
         $this->assertEquals(strval($w), $xml->rectangle->position->width);
         $this->assertEquals(strval($h), $xml->rectangle->position->height);
         $this->assertEquals(strval($rot), $xml->rectangle->position->rotation);
-        $this->assertEquals($vis
-                ? "true"
-                : "false", $xml->rectangle->visible);
+        $this->assertTrue((string)$xml->rectangle->visible === "true");
     }
 
     /**
-     * @expectedException \Rebelo\Reports\Report\Sign\SignException
+     * @throws \Rebelo\Reports\Report\Sign\SignException
      */
-    public function testSetStrVisible()
-    {
-        $rect = new Rectangle();
-        $rect->setVisible("true");
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\Sign\SignException
-     */
-    public function testSetIntVisible()
-    {
-        $rect = new Rectangle();
-        $rect->setVisible(1);
-    }
-
     public function testSetXZero()
     {
         $rect = new Rectangle();
@@ -118,15 +103,16 @@ class RectangleTest
         $this->assertEquals(0, $rect->getX());
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Sign\SignException
-     */
     public function testSetXNegative()
     {
+        $this->expectException(SignException::class);
         $rect = new Rectangle();
         $rect->setX(-1);
     }
 
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
     public function testSetYZero()
     {
         $rect = new Rectangle();
@@ -134,15 +120,16 @@ class RectangleTest
         $this->assertEquals(0, $rect->getY());
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Sign\SignException
-     */
     public function testSetYNegative()
     {
+        $this->expectException(SignException::class);
         $rect = new Rectangle();
         $rect->setY(-1);
     }
 
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
     public function testSetWidthZero()
     {
         $rect = new Rectangle();
@@ -150,15 +137,16 @@ class RectangleTest
         $this->assertEquals(0, $rect->getWidth());
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Sign\SignException
-     */
     public function testSetWidthNegative()
     {
+        $this->expectException(SignException::class);
         $rect = new Rectangle();
         $rect->setWidth(-1);
     }
 
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
     public function testSetHeightZero()
     {
         $rect = new Rectangle();
@@ -166,43 +154,41 @@ class RectangleTest
         $this->assertEquals(0, $rect->getHeight());
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Sign\SignException
-     */
     public function testSetHeightNegative()
     {
+        $this->expectException(SignException::class);
         $rect = new Rectangle();
         $rect->setHeight(-1);
     }
 
-    public function testSetRotationtZero()
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
+    public function testSetRotationZero()
     {
         $rect = new Rectangle();
         $rect->setRotation(0);
         $this->assertEquals(0, $rect->getRotation());
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Sign\SignException
-     */
     public function testSetRotationNegative()
     {
+        $this->expectException(SignException::class);
         $rect = new Rectangle();
         $rect->setRotation(-1);
     }
 
-    public function testEmtyrecNode()
+    public function testEmptyRectangleNode()
     {
         $rect = new Rectangle();
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $rect->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        $xml = simplexml_load_string($node->asXML());
         $this->assertEquals(strval(0), $xml->rectangle->position->x);
         $this->assertEquals(strval(0), $xml->rectangle->position->y);
         $this->assertEquals(strval(0), $xml->rectangle->position->width);
         $this->assertEquals(strval(0), $xml->rectangle->position->height);
         $this->assertEquals(strval(0), $xml->rectangle->position->rotation);
     }
-
 }

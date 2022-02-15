@@ -27,26 +27,25 @@ declare(strict_types=1);
 
 namespace Rebelo\Reports\Report\Datasource;
 
+use JetBrains\PhpStorm\Pure;
+
 /**
  * Description of DatasourceException
  *
  * @author João Rebelo
  */
-class DatasourceException
-    extends \Exception
+class DatasourceException extends \Exception
 {
 
     /**
      *
-     * @param type $message
-     * @param type $code
-     * @param \Throwable $previous     *
+     * @param string          $message
+     * @param int             $code
+     * @param \Throwable|null $previous
      * @since 1.0.0
      */
-    public function __construct($message = "", $code = 0,
-                                \Throwable $previous = null)
+    #[Pure] public function __construct(string $message = "", int $code = 0, \Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
-
 }

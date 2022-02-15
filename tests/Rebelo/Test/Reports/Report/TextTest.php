@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Text;
 use Rebelo\Reports\Report\JasperFile;
 
@@ -36,26 +38,19 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class TextTest
-    extends TestCase
+class TextTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
     public function testSetGet()
     {
         $text = new Text();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Text", $text);
         $this->assertNull($text->getJasperFile());
-        $this->assertNull($text->getOutputfile());
+        $this->assertNull($text->getOutputFile());
         $this->assertNull($text->getDatasource());
 
         $pathJasper = "path jasper file";
@@ -63,17 +58,18 @@ class TextTest
         $this->assertEquals($pathJasper, $text->getJasperFile()->getPath());
 
         $pathOut = "path for output file";
-        $text->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $text->getOutputfile());
+        $text->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $text->getOutputFile());
 
-        $text->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $text->getDatasource());
+        $text->setDatasource(new Database());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $text->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $text->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
-        $this->assertEquals($pathOut, $xml->text->{Text::NODE_OUT_FILE});
+        $xml = simplexml_load_string($node->asXML());
+        $this->assertEquals($pathOut, $xml->text->{AReport::NODE_OUT_FILE});
     }
-
 }

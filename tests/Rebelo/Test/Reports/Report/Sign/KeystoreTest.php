@@ -23,11 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Sign;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\SerializeReportException;
 use Rebelo\Reports\Report\Sign\Keystore;
 use Rebelo\Reports\Report\Sign\Certificate;
 
@@ -36,10 +38,13 @@ use Rebelo\Reports\Report\Sign\Certificate;
  *
  * @author João Rebelo
  */
-class KeystoreTest
-    extends TestCase
+class KeystoreTest extends TestCase
 {
 
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
     public function testSetGet()
     {
         $inst = "\Rebelo\Reports\Report\Sign\Keystore";
@@ -56,8 +61,10 @@ class KeystoreTest
         $cert->setPassword($certPwd);
         $setCert  = $key->setCertificate($cert);
         $this->assertInstanceOf($inst, $setCert);
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Sign\Certificate",
-                                $key->getCertificate());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Sign\Certificate",
+            $key->getCertificate()
+        );
 
         $pwd    = "key store pwd";
         $setPwd = $key->setPassword($pwd);
@@ -79,11 +86,9 @@ class KeystoreTest
         $this->assertEquals($certPwd, $nodeCert->password);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\SerializeReportException
-     */
     public function testCreateNodeNullCert()
     {
+        $this->expectException(SerializeReportException::class);
         $key  = new Keystore();
         $key->setPassword("pwd");
         $key->setPath("path");
@@ -91,16 +96,13 @@ class KeystoreTest
         $key->createXmlNode($node);
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\SerializeReportException
-     */
     public function testCreateNodeNullPath()
     {
+        $this->expectException(SerializeReportException::class);
         $key  = new Keystore();
         $key->setPassword("pwd");
         $key->setCertificate(new Certificate());
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $key->createXmlNode($node);
     }
-
 }

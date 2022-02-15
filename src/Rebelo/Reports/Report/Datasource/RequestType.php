@@ -23,17 +23,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Report\Datasource;
 
+use Rebelo\Enum\AEnum;
+
 /**
  * Description of RequestType
- *
+ * @method static RequestType POST()
  * @author João Rebelo
  */
-class RequestType
-    extends \Rebelo\Reports\Report\Enum\AEnum
+class RequestType extends AEnum
 {
 
     /**
@@ -50,12 +52,12 @@ class RequestType
 
     /**
      *
-     * @param type $value
+     * @param string $value
+     * @throws \Rebelo\Enum\EnumException
      * @since 1.0.0
      */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         parent::__construct($value);
     }
-
 }

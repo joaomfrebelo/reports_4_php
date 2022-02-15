@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Json;
 use Rebelo\Reports\Report\JasperFile;
 
@@ -36,26 +38,19 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class JsonTest
-    extends TestCase
+class JsonTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
     public function testSetGet()
     {
         $json = new Json();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Json", $json);
         $this->assertNull($json->getJasperFile());
-        $this->assertNull($json->getOutputfile());
+        $this->assertNull($json->getOutputFile());
         $this->assertNull($json->getDatasource());
 
         $pathJasper = "path jasper file";
@@ -63,17 +58,18 @@ class JsonTest
         $this->assertEquals($pathJasper, $json->getJasperFile()->getPath());
 
         $pathOut = "path for output file";
-        $json->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $json->getOutputfile());
+        $json->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $json->getOutputFile());
 
-        $json->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $json->getDatasource());
+        $json->setDatasource(new Database());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $json->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $json->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
-        $this->assertEquals($pathOut, $xml->json->{Json::NODE_OUT_FILE});
+        $xml = simplexml_load_string($node->asXML());
+        $this->assertEquals($pathOut, $xml->json->{AReport::NODE_OUT_FILE});
     }
-
 }

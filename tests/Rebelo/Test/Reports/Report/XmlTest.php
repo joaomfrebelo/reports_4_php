@@ -28,60 +28,44 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Xml;
-use Rebelo\Reports\Report\JasperFile;
 
 /**
  * Class CvsTest
  *
  * @author João Rebelo
  */
-class XmlTest
-    extends TestCase
+class XmlTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
     public function testSetGet()
     {
         $inst = "\Rebelo\Reports\Report\Xml";
         $xml  = new Xml();
         $this->assertInstanceOf($inst, $xml);
         $this->assertNull($xml->getJasperFile());
-        $this->assertNull($xml->getOutputfile());
+        $this->assertNull($xml->getOutputFile());
         $this->assertNull($xml->getDatasource());
-        $this->assertNull($xml->getJasperFileBaseDir());
-        $this->assertNull($xml->getOutputBaseDir());
 
         $pathOut = "path for output file";
-        $xml->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $xml->getOutputfile());
+        $xml->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $xml->getOutputFile());
 
-        $xml->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $xml->getDatasource());
+        $xml->setDatasource(new Database());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $xml->getDatasource()
+        );
 
-        $jasperFileBaseDir = "jasper File Base Dir";
-        $this->assertInstanceOf($inst,
-                                $xml->setJasperFileBaseDir($jasperFileBaseDir));
-        $this->assertEquals($jasperFileBaseDir, $xml->getJasperFileBaseDir());
-
-        $outputBaseDir = "output File Base Dir";
-        $this->assertInstanceOf($inst, $xml->setOutputBaseDir($outputBaseDir));
-        $this->assertEquals($outputBaseDir, $xml->getOutputBaseDir());
-
-        $node   = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
+        $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $xml->createXmlNode($node);
         $xmlStr = simplexml_load_string($node->asXML());
-        $this->assertEquals($pathOut, $xmlStr->xml->{Xml::NODE_OUT_FILE});
+        $this->assertEquals($pathOut, $xmlStr->xml->{AReport::NODE_OUT_FILE});
     }
-
 }

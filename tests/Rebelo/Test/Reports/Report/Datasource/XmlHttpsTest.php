@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report\Datasource;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\Datasource\DatasourceException;
 use Rebelo\Reports\Report\Datasource\XmlHttps;
 use Rebelo\Reports\Report\Datasource\RequestType;
 
@@ -36,32 +37,20 @@ use Rebelo\Reports\Report\Datasource\RequestType;
  *
  * @author João Rebelo
  */
-class XmlHttpsTest
-    extends TestCase
+class XmlHttpsTest extends TestCase
 {
 
-    protected $_object;
-
-    protected function setUp()
-    {
-
-    }
-
     /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
      */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetSetGet()
     {
         $xmlHttps = new XmlHttps();
 
-        $this->assertInstanceOf("Rebelo\Reports\Report\Datasource\XmlHttps",
-                                $xmlHttps);
+        $this->assertInstanceOf(
+            "Rebelo\Reports\Report\Datasource\XmlHttps",
+            $xmlHttps
+        );
 
         $this->assertNull($xmlHttps->getDatePattern());
         $datePattern = "yyyy-MM-dd";
@@ -91,6 +80,9 @@ class XmlHttpsTest
         $this->assertEquals($typeGet->get(), $xmlHttps->getType()->get());
     }
 
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
     public function testInstance()
     {
         $url      = "https://test.example";
@@ -100,21 +92,16 @@ class XmlHttpsTest
         $this->assertEquals($typePost->get(), $xmlHttps->getType()->get());
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Datasource\DatasourceException
-     */
     public function testWrongSchema()
     {
+        $this->expectException(DatasourceException::class);
         new XmlHttps("http://test.example");
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Datasource\DatasourceException
-     */
     public function testWrongSetSchema()
     {
+        $this->expectException(DatasourceException::class);
         $xmlHttps = new XmlHttps();
         $xmlHttps->setUrl("http://test.example");
     }
-
 }

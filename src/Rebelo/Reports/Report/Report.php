@@ -27,41 +27,40 @@ declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
 
-use Rebelo\Reports\Report\ExecException;
 use Rebelo\Reports\Config\Config;
 
 /**
  * Generate the report
  *
  * @author João Rebelo
- * @since 1.0.0
+ * @since  1.0.0
  */
 class Report
 {
 
     /**
      *
-     * @var \Rebelo\Reports\Report\ReportPathType
+     * @var \Rebelo\Reports\Report\ReportPathType|null
      */
-    private $pathType = null;
+    private ?ReportPathType $pathType = null;
 
     /**
      * The path to pre append to the output file
      * path defined in the xml file
      *
-     * @var string
+     * @var string|null
      * @since 1.0.0
      */
-    protected $outputBaseDir = null;
+    protected ?string $outputBaseDir = null;
 
     /**
      * The path to pre append to the jasper file
      * path defined in the xml file
      *
-     * @var string
+     * @var string|null
      * @since 1.0.0
      */
-    protected $jasperFileBaseDir = null;
+    protected ?string $jasperFileBaseDir = null;
 
     /**
      * If is true the xml file will be deleted after report generator<br>
@@ -69,7 +68,7 @@ class Report
      * @var boolean
      * @since 1.0.0
      */
-    protected $deleteFile = true;
+    protected bool $deleteFile = true;
 
     /**
      * If is true the xml directory will be deleted after report generator<br>
@@ -77,19 +76,20 @@ class Report
      * @var boolean
      * @since 1.0.0
      */
-    protected $deleteDirectory = true;
+    protected bool $deleteDirectory = true;
 
     /**
      *
-     * Temp direactory where the xml file will be written<br>
-     * Will be created one per nstance
+     * Temp directory where the xml file will be written<br>
+     * Will be created one per instance
      *
      * @var string
      */
-    protected $tmpDir;
+    protected string $tmpDir;
 
     /**
      * Generate the report
+     * @throws \Rebelo\Reports\Config\ConfigException
      * @since 1.0.0
      */
     public function __construct()
@@ -97,10 +97,10 @@ class Report
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
         $config       = Config::getInstance();
         $this->tmpDir = $config->getTempDirectory()
-            . DIRECTORY_SEPARATOR
-            . \uniqid("RReports", true) . \strval(rand(9, 9999));
+                        . DIRECTORY_SEPARATOR
+                        . \uniqid("RReports", true) . \rand(9, 9999);
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " temp dir '%s'", $this->tmpDir));
+               ->info(sprintf(__METHOD__ . " temp dir '%s'", $this->tmpDir));
     }
 
     /**
@@ -108,50 +108,50 @@ class Report
      * The cli base command
      *
      * @return string
+     * @throws \Rebelo\Reports\Config\ConfigException
+     * @throws \Rebelo\Reports\Report\ExecException
+     * @throws \Rebelo\Enum\EnumException
      */
-    public function getBaseCmd()
+    public function getBaseCmd(): string
     {
         $conf     = Config::getInstance();
-        $cmdStk   = array();
+        $cmdStk   = [];
         $cmdStk[] = "\"" . $conf->getJavaPath() . "\"";
-        if ($conf->getJavaXsharedClassesName() !== null)
-        {
+        if ($conf->getJavaXsharedClassesName() !== null) {
             $cmdStk[] = "-Xshareclasses:name=\"" . $conf->getJavaXsharedClassesName() . "\"";
-            if ($conf->getJavaXsharedClassesDir() !== null)
-            {
+            if ($conf->getJavaXsharedClassesDir() !== null) {
                 $cmdStk[] = "-Xshareclasses:cacheDir=\"" . $conf->getJavaXsharedClassesDir() . "\"";
             }
         }
         $cmdStk[] = "-jar \"" . $conf->getJarPath() . "\"";
-        $cmdStk[] = "-" . $this->getPathType()->get() . "=\"%1\$s\"";
+        $cmdStk[] = "-" . (
+                $this->getPathType()?->get() ?? throw new ExecException("Path type not defined")
+            ). "=\"%1\$s\"";
 
-        if ($this->deleteFile)
-        {
+        if ($this->deleteFile) {
             $cmdStk[] = "-e";
         }
 
-        if ($this->deleteDirectory)
-        {
+        if ($this->deleteDirectory) {
             $cmdStk[] = "-E";
         }
 
-        if ($this->getOutputBaseDir() !== null)
-        {
+        if ($this->getOutputBaseDir() !== null) {
             $cmdStk[] = "-o=\"" . $this->getOutputBaseDir() . "\"";
         }
 
-        if ($this->getJasperFileBaseDir() !== null)
-        {
+        if ($this->getJasperFileBaseDir() !== null) {
             $cmdStk[] = "-j=\"" . $this->getJasperFileBaseDir() . "\"";
         }
 
-        $cmdStk[] = "-v=" . $conf->getVerboseLevel()->get();
+        $cmdStk[] = "-v=" . $conf->getVerboseLevel()?->get() ??
+                    throw new ExecException("Verbose Level nor defined");
         // java -Xcla.. -Xcla -jar cli.jar -f="path.xml"
 
         $cmd = \join(" ", $cmdStk);
 
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " '%s'", $cmd));
+               ->debug(sprintf(__METHOD__ . " '%s'", $cmd));
 
         return $cmd;
     }
@@ -161,32 +161,31 @@ class Report
      * @return string
      * @since 1.0.0
      */
-    public function getTmpDir()
+    public function getTmpDir(): string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " getted '%s'", $this->tmpDir));
+               ->info(sprintf(__METHOD__ . " get '%s'", $this->tmpDir));
         return $this->tmpDir;
     }
 
     /**
      *
      * @param string $tmpDir
-     * @return $this
+     * @return static
      * @throws ReportException
      * @since 1.0.0
      */
-    public function setTmpDir($tmpDir)
+    public function setTmpDir(string $tmpDir): static
     {
-        if (!\is_string($tmpDir) || \trim($tmpDir) === "")
-        {
-            $msg = "Temporary diretory nust be a non empty string";
+        if ("" === $tmpDir = \trim($tmpDir)) {
+            $msg = "Temporary directory must be a non empty string";
             \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(sprintf(__METHOD__ . " '%s'", $msg));
             throw new ReportException($msg);
         }
         $this->tmpDir = $tmpDir;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'", $this->tmpDir));
+               ->debug(sprintf(__METHOD__ . " set to '%s'", $this->tmpDir));
         return $this;
     }
 
@@ -197,13 +196,15 @@ class Report
      * @return boolean
      * @since 1.0.0
      */
-    public function getDeleteFile()
+    public function getDeleteFile(): bool
     {
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " getted '%s'",
-                           $this->deleteFile
-                        ? "true"
-                        : "false"));
+               ->info(sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->deleteFile
+                              ? "true"
+                              : "false"
+               ));
         return $this->deleteFile;
     }
 
@@ -211,26 +212,21 @@ class Report
      * If is true the xml file will be deleted after report generator<br>
      * Argument -e, --erase
      *
-     * @param type $deleteFile
-     * @return $this
+     * @param bool $deleteFile
+     * @return static
      * @since 1.0.0
      */
-    public function setDeleteFile($deleteFile)
+    public function setDeleteFile(bool $deleteFile): static
     {
-        if (\is_bool($deleteFile) === false)
-        {
-            $msg = "deleteFile must be boolean";
-            \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
-            throw new ReportException($msg);
-        }
         $this->deleteFile = $deleteFile;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            $this->deleteFile
-                        ?
-                        "true"
-                        : "false"));
+               ->debug(sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->deleteFile
+                               ?
+                               "true"
+                               : "false"
+               ));
         return $this;
     }
 
@@ -241,13 +237,15 @@ class Report
      * @return boolean
      * @since 1.0.0
      */
-    public function getDeleteDirectory()
+    public function getDeleteDirectory(): bool
     {
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " getted '%s'",
-                           $this->deleteDirectory
-                        ? "true"
-                        : "false"));
+               ->info(sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->deleteDirectory
+                              ? "true"
+                              : "false"
+               ));
         return $this->deleteDirectory;
     }
 
@@ -255,26 +253,21 @@ class Report
      * If is true the xml directory will be deleted after report generator<br>
      * Argument -e, --erase
      *
-     * @param type $deleteDirectory
-     * @return $this
+     * @param bool $deleteDirectory
+     * @return static
      * @since 1.0.0
      */
-    public function setDeleteDirectory($deleteDirectory)
+    public function setDeleteDirectory(bool $deleteDirectory): static
     {
-        if (\is_bool($deleteDirectory) === false)
-        {
-            $msg = "deleteDirectory must be boolean";
-            \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
-            throw new ReportException($msg);
-        }
         $this->deleteDirectory = $deleteDirectory;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            $this->deleteDirectory
-                        ?
-                        "true"
-                        : "false"));
+               ->debug(sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->deleteDirectory
+                               ?
+                               "true"
+                               : "false"
+               ));
         return $this;
     }
 
@@ -282,32 +275,36 @@ class Report
      *
      * The report file path file or directory
      *
-     * @return \Rebelo\Reports\Report\ReportPathType
+     * @return \Rebelo\Reports\Report\ReportPathType|null
      * @since 1.0.0
      */
-    public function getPathType()
+    public function getPathType(): ?ReportPathType
     {
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " getted '%s'",
-                           $this->pathType == null
-                        ? "null"
-                        : $this->pathType->get()));
+               ->info(sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->pathType == null
+                              ? "null"
+                              : $this->pathType->get()
+               ));
         return $this->pathType;
     }
 
     /**
      * Get the report path type<br>
-     * (rebelo reports_cli) argunent -f,--file, -d, --dir)
+     * (rebelo reports_cli) argument -f,--file, -d, --dir)
      * @param \Rebelo\Reports\Report\ReportPathType $pathType
-     * @return $this
+     * @return static
      * @since 1.0.0
      */
-    public function setPathType(\Rebelo\Reports\Report\ReportPathType $pathType)
+    public function setPathType(ReportPathType $pathType): static
     {
         $this->pathType = $pathType;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            $this->pathType->get()));
+               ->debug(sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->pathType->get()
+               ));
         return $this;
     }
 
@@ -315,17 +312,19 @@ class Report
      * The path to pre append to the output file "
      * path defined in the xml file
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
-    public function getOutputBaseDir()
+    public function getOutputBaseDir(): ?string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " getted '%s'",
-                           $this->outputBaseDir === null
-                        ?
-                        "null"
-                        : $this->outputBaseDir));
+               ->info(sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->outputBaseDir === null
+                              ?
+                              "null"
+                              : $this->outputBaseDir
+               ));
         return $this->outputBaseDir;
     }
 
@@ -333,26 +332,20 @@ class Report
      * The path to pre append to the output file "
      * path defined in the xml file
      *
-     * @param type $outputBaseDir
-     * @return $this
-     * @throws ReportException
+     * @param string|null $outputBaseDir
+     * @return static
      * @since 1.0.0
      */
-    public function setOutputBaseDir($outputBaseDir)
+    public function setOutputBaseDir(?string $outputBaseDir): static
     {
-        if ($outputBaseDir !== null && !\is_string($outputBaseDir))
-        {
-            $msg = "outputBaseDir must be null or string";
-            \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
-            throw new ReportException($msg);
-        }
         $this->outputBaseDir = $outputBaseDir;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            $this->outputBaseDir === null
-                        ? "null"
-                        : $this->outputBaseDir));
+               ->debug(sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->outputBaseDir === null
+                               ? "null"
+                               : $this->outputBaseDir
+               ));
         return $this;
     }
 
@@ -361,17 +354,19 @@ class Report
      * The path to pre append to the jasper file
      * path defined in the xml file
      *
-     * @return self
+     * @return string|null
      * @since 1.0.0
      */
-    public function getJasperFileBaseDir()
+    public function getJasperFileBaseDir(): ?string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " getted '%s'",
-                           $this->jasperFileBaseDir === null
-                        ?
-                        "null"
-                        : $this->jasperFileBaseDir));
+               ->info(sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->jasperFileBaseDir === null
+                              ?
+                              "null"
+                              : $this->jasperFileBaseDir
+               ));
         return $this->jasperFileBaseDir;
     }
 
@@ -379,26 +374,20 @@ class Report
      * The path to pre append to the jasper file
      * path defined in the xml file
      *
-     * @param type $jasperFileBaseDir
-     * @return $this
-     * @throws ReportException
+     * @param ?string $jasperFileBaseDir
+     * @return static
      * @since 1.0.0
      */
-    public function setJasperFileBaseDir($jasperFileBaseDir)
+    public function setJasperFileBaseDir(?string $jasperFileBaseDir): static
     {
-        if ($jasperFileBaseDir !== null && !\is_string($jasperFileBaseDir))
-        {
-            $msg = "jasperFileBaseDir must be null or string";
-            \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
-            throw new ReportException($msg);
-        }
         $this->jasperFileBaseDir = $jasperFileBaseDir;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            $this->jasperFileBaseDir === null
-                        ? "null"
-                        : $this->jasperFileBaseDir));
+               ->debug(sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->jasperFileBaseDir === null
+                               ? "null"
+                               : $this->jasperFileBaseDir
+               ));
         return $this;
     }
 
@@ -409,38 +398,36 @@ class Report
      * @return \Rebelo\Reports\Report\ExecReturn
      * @throws ExecException
      */
-    public function generate(AReport $report)
+    public function generate(AReport $report): ExecReturn
     {
-        try
-        {
+        try {
             \Logger::getLogger(\get_class($this))->debug(__METHOD__);
             $xmlFile = $this->getTmpDir()
-                . DIRECTORY_SEPARATOR
-                . uniqid("report")
-                . ".xml";
+                       . DIRECTORY_SEPARATOR
+                       . uniqid("report")
+                       . ".xml";
 
             $this->setPathType(new ReportPathType(ReportPathType::PATH_FILE));
             $cmd = sprintf($this->getBaseCmd(), $xmlFile);
-            if (!\mkdir($this->getTmpDir()))
-            {
-                $msg = sprintf(" Error creating tmp dir to '%s'",
-                               $this->getTmpDir());
+            if (!\mkdir($this->getTmpDir())) {
+                $msg = sprintf(
+                    " Error creating tmp dir to '%s'",
+                    $this->getTmpDir()
+                );
                 \Logger::getLogger(\get_class($this))
-                    ->debug(__METHOD__ . $msg);
+                       ->debug(__METHOD__ . $msg);
                 throw new ReportException($msg);
             }
             $report->serializeToFile($xmlFile);
-            $exit = $this->invoque($cmd);
+            $exit = $this->invoke($cmd);
             $this->checkTmp($report);
             return $exit;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " error to '%s'",
-                                $this->url === null
-                            ? "null"
-                            : $this->url));
+                   ->error(sprintf(
+                       __METHOD__ . " error to '%s'",
+                       $e->getMessage()
+                   ));
             $this->deleteInstanceDir();
             throw new ExecException($e->getMessage());
         }
@@ -450,63 +437,60 @@ class Report
      *
      * Generate multiple reports in one exporter
      *
-     * @param areport[] $stack
+     * @param \Rebelo\Reports\Report\AReport[] $stack
      * @return \Rebelo\Reports\Report\ExecReturn
      * @throws ExecException
-     * @throws ReportException
      * @since 1.0.0
      */
-    public function generateMultipeInOne($stack)
+    public function generateMultipleInOne(array $stack): ExecReturn
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
-        try
-        {
-            if (!\is_array($stack) || count($stack) === 0)
-            {
+        try {
+            if (\count($stack) === 0) {
                 $msg = "Stack array must be an array of AReport";
                 \Logger::getLogger(\get_class($this))
-                    ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                       ->error(sprintf(__METHOD__ . " '%s'", $msg));
                 throw new ReportException($msg);
             }
 
-            if (!\mkdir($this->getTmpDir()))
-            {
-                $msg = sprintf(" Error creating tmp dir to '%s'",
-                               $this->getTmpDir());
+            if (!\mkdir($this->getTmpDir())) {
+                $msg = sprintf(
+                    " Error creating tmp dir to '%s'",
+                    $this->getTmpDir()
+                );
                 \Logger::getLogger(\get_class($this))
-                    ->debug(__METHOD__ . $msg);
+                       ->debug(__METHOD__ . $msg);
                 throw new ReportException($msg);
             }
 
-            foreach ($stack as $k => $report)
-            {
-                if (!($report instanceof AReport))
-                {
+            foreach ($stack as $k => $report) {
+                if (!($report instanceof AReport)) {
                     $msg = "Stack array must be an array of AReport";
                     \Logger::getLogger(\get_class($this))
-                        ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                           ->error(sprintf(__METHOD__ . " '%s'", $msg));
                     throw new ReportException($msg);
                 }
 
                 $xmlFile = $this->getTmpDir()
-                    . DIRECTORY_SEPARATOR
-                    . uniqid("report") . "_" . strval($k)
-                    . ".xml";
+                           . DIRECTORY_SEPARATOR
+                           . uniqid("report") . "_" . $k
+                           . ".xml";
                 $report->serializeToFile($xmlFile);
             }
+
             $this->setPathType(new ReportPathType(ReportPathType::PATH_DIR));
             $cmd  = sprintf($this->getBaseCmd(), $this->getTmpDir());
-            $exit = $this->invoque($cmd);
-            $this->checkTmp($report);
+            $exit = $this->invoke($cmd);
+            if (isset($report)) {
+                $this->checkTmp($report);
+            }
             return $exit;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " error to '%s'",
-                                $this->url === null
-                            ? "null"
-                            : $this->url));
+                   ->error(sprintf(
+                       __METHOD__ . " error to '%s'",
+                       $e->getMessage()
+                   ));
             $this->deleteInstanceDir();
             throw new ExecException($e->getMessage());
         }
@@ -519,33 +503,30 @@ class Report
      * @throws ExecException
      * @since 1.0.0
      */
-    public function invoque($cmd)
+    public function invoke(string $cmd): ExecReturn
     {
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " command '%s'", $cmd));
+               ->debug(sprintf(__METHOD__ . " command '%s'", $cmd));
         $out      = null;
         $exitCode = null;
         exec($cmd, $out, $exitCode);
 
-        if ($exitCode === null)
-        {
+        if ($exitCode === null) {
             $msg = "Command didn't return exit code";
             \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(sprintf(__METHOD__ . " '%s'", $msg));
             throw new ExecException($msg);
         }
 
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " exit code '%s'", $exitCode));
+               ->info(sprintf(__METHOD__ . " exit code '%s'", $exitCode));
 
-        $execReturn = new ExecReturn($exitCode, $out);
+        $execReturn = new ExecReturn($exitCode, $out ?? "");
 
-        if (\count($execReturn->getMessages()) > 0)
-        {
-            foreach ($execReturn->getMessages() as $msg)
-            {
+        if (\count($execReturn->getMessages()) > 0) {
+            foreach ($execReturn->getMessages() as $msg) {
                 \Logger::getLogger(\get_class($this))
-                    ->debug(sprintf(__METHOD__ . " java out '%s' ", $msg));
+                       ->debug(sprintf(__METHOD__ . " java out '%s' ", $msg));
             }
         }
 
@@ -556,26 +537,23 @@ class Report
      * Delete file and temp dir of this instance
      * @since 1.0.0
      */
-    public function deleteInstanceDir()
+    public function deleteInstanceDir(): void
     {
-        try
-        {
+        try {
             $files = \scandir($this->getTmpDir());
-            foreach ($files as $f)
-            {
-                if ($f === "." || $f === "..")
-                {
+            foreach ($files as $f) {
+                if ($f === "." || $f === "..") {
                     continue;
                 }
                 \unlink($this->getTmpDir() . DIRECTORY_SEPARATOR . $f);
             }
             \rmdir($this->getTmpDir());
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " while deleting file: '%s'",
-                                $e->getMessage()));
+                   ->error(sprintf(
+                       __METHOD__ . " while deleting file: '%s'",
+                       $e->getMessage()
+                   ));
         }
     }
 
@@ -585,19 +563,18 @@ class Report
      *
      * @param \Rebelo\Reports\Report\AReport $report
      */
-    protected function checkTmp(AReport $report)
+    protected function checkTmp(AReport $report): void
     {
         // Some times in windows (?? other so) block the deletion in RReports cli
         // even with all stream closed this is only to guaranty that we have the right file
-        if ($report instanceof AFileReport)
-        {
-            if (\is_file($report->getOutputfile() . ".tmp"))
-            {
-                \unlink($report->getOutputfile());
-                \rename($report->getOutputfile() . ".tmp",
-                        $report->getOutputfile());
+        if ($report instanceof AFileReport) {
+            if (\is_file($report->getOutputFile() . ".tmp")) {
+                \unlink($report->getOutputFile());
+                \rename(
+                    $report->getOutputFile() . ".tmp",
+                    $report->getOutputFile()
+                );
             }
         }
     }
-
 }

@@ -35,65 +35,31 @@ use Rebelo\Reports\Report\ExecReturn;
  *
  * @author João Rebelo
  */
-class ExecReturnTest
-    extends TestCase
+class ExecReturnTest extends TestCase
 {
 
     public function testSetGet()
     {
-        $inst     = "\Rebelo\Reports\Report\ExecReturn";
-        $code     = 0;
-        $messages = array(
+        $inst       = "\Rebelo\Reports\Report\ExecReturn";
+        $code       = 0;
+        $messages   = [
             "line 1",
-            "line 2"
-        );
-        $exret    = new ExecReturn($code, $messages);
-        $this->assertInstanceOf($inst, $exret);
-        $this->assertEquals($code, $exret->getCode());
-        $this->assertEquals($messages, $exret->getMessages());
-        $this->assertEquals(join("; ", $messages), $exret->messagesToString());
+            "line 2",
+        ];
+        $execReturn = new ExecReturn($code, $messages);
+        $this->assertInstanceOf($inst, $execReturn);
+        $this->assertEquals($code, $execReturn->getCode());
+        $this->assertEquals($messages, $execReturn->getMessages());
+        $this->assertEquals(join("; ", $messages), $execReturn->messagesToString());
 
         $code2 = 2;
-        $this->assertInstanceOf($inst, $exret->setCode($code2));
-        $this->assertEquals($code2, $exret->getCode());
+        $this->assertInstanceOf($inst, $execReturn->setCode($code2));
+        $this->assertEquals($code2, $execReturn->getCode());
 
-        $msg = array(
-            "error output"
-        );
-        $this->assertInstanceOf($inst, $exret->setMessages($msg));
-        $this->assertEquals($msg, $exret->getMessages());
+        $msg = [
+            "error output",
+        ];
+        $this->assertInstanceOf($inst, $execReturn->setMessages($msg));
+        $this->assertEquals($msg, $execReturn->getMessages());
     }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\ExecException
-     */
-    public function setStringCodeConstruct()
-    {
-        new ExecReturn("", array());
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\ExecException
-     */
-    public function setNullCodeConstruct()
-    {
-        new ExecReturn(null, array());
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\ExecException
-     */
-    public function setEmptyConstruct()
-    {
-        new ExecReturn();
-    }
-
-    /**
-     * @expectedException \Rebelo\Reports\Report\ExecException
-     */
-    public function setWrongMessageConstruct()
-    {
-        new ExecReturn(0, "");
-    }
-
 }

@@ -28,7 +28,9 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
 use Rebelo\Reports\Report\Csv;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\JasperFile;
 
 /**
@@ -36,26 +38,19 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class CsvTest
-    extends TestCase
+class CsvTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
     public function testSetGet()
     {
         $csv = new Csv();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Csv", $csv);
         $this->assertNull($csv->getJasperFile());
-        $this->assertNull($csv->getOutputfile());
+        $this->assertNull($csv->getOutputFile());
         $this->assertNull($csv->getDatasource());
 
         $pathJasper = "path jasper file";
@@ -63,17 +58,18 @@ class CsvTest
         $this->assertEquals($pathJasper, $csv->getJasperFile()->getPath());
 
         $pathOut = "path for output file";
-        $csv->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $csv->getOutputfile());
+        $csv->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $csv->getOutputFile());
 
-        $csv->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $csv->getDatasource());
+        $csv->setDatasource(new Database());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $csv->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $csv->createXmlNode($node);
         $xml  = simplexml_load_string($node->asXML());
-        $this->assertEquals($pathOut, $xml->csv->{Csv::NODE_OUT_FILE});
+        $this->assertEquals($pathOut, $xml->csv->{AReport::NODE_OUT_FILE});
     }
-
 }

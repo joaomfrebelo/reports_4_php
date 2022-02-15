@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Printer;
 use Rebelo\Reports\Report\JasperFile;
 
@@ -36,20 +37,12 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class PrinterTest
-    extends TestCase
+class PrinterTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
+    /**
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
     public function testSetGet()
     {
         $inst    = "\Rebelo\Reports\Report\Printer";
@@ -58,7 +51,6 @@ class PrinterTest
         $this->assertNull($printer->getJasperFile());
         $this->assertEquals("", $printer->getPrinter());
         $this->assertNull($printer->getDatasource());
-        $this->assertNull($printer->getJasperFileBaseDir());
 
         $pathJasper = "path jasper file";
         $printer->setJasperFile(new JasperFile($pathJasper));
@@ -68,14 +60,15 @@ class PrinterTest
         $printer->setPrinter($printerName);
         $this->assertEquals($printerName, $printer->getPrinter());
 
-        $printer->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $printer->getDatasource());
+        $printer->setDatasource(new Database());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $printer->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $printer->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
+        $xml = simplexml_load_string($node->asXML());
         $this->assertEquals($printerName, $xml->print->printer);
     }
-
 }

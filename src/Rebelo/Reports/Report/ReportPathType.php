@@ -23,17 +23,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
 
+use Rebelo\Enum\AEnum;
+
 /**
- * The report file path type (argunent -f,--file, -d, --dir)
- *
+ * The report file path type (argument -f,--file, -d, --dir)
+ * @method static ReportPathType PATH_DIR()
+ * @method static ReportPathType PATH_FILE()
  * @author João Rebelo
  */
-class ReportPathType
-    extends \Rebelo\Reports\Report\Enum\AEnum
+class ReportPathType extends AEnum
 {
 
     /**
@@ -50,5 +53,4 @@ class ReportPathType
     {
         parent::__construct($value);
     }
-
 }

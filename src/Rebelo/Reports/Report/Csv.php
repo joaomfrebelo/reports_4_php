@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rebelo\Reports\Report;
 
 /**
@@ -7,8 +9,7 @@ namespace Rebelo\Reports\Report;
  *
  * Properties file to export the report to a Csv file
  */
-class Csv
-    extends AFileReport
+class Csv extends AFileReport
 {
 
     /**
@@ -28,5 +29,4 @@ class Csv
     {
         return serialize($this);
     }
-
 }

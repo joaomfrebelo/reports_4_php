@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Rtf;
 use Rebelo\Reports\Report\JasperFile;
 
@@ -36,26 +38,19 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class RtfTest
-    extends TestCase
+class RtfTest extends TestCase
 {
 
-    protected function setUp()
-    {
-
-    }
-
-    protected function tearDown()
-    {
-
-    }
-
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
     public function testSetGet()
     {
         $rtf = new Rtf();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Rtf", $rtf);
         $this->assertNull($rtf->getJasperFile());
-        $this->assertNull($rtf->getOutputfile());
+        $this->assertNull($rtf->getOutputFile());
         $this->assertNull($rtf->getDatasource());
 
         $pathJasper = "path jasper file";
@@ -63,17 +58,18 @@ class RtfTest
         $this->assertEquals($pathJasper, $rtf->getJasperFile()->getPath());
 
         $pathOut = "path for output file";
-        $rtf->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $rtf->getOutputfile());
+        $rtf->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $rtf->getOutputFile());
 
-        $rtf->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Datasource\Database",
-                                $rtf->getDatasource());
+        $rtf->setDatasource(new Database());
+        $this->assertInstanceOf(
+            "\Rebelo\Reports\Report\Datasource\Database",
+            $rtf->getDatasource()
+        );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $rtf->createXmlNode($node);
-        $xml  = simplexml_load_string($node->asXML());
-        $this->assertEquals($pathOut, $xml->rtf->{Rtf::NODE_OUT_FILE});
+        $xml = simplexml_load_string($node->asXML());
+        $this->assertEquals($pathOut, $xml->rtf->{AReport::NODE_OUT_FILE});
     }
-
 }

@@ -23,9 +23,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Config;
+
+use JetBrains\PhpStorm\Pure;
 
 /**
  * Description of Config
@@ -42,7 +44,7 @@ class Config
      * @var string
      * @since 1.0.0
      */
-    public static $iniPath = __DIR__ . "/config.properties";
+    public static string $iniPath = __DIR__ . "/config.properties";
 
     /**
      * The java block name in the ini file
@@ -99,7 +101,7 @@ class Config
      * Config
      * @since 1.0.0
      */
-    protected static $config = null;
+    protected static ?Config $config = null;
 
     /**
      *
@@ -108,13 +110,13 @@ class Config
      * @var array
      * @since 1.0.0
      */
-    protected $ini = array();
+    protected array $ini = [];
 
     /**
      * Stores if log4php was already configured
      * @var boolean
      */
-    protected static $isSettedLogConfig = false;
+    protected static bool $isSetLogConfig = false;
 
     /**
      *
@@ -123,28 +125,30 @@ class Config
      */
     protected function __construct()
     {
-        \Rebelo\Reports\Config\Config::configLog4Php();
+        Config::configLog4Php();
         \Logger::getLogger(__CLASS__)->debug(
-            sprintf(
-                "ini file is going to be setted to '%s'", static::$iniPath
+            \sprintf(
+                "ini file is going to be set to '%s'",
+                static::$iniPath
             )
         );
 
-        if (\is_file(static::$iniPath) === false || \is_readable(static::$iniPath) === false)
-        {
+        if (\is_file(static::$iniPath) === false || \is_readable(static::$iniPath) === false) {
             throw new ConfigException(
-                sprintf(
+                \sprintf(
                     "ini file '%s' is not a file or is not readable",
-                    static::$iniPath)
+                    static::$iniPath
+                )
             );
         }
 
-        $ini = parse_ini_file(static::$iniPath, true);
-        if ($ini === false)
-        {
+        $ini = \parse_ini_file(static::$iniPath, true);
+        if ($ini === false) {
             throw new ConfigException(
-                sprintf(
-                    "Error parsing ini file '%s'", static::$iniPath)
+                \sprintf(
+                    "Error parsing ini file '%s'",
+                    static::$iniPath
+                )
             );
         }
         $this->ini = $ini;
@@ -157,10 +161,9 @@ class Config
      * @return Config
      * @since 1.0.0
      */
-    public static function getInstance()
+    public static function getInstance(): Config
     {
-        if (static::$config !== null)
-        {
+        if (static::$config !== null) {
             return static::$config;
         }
         static::$config = new Config();
@@ -175,17 +178,16 @@ class Config
      * @throws ConfigException
      * @since 1.0.0
      */
-    public function getJavaPath()
+    public function getJavaPath(): string
     {
-        if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
-        {
-            if (\array_key_exists(static::KEY_JAVA_PATH,
-                                  $this->ini[static::BLOCK_JAVA])
+        if (\array_key_exists(static::BLOCK_JAVA, $this->ini)) {
+            if (\array_key_exists(
+                static::KEY_JAVA_PATH,
+                $this->ini[static::BLOCK_JAVA]
             )
-            {
+            ) {
                 $path = $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH];
-                if (empty($path) === false)
-                {
+                if (empty($path) === false) {
                     return $path;
                 }
             }
@@ -196,23 +198,24 @@ class Config
     /**
      * Set the Java Virtual Machine
      * @param string $path
-     * @return $this
+     * @return \Rebelo\Reports\Config\Config
      * @throws ConfigException
      * @since 1.0.0
      */
-    public function setJavaPath($path)
+    public function setJavaPath(string $path): Config
     {
-        if (!\is_string($path) || \trim($path) === "")
-        {
+        if ("" === $path = \trim($path)) {
             $msg = "Java Virtual Machine PAth must be a non empty string";
             \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(sprintf(__METHOD__ . " '%s'", $msg));
             throw new ConfigException($msg);
         }
         $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH] = $path;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH]));
+               ->debug(sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH]
+               ));
         return $this;
     }
 
@@ -224,17 +227,12 @@ class Config
      * @throws ConfigException
      * @since 1.0.0
      */
-    public function getJarPath()
+    public function getJarPath(): string
     {
-        if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
-        {
-            if (\array_key_exists(static::KEY_JAR_PATH,
-                                  $this->ini[static::BLOCK_JAVA])
-            )
-            {
+        if (\array_key_exists(static::BLOCK_JAVA, $this->ini)) {
+            if (\array_key_exists(static::KEY_JAR_PATH, $this->ini[static::BLOCK_JAVA])) {
                 $path = $this->ini[static::BLOCK_JAVA][static::KEY_JAR_PATH];
-                if (empty($path) === false)
-                {
+                if (empty($path) === false) {
                     return $path;
                 }
             }
@@ -246,18 +244,17 @@ class Config
      *
      * Get the java Xshareclasses name
      *
-     * @return string the Xshareclasses name or null if not configurated
+     * @return string|null the Xshareclasses name or null if not configurated
      * @since 1.0.0
-     *      */
-    public function getJavaXsharedClassesName()
+     */
+    public function getJavaXsharedClassesName(): ?string
     {
-        if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
-        {
-            if (\array_key_exists(static::KEY_X_SHARECLASSE_NAME,
-                                  $this->ini[static::BLOCK_JAVA]))
-            {
-                if (empty($this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_NAME]) === false)
-                {
+        if (\array_key_exists(static::BLOCK_JAVA, $this->ini)) {
+            if (\array_key_exists(
+                static::KEY_X_SHARECLASSE_NAME,
+                $this->ini[static::BLOCK_JAVA]
+            )) {
+                if (empty($this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_NAME]) === false) {
                     return $this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_NAME];
                 }
             }
@@ -269,20 +266,19 @@ class Config
      *
      * Get the java Xshareclasses dir cache
      *
-     * @return string the Xshareclasses dir or null if not configurated
+     * @return string|null the X share classes dir or null if not configurated
      * @since 1.0.0
      */
-    public function getJavaXsharedClassesDir()
+    #[Pure] public function getJavaXsharedClassesDir(): ?string
     {
-        if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
-        {
-            if (\array_key_exists(static::KEY_X_SHARECLASSE_DIR,
-                                  $this->ini[static::BLOCK_JAVA]))
-            {
-                if (empty($this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_DIR]) === false)
-                {
+        if (\array_key_exists(static::BLOCK_JAVA, $this->ini)) {
+            if (\array_key_exists(
+                static::KEY_X_SHARECLASSE_DIR,
+                $this->ini[static::BLOCK_JAVA]
+            )) {
+                if (empty($this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_DIR]) === false) {
                     return static::cleanLastSlash(
-                            $this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_DIR]
+                        $this->ini[static::BLOCK_JAVA][static::KEY_X_SHARECLASSE_DIR]
                     );
                 }
             }
@@ -295,20 +291,16 @@ class Config
      * Get Verbose Level to pass as argument to jar Rebelo reports CLI
      *
      * @return \Rebelo\Reports\Config\VerboseLevel
-     * @throws ConfigException
+     * @throws \Rebelo\Reports\Config\ConfigException
+     * @throws \Rebelo\Enum\EnumException
      * @since 1.0.0
      */
-    public function getVerboseLevel()
+    public function getVerboseLevel(): VerboseLevel
     {
-        if (\array_key_exists(static::BLOCK_JAVA, $this->ini))
-        {
-            if (\array_key_exists(static::KEY_VERBOSE,
-                                  $this->ini[static::BLOCK_JAVA])
-            )
-            {
+        if (\array_key_exists(static::BLOCK_JAVA, $this->ini)) {
+            if (\array_key_exists(static::KEY_VERBOSE, $this->ini[static::BLOCK_JAVA])) {
                 $path = $this->ini[static::BLOCK_JAVA][static::KEY_VERBOSE];
-                if (empty($path))
-                {
+                if (empty($path)) {
                     return new VerboseLevel(VerboseLevel::OFF);
                 }
                 return new VerboseLevel(\strtoupper(\trim($path)));
@@ -320,23 +312,24 @@ class Config
     /**
      * Set the temp dir
      * @param string $path
-     * @return $this
+     * @return \Rebelo\Reports\Config\Config
      * @throws ConfigException
      * @since 1.0.0
      */
-    public function setTempDirectory($path)
+    public function setTempDirectory(string $path):Config
     {
-        if (!\is_string($path) || \trim($path) === "")
-        {
-            $msg = "Path must be an nonn empty string";
+        if ("" === $path = \trim($path)) {
+            $msg = "Path must be an non empty string";
             \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(sprintf(__METHOD__ . " '%s'", $msg));
             throw new ConfigException($msg);
         }
         $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP] = $path;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'",
-                            $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP]));
+               ->debug(sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP]
+               ));
         return $this;
     }
 
@@ -347,18 +340,13 @@ class Config
      * @return string The temp directory path
      * @throws ConfigException
      */
-    public function getTempDirectory()
+    public function getTempDirectory(): string
     {
-        if (\array_key_exists(static::BLOCK_SYSTEM, $this->ini))
-        {
-            if (\array_key_exists(static::KEY_TMP,
-                                  $this->ini[static::BLOCK_SYSTEM]))
-            {
+        if (\array_key_exists(static::BLOCK_SYSTEM, $this->ini)) {
+            if (\array_key_exists(static::KEY_TMP, $this->ini[static::BLOCK_SYSTEM])) {
                 $tmp = $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP];
-                if (empty($tmp) === false)
-                {
-                    if (\is_writable($tmp) == false)
-                    {
+                if (empty($tmp) === false) {
+                    if (\is_writable($tmp) == false) {
                         throw new ConfigException(
                             sprintf("Tmp file '%s' is not writable", $tmp)
                         );
@@ -376,14 +364,11 @@ class Config
      * @return string
      * @since 1.0.0
      */
-    public static function cleanLastSlash($string)
+    public static function cleanLastSlash(string $string): string
     {
         $last = \substr($string, -1);
-        $stk  = array(
-            "\\",
-            "/");
-        if (\in_array($last, $stk))
-        {
+        $stk  = ["\\", "/"];
+        if (\in_array($last, $stk)) {
             return \substr($string, 0, strlen($string) - 1);
         }
         return $string;
@@ -391,26 +376,24 @@ class Config
 
     /**
      * Configures the Log4php with the logconfig.xml in the Config folder
-     * @return
+     * @return void
      */
-    public static function configLog4Php()
+    public static function configLog4Php(): void
     {
-        if (static::$isSettedLogConfig === true)
-        {
+        if (static::$isSetLogConfig === true) {
             return;
         }
-        static::$isSettedLogConfig = true;
+        static::$isSetLogConfig = true;
 
         $logxml = __DIR__ . DIRECTORY_SEPARATOR . "logconfig.xml";
 
-        if (is_file($logxml))
-        {
+        if (is_file($logxml)) {
             \Logger::configure($logxml);
             return;
         }
 
-        \Logger::getLogger(__CLASS__)->warn(sprintf(__METHOD__
-                . " log4php log dosen't exist '%s'", $logxml));
+        \Logger::getLogger(__CLASS__)->warn(
+            sprintf(__METHOD__ . " log4php log doesn't exist '%s'", $logxml)
+        );
     }
-
 }

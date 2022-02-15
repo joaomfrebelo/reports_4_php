@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report\Datasource;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\Datasource\DatasourceException;
 use Rebelo\Reports\Report\Datasource\JsonHttps;
 use Rebelo\Reports\Report\Datasource\RequestType;
 
@@ -36,32 +37,20 @@ use Rebelo\Reports\Report\Datasource\RequestType;
  *
  * @author João Rebelo
  */
-class JsonHttpsTest
-    extends TestCase
+class JsonHttpsTest extends TestCase
 {
 
-    protected $_object;
-
-    protected function setUp()
-    {
-
-    }
-
     /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
      */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetSetGet()
     {
         $jsonHttps = new JsonHttps();
 
-        $this->assertInstanceOf("Rebelo\Reports\Report\Datasource\JsonHttps",
-                                $jsonHttps);
+        $this->assertInstanceOf(
+            "Rebelo\Reports\Report\Datasource\JsonHttps",
+            $jsonHttps
+        );
 
         $this->assertNull($jsonHttps->getDatePattern());
         $datePattern = "yyyy-MM-dd";
@@ -91,6 +80,9 @@ class JsonHttpsTest
         $this->assertEquals($typeGet->get(), $jsonHttps->getType()->get());
     }
 
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
     public function testInstance()
     {
         $url       = "https://test.example";
@@ -100,21 +92,16 @@ class JsonHttpsTest
         $this->assertEquals($typePost->get(), $jsonHttps->getType()->get());
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Datasource\DatasourceException
-     */
     public function testWrongSchema()
     {
+        $this->expectException(DatasourceException::class);
         new JsonHttps("http://test.example");
     }
 
-    /**
-     * @expectedException \Rebelo\Reports\Report\Datasource\DatasourceException
-     */
     public function testWrongSetSchema()
     {
+        $this->expectException(DatasourceException::class);
         $jsonHttps = new JsonHttps();
         $jsonHttps->setUrl("http://test.example");
     }
-
 }
