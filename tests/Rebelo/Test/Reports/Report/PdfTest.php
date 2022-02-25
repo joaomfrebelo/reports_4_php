@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report;
@@ -31,7 +32,9 @@ use PHPUnit\Framework\TestCase;
 use Rebelo\Reports\Report\AReport;
 use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\JasperFile;
+use Rebelo\Reports\Report\Metadata;
 use Rebelo\Reports\Report\Pdf;
+use Rebelo\Reports\Report\PdfProperties;
 use Rebelo\Reports\Report\Sign\Level;
 use Rebelo\Reports\Report\Sign\Sign;
 use Rebelo\Reports\Report\Sign\Type;
@@ -61,6 +64,9 @@ class PdfTest extends TestCase
         $this->assertNull($pdf->getJasperFile());
         $this->assertNull($pdf->getOutputFile());
         $this->assertEquals([], $pdf->getParameters());
+        $this->assertEquals(0, $pdf->getAfterPrintOperations());
+        $this->assertNull($pdf->getMetadata());
+        $this->assertNull($pdf->getPdfProperties());
 
         $ds = new Database();
         $this->assertInstanceOf($inst, $pdf->setDatasource($ds));
@@ -85,6 +91,17 @@ class PdfTest extends TestCase
             "\Rebelo\Reports\Report\Sign\Sign",
             $pdf->getSign()
         );
+
+        $pdf->setAfterPrintOperations(AReport::AFTER_PRINT_CUT_PAPER);
+        $this->assertSame(AReport::AFTER_PRINT_CUT_PAPER, $pdf->getAfterPrintOperations());
+
+        $metada = new Metadata();
+        $pdf->setMetadata($metada);
+        $this->assertSame($metada, $pdf->getMetadata());
+
+        $pdfProperties = new PdfProperties();
+        $pdf->setPdfProperties($pdfProperties);
+        $this->assertSame($pdfProperties, $pdf->getPdfProperties());
     }
 
     /**

@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Sign;
@@ -90,7 +91,9 @@ class SignTest extends TestCase
         $this->assertEquals($reason, $sign->getReason());
         $this->assertInstanceOf($inst, $sign->setRectangle(new Rectangle()));
         $this->assertEquals(0, $sign->getRectangle()->getRotation());
-
+        $contact = "The contact";
+        $this->assertInstanceOf($inst, $sign->setContact($contact));
+        $this->assertEquals($contact, $sign->getContact());
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $sign->createXmlNode($node);
@@ -107,5 +110,82 @@ class SignTest extends TestCase
         $this->expectException(SerializeReportException::class);
         $sign = new Sign();
         $sign->createXmlNode(new \SimpleXMLElement("<root></root>"));
+    }
+
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
+    public function testFillApiRequest(): void
+    {
+        $data = [];
+
+        $certificate = new Certificate();
+        $certificate->setPassword("The cert pass");
+        $certificate->setName("The cert name");
+
+        $keystore = new Keystore();
+        $keystore->setPassword("The password");
+        $keystore->setCertificate($certificate);
+
+        $rectangle = new Rectangle();
+        $rectangle->setX(9);
+        $rectangle->setY(29);
+        $rectangle->setHeight(99);
+        $rectangle->setWidth(199);
+        $rectangle->setRotation(90);
+        $rectangle->setVisible(true);
+
+        $sign = new Sign();
+        $sign->setReason("The reason");
+        $sign->setContact("The contact");
+        $sign->setLocation("The location");
+        $sign->setLevel(Level::CERTIFIED_NO_CHANGES_ALLOWED());
+        $sign->setType(Type::SELF_SIGNED());
+        $sign->setKeystore($keystore);
+        $sign->setRectangle($rectangle);
+        $sign->fillApiRequest($data);
+
+        $this->assertSame(
+            $keystore->getPassword(),
+            $data[Sign::API_N_SIGN][Keystore::API_P_KEY_STORE_PASS]
+        );
+
+        $this->assertSame(
+            $certificate->getName(),
+            $data[Sign::API_N_SIGN][Certificate::API_P_CERTIFICATE_NAME]
+        );
+
+        $this->assertSame(
+            $certificate->getPassword(),
+            $data[Sign::API_N_SIGN][Certificate::API_P_CERTIFICATE_PASS]
+        );
+
+        $this->assertSame($sign->getLevel()->get(), $data[Sign::API_N_SIGN][Sign::API_P_LEVEL]);
+        $this->assertSame($sign->getType()->get(), $data[Sign::API_N_SIGN][Sign::API_P_CERTIFICATE_TYPE]);
+
+        $this->assertSame(
+            $rectangle->getX(),
+            $data[Sign::API_N_SIGN][Rectangle::API_N_RECTANGLE][Rectangle::API_P_X]
+        );
+
+        $this->assertSame(
+            $rectangle->getY(),
+            $data[Sign::API_N_SIGN][Rectangle::API_N_RECTANGLE][Rectangle::API_P_Y]
+        );
+
+        $this->assertSame(
+            $rectangle->getWidth(),
+            $data[Sign::API_N_SIGN][Rectangle::API_N_RECTANGLE][Rectangle::API_P_WIDTH]
+        );
+
+        $this->assertSame(
+            $rectangle->getHeight(),
+            $data[Sign::API_N_SIGN][Rectangle::API_N_RECTANGLE][Rectangle::API_P_HEIGHT]
+        );
+
+        $this->assertSame(
+            $rectangle->getRotation(),
+            $data[Sign::API_N_SIGN][Rectangle::API_N_RECTANGLE][Rectangle::API_P_ROTATION]
+        );
     }
 }

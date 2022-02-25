@@ -18,6 +18,42 @@ class Sign implements IAReport
 {
 
     /**
+     * Sign api node name
+     * @since 3.0.0
+     */
+    const API_N_SIGN = "sign";
+
+    /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_LEVEL = "level";
+
+    /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_CERTIFICATE_TYPE = "certificateType";
+
+    /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_LOCATION = "location";
+
+    /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_REASON = "reason";
+
+    /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_CONTACT = "contact";
+
+    /**
      * The java key store where the certificates are
      *
      * @var \Rebelo\Reports\Report\Sign\Keystore|null $keystore
@@ -60,6 +96,13 @@ class Sign implements IAReport
     private ?string $reason = null;
 
     /**
+     * The legend 'Contact' to be write in the signature (Only for API)
+     *
+     * @var string|null $contact
+     */
+    private ?string $contact = null;
+
+    /**
      * @since 1.0.0
      */
     public function __construct()
@@ -80,12 +123,12 @@ class Sign implements IAReport
     public function getKeystore(): ?Keystore
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(
-                __METHOD__ . " get '%s'",
-                $this->keystore === null
-                        ? "null"
-                : $this->keystore->__toString()
-            ));
+               ->info(\sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->keystore === null
+                              ? "null"
+                              : $this->keystore->__toString()
+               ));
         return $this->keystore;
     }
 
@@ -102,12 +145,12 @@ class Sign implements IAReport
     {
         $this->keystore = $keystore;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(
-                __METHOD__ . " set to '%s'",
-                $this->keystore === null
-                        ? "null"
-                : $this->keystore
-            ));
+               ->debug(\sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->keystore === null
+                               ? "null"
+                               : $this->keystore
+               ));
         return $this;
     }
 
@@ -122,12 +165,12 @@ class Sign implements IAReport
     public function getLevel(): ?Level
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(
-                __METHOD__ . " get '%s'",
-                $this->level == null
-                        ? "null"
-                : $this->level->get()
-            ));
+               ->info(\sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->level == null
+                              ? "null"
+                              : $this->level->get()
+               ));
         return $this->level;
     }
 
@@ -144,7 +187,7 @@ class Sign implements IAReport
     {
         $this->level = $level;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->level->get()));
+               ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->level->get()));
         return $this;
     }
 
@@ -159,7 +202,7 @@ class Sign implements IAReport
     public function getType(): ?Type
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " get '%s'", $this->type?->get() ?? "null"));
+               ->info(\sprintf(__METHOD__ . " get '%s'", $this->type?->get() ?? "null"));
         return $this->type;
     }
 
@@ -176,7 +219,7 @@ class Sign implements IAReport
     {
         $this->type = $type;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->type->get()));
+               ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->type->get()));
         return $this;
     }
 
@@ -191,12 +234,12 @@ class Sign implements IAReport
     public function getRectangle(): ?Rectangle
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(
-                __METHOD__ . " get '%s'",
-                $this->rectangle === null
-                        ? "null"
-                : $this->rectangle->__toString()
-            ));
+               ->info(\sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->rectangle === null
+                              ? "null"
+                              : $this->rectangle->__toString()
+               ));
         return $this->rectangle;
     }
 
@@ -213,12 +256,12 @@ class Sign implements IAReport
     {
         $this->rectangle = $rectangle;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(
-                __METHOD__ . " set to '%s'",
-                $this->rectangle === null
-                        ? "null"
-                : $this->rectangle->__toString()
-            ));
+               ->debug(\sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->rectangle === null
+                               ? "null"
+                               : $this->rectangle->__toString()
+               ));
         return $this;
     }
 
@@ -233,12 +276,12 @@ class Sign implements IAReport
     public function getLocation(): ?string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(
-                __METHOD__ . " get '%s'",
-                $this->location === null
-                        ? "null"
-                : $this->location
-            ));
+               ->info(\sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->location === null
+                              ? "null"
+                              : $this->location
+               ));
         return $this->location;
     }
 
@@ -253,12 +296,12 @@ class Sign implements IAReport
     {
         $this->location = $location;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(
-                __METHOD__ . " set to '%s'",
-                $this->location === null
-                        ? "null"
-                : $this->location
-            ));
+               ->debug(\sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->location === null
+                               ? "null"
+                               : $this->location
+               ));
         return $this;
     }
 
@@ -273,12 +316,12 @@ class Sign implements IAReport
     public function getReason(): ?string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(
-                __METHOD__ . " get '%s'",
-                $this->reason === null
-                        ? "null"
-                : $this->reason
-            ));
+               ->info(\sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->reason === null
+                              ? "null"
+                              : $this->reason
+               ));
         return $this->reason;
     }
 
@@ -295,12 +338,54 @@ class Sign implements IAReport
     {
         $this->reason = $reason;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(
-                __METHOD__ . " set to '%s'",
-                $this->reason === null
-                        ? "null"
-                : $this->reason
-            ));
+               ->debug(\sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->reason === null
+                               ? "null"
+                               : $this->reason
+               ));
+        return $this;
+    }
+
+    /**
+     * Gets as contact
+     *
+     * The legend 'Contact' to be write in the signature
+     *
+     * @return string|null
+     * @since 1.0.0
+     */
+    public function getContact(): ?string
+    {
+        \Logger::getLogger(\get_class($this))
+               ->info(\sprintf(
+                   __METHOD__ . " get '%s'",
+                   $this->contact === null
+                              ? "null"
+                              : $this->contact
+               ));
+        return $this->contact;
+    }
+
+    /**
+     * Sets a new contact
+     *
+     * The legend 'Contact' to be write in the signature
+     *
+     * @param string|null $contact
+     * @return static
+     * @since 1.0.0
+     */
+    public function setContact(?string $contact): static
+    {
+        $this->contact = $contact;
+        \Logger::getLogger(\get_class($this))
+               ->debug(\sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->contact === null
+                               ? "null"
+                               : $this->contact
+               ));
         return $this;
     }
 
@@ -333,7 +418,7 @@ class Sign implements IAReport
         if ($this->getKeystore() === null) {
             $msg = "To have a sign pdf the keystore must be set";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new SerializeReportException($msg);
         }
         $this->getKeystore()->createXmlNode($signNode);
@@ -346,5 +431,26 @@ class Sign implements IAReport
         AReport::cdata($signNode->addChild("reazon"), $this->getReason());
 
         return $signNode;
+    }
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        $data[static::API_N_SIGN] = [];
+        $sign                     = &$data[static::API_N_SIGN];
+
+        $sign[static::API_P_LEVEL]            = $this->getLevel()?->get();
+        $sign[static::API_P_LOCATION]         = $this->getLocation() ?? "";
+        $sign[static::API_P_CERTIFICATE_TYPE] = $this->getType()?->get();
+        $sign[static::API_P_CONTACT]          = $this->getContact() ?? "";
+        $sign[static::API_P_REASON]           = $this->getReason() ?? "";
+
+        $this->getKeystore()?->fillApiRequest($sign);
+        $this->getRectangle()?->fillApiRequest($sign);
     }
 }

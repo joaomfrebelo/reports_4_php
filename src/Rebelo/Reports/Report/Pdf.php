@@ -48,6 +48,12 @@ class Pdf extends AFileReport
     private Sign|null $sign = null;
 
     /**
+     * @var \Rebelo\Reports\Report\PdfProperties|null
+     * @since 3.0.0
+     */
+    private ?PdfProperties $pdfProperties = null;
+
+    /**
      *
      * Properties class to generate a pdf report
      *
@@ -97,6 +103,33 @@ class Pdf extends AFileReport
                         ? "null"
                 : $this->sign->__toString()
             ));
+        return $this;
+    }
+
+    /**
+     * @return \Rebelo\Reports\Report\PdfProperties|null
+     * @since 3.0.0
+     */
+    public function getPdfProperties(): ?PdfProperties
+    {
+        return $this->pdfProperties;
+    }
+
+    /**
+     * @param \Rebelo\Reports\Report\PdfProperties|null $pdfProperties
+     * @return \Rebelo\Reports\Report\Pdf
+     * @since 3.0.0
+     */
+    public function setPdfProperties(?PdfProperties $pdfProperties): Pdf
+    {
+        $this->pdfProperties = $pdfProperties;
+        \Logger::getLogger(\get_class($this))
+               ->debug(\sprintf(
+                   __METHOD__ . " set to '%s'",
+                   $this->pdfProperties === null
+                               ? "null"
+                               : $this->pdfProperties->__toString()
+               ));
         return $this;
     }
 

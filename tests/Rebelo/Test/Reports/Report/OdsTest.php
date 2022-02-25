@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report;
@@ -30,6 +31,7 @@ namespace Rebelo\Test\Reports\Report;
 use PHPUnit\Framework\TestCase;
 use Rebelo\Reports\Report\AReport;
 use Rebelo\Reports\Report\Datasource\Database;
+use Rebelo\Reports\Report\Metadata;
 use Rebelo\Reports\Report\Ods;
 use Rebelo\Reports\Report\JasperFile;
 
@@ -48,10 +50,11 @@ class OdsTest extends TestCase
     public function testSetGet()
     {
         $ods = new Ods();
-        $this->assertInstanceOf("\Rebelo\Reports\Report\Ods", $ods);
+        $this->assertInstanceOf(Ods::class, $ods);
         $this->assertNull($ods->getJasperFile());
         $this->assertNull($ods->getOutputFile());
         $this->assertNull($ods->getDatasource());
+        $this->assertNull($ods->getMetadata());
 
         $pathJasper = "path jasper file";
         $ods->setJasperFile(new JasperFile($pathJasper));
@@ -63,8 +66,15 @@ class OdsTest extends TestCase
 
         $ods->setDatasource(new Database());
         $this->assertInstanceOf(
-            "\Rebelo\Reports\Report\Datasource\Database",
+            Database::class,
             $ods->getDatasource()
+        );
+
+        $metadata = new Metadata();
+        $ods->setMetadata($metadata);
+        $this->assertInstanceOf(
+            Metadata::class,
+            $ods->getMetadata()
         );
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);

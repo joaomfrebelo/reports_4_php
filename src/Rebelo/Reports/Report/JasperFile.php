@@ -28,12 +28,27 @@ declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
 
+use Rebelo\Reports\Cache\Filesystem;
+use Rebelo\Reports\Config\Config;
+
 /**
  * Class representing JasperFileAType
  * @since 1.0.0
  */
 class JasperFile implements IAReport
 {
+
+    /**
+     * Jasper API request node
+     * @since 3.0.0
+     */
+    const API_N_JASPER = "report";
+
+    /**
+     * Copies API request node
+     * @since 3.0.0
+     */
+    const API_N_COPIES = "copies";
 
     /**
      * @var string|null $path
@@ -46,6 +61,13 @@ class JasperFile implements IAReport
      * @since 1.0.0
      */
     private int $copies;
+
+    /**
+     * Only for API request
+     * @var \Rebelo\Reports\Report\ReportResources[]
+     * @since 3.0.0
+     */
+    private array $reportResources = [];
 
     /**
      * Construct
@@ -75,12 +97,7 @@ class JasperFile implements IAReport
     public function getPath(): ?string
     {
         \Logger::getLogger(\get_class($this))
-               ->info(\sprintf(
-                   __METHOD__ . " get '%s'",
-                   $this->path === null
-                              ? "null"
-                              : $this->path
-               ));
+               ->info(\sprintf(__METHOD__ . " get '%s'", $this->path === null ? "null" : $this->path));
         return $this->path;
     }
 
@@ -134,12 +151,34 @@ class JasperFile implements IAReport
         $this->copies = $copies;
 
         \Logger::getLogger(\get_class($this))
-               ->debug(\sprintf(
-                   __METHOD__ . " set to '%s'",
-                   (string)$this->copies
-               ));
+               ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->copies));
 
         return $this;
+    }
+
+    /**
+     * Add a Report Resources.
+     * Only for API request
+     * @param \Rebelo\Reports\Report\ReportResources $reportResources
+     * @return int The index
+     */
+    public function addReportResources(ReportResources $reportResources): int
+    {
+        $index                         = \count($this->reportResources);
+        $this->reportResources[$index] = $reportResources;
+        \Logger::getLogger(\get_class($this))
+               ->debug(\sprintf("The Resource '%s' was add with index '%s'", $reportResources->getName(), $index));
+        return $index;
+    }
+
+    /**
+     * Get the ReportResources stack.
+     * Only for API request
+     * @return \Rebelo\Reports\Report\ReportResources[]
+     */
+    public function getReportResources(): array
+    {
+        return $this->reportResources;
     }
 
     /**
@@ -175,5 +214,39 @@ class JasperFile implements IAReport
         $jasper = AReport::cdata($node->addChild("jasperfile"), $this->getPath());
         $jasper->addAttribute("copies", strval($this->getCopies()));
         return $jasper;
+    }
+
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @throws \Rebelo\Reports\Report\ReportException
+     * @throws \Rebelo\Reports\Cache\CacheException
+     * @throws \Rebelo\Reports\Config\ConfigException
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        if (Config::getInstance()->getCacheResources()) {
+            $jasperBase64 = (new Filesystem($this->getPath()))->getResource();
+        } else {
+            if (false === \is_file($this->getPath()) || false === $jasper = @\file_get_contents($this->getPath())) {
+                $msg = \sprintf("Fail loading file '%s'", $this->getPath());
+                \Logger::getLogger(\get_class($this))->error($msg);
+                throw new ReportException($msg);
+            }
+            $jasperBase64 = \base64_encode($jasper);
+        }
+
+        $data[static::API_N_JASPER] = $jasperBase64;
+        $data[static::API_N_COPIES] = $this->getCopies();
+
+        if (\count($this->reportResources) > 0) {
+            $data[ReportResources::API_N_RESOURCES] = [];
+            foreach ($this->reportResources as $reportResource) {
+                $reportResource->fillApiRequest($data);
+            }
+        }
     }
 }

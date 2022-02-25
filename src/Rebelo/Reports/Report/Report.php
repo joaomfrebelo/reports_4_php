@@ -23,11 +23,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
 
 use Rebelo\Reports\Config\Config;
+use Rebelo\Reports\Report\Api\Request;
+use Rebelo\Reports\Report\Api\Status;
 
 /**
  * Generate the report
@@ -100,7 +103,7 @@ class Report
                         . DIRECTORY_SEPARATOR
                         . \uniqid("RReports", true) . \rand(9, 9999);
         \Logger::getLogger(\get_class($this))
-               ->info(sprintf(__METHOD__ . " temp dir '%s'", $this->tmpDir));
+               ->info(\sprintf(__METHOD__ . " temp dir '%s'", $this->tmpDir));
     }
 
     /**
@@ -151,7 +154,7 @@ class Report
         $cmd = \join(" ", $cmdStk);
 
         \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(__METHOD__ . " '%s'", $cmd));
+               ->debug(\sprintf(__METHOD__ . " '%s'", $cmd));
 
         return $cmd;
     }
@@ -164,7 +167,7 @@ class Report
     public function getTmpDir(): string
     {
         \Logger::getLogger(\get_class($this))
-               ->info(sprintf(__METHOD__ . " get '%s'", $this->tmpDir));
+               ->info(\sprintf(__METHOD__ . " get '%s'", $this->tmpDir));
         return $this->tmpDir;
     }
 
@@ -180,12 +183,12 @@ class Report
         if ("" === $tmpDir = \trim($tmpDir)) {
             $msg = "Temporary directory must be a non empty string";
             \Logger::getLogger(\get_class($this))
-                   ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new ReportException($msg);
         }
         $this->tmpDir = $tmpDir;
         \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(__METHOD__ . " set to '%s'", $this->tmpDir));
+               ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->tmpDir));
         return $this;
     }
 
@@ -199,7 +202,7 @@ class Report
     public function getDeleteFile(): bool
     {
         \Logger::getLogger(\get_class($this))
-               ->info(sprintf(
+               ->info(\sprintf(
                    __METHOD__ . " get '%s'",
                    $this->deleteFile
                               ? "true"
@@ -220,7 +223,7 @@ class Report
     {
         $this->deleteFile = $deleteFile;
         \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(
+               ->debug(\sprintf(
                    __METHOD__ . " set to '%s'",
                    $this->deleteFile
                                ?
@@ -240,7 +243,7 @@ class Report
     public function getDeleteDirectory(): bool
     {
         \Logger::getLogger(\get_class($this))
-               ->info(sprintf(
+               ->info(\sprintf(
                    __METHOD__ . " get '%s'",
                    $this->deleteDirectory
                               ? "true"
@@ -261,7 +264,7 @@ class Report
     {
         $this->deleteDirectory = $deleteDirectory;
         \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(
+               ->debug(\sprintf(
                    __METHOD__ . " set to '%s'",
                    $this->deleteDirectory
                                ?
@@ -281,7 +284,7 @@ class Report
     public function getPathType(): ?ReportPathType
     {
         \Logger::getLogger(\get_class($this))
-               ->info(sprintf(
+               ->info(\sprintf(
                    __METHOD__ . " get '%s'",
                    $this->pathType == null
                               ? "null"
@@ -301,7 +304,7 @@ class Report
     {
         $this->pathType = $pathType;
         \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(
+               ->debug(\sprintf(
                    __METHOD__ . " set to '%s'",
                    $this->pathType->get()
                ));
@@ -318,7 +321,7 @@ class Report
     public function getOutputBaseDir(): ?string
     {
         \Logger::getLogger(\get_class($this))
-               ->info(sprintf(
+               ->info(\sprintf(
                    __METHOD__ . " get '%s'",
                    $this->outputBaseDir === null
                               ?
@@ -340,7 +343,7 @@ class Report
     {
         $this->outputBaseDir = $outputBaseDir;
         \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(
+               ->debug(\sprintf(
                    __METHOD__ . " set to '%s'",
                    $this->outputBaseDir === null
                                ? "null"
@@ -360,7 +363,7 @@ class Report
     public function getJasperFileBaseDir(): ?string
     {
         \Logger::getLogger(\get_class($this))
-               ->info(sprintf(
+               ->info(\sprintf(
                    __METHOD__ . " get '%s'",
                    $this->jasperFileBaseDir === null
                               ?
@@ -382,7 +385,7 @@ class Report
     {
         $this->jasperFileBaseDir = $jasperFileBaseDir;
         \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(
+               ->debug(\sprintf(
                    __METHOD__ . " set to '%s'",
                    $this->jasperFileBaseDir === null
                                ? "null"
@@ -424,7 +427,7 @@ class Report
             return $exit;
         } catch (\Exception $e) {
             \Logger::getLogger(\get_class($this))
-                   ->error(sprintf(
+                   ->error(\sprintf(
                        __METHOD__ . " error to '%s'",
                        $e->getMessage()
                    ));
@@ -449,7 +452,7 @@ class Report
             if (\count($stack) === 0) {
                 $msg = "Stack array must be an array of AReport";
                 \Logger::getLogger(\get_class($this))
-                       ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                       ->error(\sprintf(__METHOD__ . " '%s'", $msg));
                 throw new ReportException($msg);
             }
 
@@ -467,7 +470,7 @@ class Report
                 if (!($report instanceof AReport)) {
                     $msg = "Stack array must be an array of AReport";
                     \Logger::getLogger(\get_class($this))
-                           ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                           ->error(\sprintf(__METHOD__ . " '%s'", $msg));
                     throw new ReportException($msg);
                 }
 
@@ -487,7 +490,7 @@ class Report
             return $exit;
         } catch (\Exception $e) {
             \Logger::getLogger(\get_class($this))
-                   ->error(sprintf(
+                   ->error(\sprintf(
                        __METHOD__ . " error to '%s'",
                        $e->getMessage()
                    ));
@@ -506,7 +509,7 @@ class Report
     public function invoke(string $cmd): ExecReturn
     {
         \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(__METHOD__ . " command '%s'", $cmd));
+               ->debug(\sprintf(__METHOD__ . " command '%s'", $cmd));
         $out      = null;
         $exitCode = null;
         exec($cmd, $out, $exitCode);
@@ -514,19 +517,19 @@ class Report
         if ($exitCode === null) {
             $msg = "Command didn't return exit code";
             \Logger::getLogger(\get_class($this))
-                   ->error(sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new ExecException($msg);
         }
 
         \Logger::getLogger(\get_class($this))
-               ->info(sprintf(__METHOD__ . " exit code '%s'", $exitCode));
+               ->info(\sprintf(__METHOD__ . " exit code '%s'", $exitCode));
 
-        $execReturn = new ExecReturn($exitCode, $out ?? "");
+        $execReturn = new ExecReturn($exitCode, $out ?? []);
 
         if (\count($execReturn->getMessages()) > 0) {
             foreach ($execReturn->getMessages() as $msg) {
                 \Logger::getLogger(\get_class($this))
-                       ->debug(sprintf(__METHOD__ . " java out '%s' ", $msg));
+                       ->debug(\sprintf(__METHOD__ . " java out '%s' ", $msg));
             }
         }
 
@@ -550,7 +553,7 @@ class Report
             \rmdir($this->getTmpDir());
         } catch (\Exception $e) {
             \Logger::getLogger(\get_class($this))
-                   ->error(sprintf(
+                   ->error(\sprintf(
                        __METHOD__ . " while deleting file: '%s'",
                        $e->getMessage()
                    ));
@@ -576,5 +579,77 @@ class Report
                 );
             }
         }
+    }
+
+    /**
+     * Get the report from the Rest server API
+     * @param \Rebelo\Reports\Report\AReport $report
+     * @return string|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Rebelo\Enum\EnumException
+     * @throws \Rebelo\Reports\Config\ConfigException
+     * @throws \Rebelo\Reports\Report\ReportException
+     * @throws \Rebelo\Test\Reports\Api\RequestException
+     */
+    public function invokeApi(AReport $report): ?string
+    {
+        \Logger::getLogger(\get_class($this))->debug(__METHOD__);
+
+        $data = [];
+        $report->fillApiRequest($data);
+
+        $request = new Request();
+        $response = $request->requestReport($data);
+
+        if ($response->getStatus()->isNotEqual(Status::OK)) {
+            \Logger::getLogger(\get_class($this))->error($response->getMessage());
+            throw new ReportException($response->getMessage());
+        }
+
+        \Logger::getLogger(\get_class($this))
+               ->debug(\sprintf("Report generated in '%s'", $response->getDuration()));
+
+        return $response->getReport();
+    }
+
+    /**
+     * Get reports in bulk
+     * @param \Rebelo\Reports\Report\AReport[] $reports
+     * @param array                            $reportErrors Get report errors
+     * @param array                            $clientErrors Get request http client errors
+     * @return string[] The reposts as base64 encoded string
+     * @throws \Rebelo\Enum\EnumException
+     * @throws \Rebelo\Reports\Config\ConfigException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
+    public function invokeApiBulk(array $reports, array &$reportErrors = [], array &$clientErrors = []): array
+    {
+        \Logger::getLogger(\get_class($this))->debug(__METHOD__);
+
+        $dataStack = [];
+
+        foreach ($reports as $k => $report) {
+            $data = [];
+            $report->fillApiRequest($data);
+            $dataStack[$k] = $data;
+        }
+
+        $responses = (new Request())->bulkReportRequest($dataStack, $clientErrors);
+
+        /** @var string[] $reportStack */
+        $reportStack = [];
+
+        foreach ($responses as $k => $response) {
+            if ($response->getStatus()->isEqual(Status::ERROR())) {
+                $reportErrors[$k] = $response->getMessage();
+                continue;
+            }
+            \Logger::getLogger(\get_class($this))->debug(
+                \sprintf("Report of index '%s' generated in '%s'", $k, $response->getStatus())
+            );
+            $reportStack[] = $response->getReport();
+        }
+
+        return $reportStack;
     }
 }

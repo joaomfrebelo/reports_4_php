@@ -32,7 +32,7 @@ use Rebelo\Enum\AEnum;
 
 /**
  * Type of certificate
- *
+ * @method static Type SELF_SIGNED()
  * @author João Rebelo
  * @since 1.0.0
  */

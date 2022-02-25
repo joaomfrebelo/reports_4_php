@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.14.0.final using JasperReports Library version 6.14.0-2ab0d8625be255bf609c78e1181801213e51db8f  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="subreport_2" pageWidth="595" pageHeight="100" columnWidth="555" leftMargin="20" rightMargin="20"
+              topMargin="20" bottomMargin="20" uuid="ce9aa437-f957-455b-a277-6936e3fcf03a">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="a2s_pchouse_debug"/>
+    <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+    <property name="com.jaspersoft.studio.unit." value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+    <queryString>
+        <![CDATA[select null]]>
+    </queryString>
+    <field name="NULL" class="java.lang.Object">
+        <property name="com.jaspersoft.studio.field.name" value="NULL"/>
+        <property name="com.jaspersoft.studio.field.label" value="NULL"/>
+    </field>
+    <title>
+        <band height="35">
+            <staticText>
+                <reportElement x="-6" y="0" width="550" height="30" uuid="3313ce55-a25d-4e47-80db-11d848b75b15"/>
+                <textElement textAlignment="Center">
+                    <font size="12"/>
+                </textElement>
+                <text><![CDATA[The sub report 2]]></text>
+            </staticText>
+        </band>
+    </title>
+</jasperReport>

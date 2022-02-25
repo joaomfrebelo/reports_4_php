@@ -1,6 +1,6 @@
 ; The MIT License
 ;
-; Copyright 2020 Jo\u00e3o Rebelo.
+; Copyright 2020 João Rebelo.
 ;
 ; Permission is hereby granted, free of charge, to any person obtaining a copy
 ; of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,11 @@
 ; THE SOFTWARE.
 [java]
 ;the path to the jvm to be use in exec
-jvm_path = 
+jvm_path =
 ; the path to the rebelo reports_cli jar to be use in exec
-jar_path = 
+jar_path =
 ;the name of the Xshareclasses cache, if empty Xshareclasses will nor be used
-XshareclassesName = 
+XshareclassesName =
 ; the dir of the Xshareclasses cache, if empty Xshareclasses dir will not be used
 XshareclassesDir =
 ; Verbose of jar Rebelo Report Cli one of:  OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL
@@ -33,3 +33,7 @@ verbose = ALL
 [system]
 ;The temp dir where to be used to write temporary files
 tmp =
+[api]
+;The Reports api endpoint URL
+endpoint = http://localhost:4999
+cache_resources = true

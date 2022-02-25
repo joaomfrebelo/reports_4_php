@@ -15,6 +15,30 @@ abstract class AServer extends ADatasource
 {
 
     /**
+     * Api property name
+     * @since 3.0.0
+     */
+    const API_P_URL = "url";
+
+    /**
+     * Api property name
+     * @since 3.0.0
+     */
+    const API_P_TYPE = "type";
+
+    /**
+     * Api property name
+     * @since 3.0.0
+     */
+    const API_P_DATE_PATTERN = "datePattern";
+
+    /**
+     * Api property name
+     * @since 3.0.0
+     */
+    const API_P_NUMBER_PATTERN = "numberPattern";
+
+    /**
      * The server URL
      *
      * @var string|null $url
@@ -269,5 +293,22 @@ abstract class AServer extends ADatasource
         }
 
         return $serverNode;
+    }
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        $ref                                  = new \ReflectionClass($this);
+        $data[$ref->getShortName()]           = [];
+        $server                               = &$data[$ref->getShortName()];
+        $server[static::API_P_URL]            = $this->getUrl();
+        $server[static::API_P_TYPE]           = $this->getType()->get();
+        $server[static::API_P_DATE_PATTERN]   = $this->getDatePattern();
+        $server[static::API_P_NUMBER_PATTERN] = $this->getNumberPattern();
     }
 }

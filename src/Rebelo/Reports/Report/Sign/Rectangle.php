@@ -13,6 +13,47 @@ use Rebelo\Reports\Report\IAReport;
  */
 class Rectangle implements IAReport
 {
+    /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_VISIBLE = "visible";
+
+    /**
+     * Api rectangle property name
+     * @since 3.0.0
+     */
+    const API_N_RECTANGLE = "signRectangle";
+
+    /**
+     * Api rectangle property name
+     * @since 3.0.0
+     */
+    const API_P_X = "x";
+
+    /**
+     * Api rectangle property name
+     * @since 3.0.0
+     */
+    const API_P_Y = "y";
+
+    /**
+     * Api rectangle property name
+     * @since 3.0.0
+     */
+    const API_P_WIDTH = "width";
+
+    /**
+     * Api rectangle property name
+     * @since 3.0.0
+     */
+    const API_P_HEIGHT = "height";
+
+    /**
+     * Api rectangle property name
+     * @since 3.0.0
+     */
+    const API_P_ROTATION = "rotation";
 
     /**
      * Define if the signature is visible or not
@@ -404,5 +445,25 @@ class Rectangle implements IAReport
         );
 
         return $rectNode;
+    }
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        $data[static::API_P_VISIBLE] = $this->getVisible();
+        $data[static::API_N_RECTANGLE] = [];
+
+        $rect = &$data[static::API_N_RECTANGLE];
+
+        $rect[static::API_P_X]     = $this->getX();
+        $rect[static::API_P_Y]     = $this->getY();
+        $rect[static::API_P_WIDTH] = $this->getWidth();
+        $rect[static::API_P_HEIGHT] = $this->getHeight();
+        $rect[static::API_P_ROTATION] = $this->getRotation();
     }
 }

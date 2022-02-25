@@ -23,11 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Datasource;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\Datasource\AServer;
 use Rebelo\Reports\Report\Datasource\DatasourceException;
 use Rebelo\Reports\Report\Datasource\JsonHttps;
 use Rebelo\Reports\Report\Datasource\RequestType;
@@ -75,7 +77,7 @@ class JsonHttpsTest extends TestCase
         $selfType = $jsonHttps->setType($typePost);
         $this->assertInstanceOf(get_class($jsonHttps), $selfType);
         $this->assertEquals($typePost->get(), $jsonHttps->getType()->get());
-        $typeGet  = new RequestType(RequestType::GET);
+        $typeGet = new RequestType(RequestType::GET);
         $jsonHttps->setType($typeGet);
         $this->assertEquals($typeGet->get(), $jsonHttps->getType()->get());
     }
@@ -103,5 +105,39 @@ class JsonHttpsTest extends TestCase
         $this->expectException(DatasourceException::class);
         $jsonHttps = new JsonHttps();
         $jsonHttps->setUrl("http://test.example");
+    }
+
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testFillApiRequest(): void
+    {
+        $data = [];
+        $json = new JsonHttps("https://localhost:4999", new RequestType(RequestType::GET));
+        $json->setDatePattern("Y-m-d");
+        $json->setNumberPattern("0#.##");
+        $json->fillApiRequest($data);
+
+        $api = $data[(new \ReflectionClass(JsonHttps::class))->getShortName()];
+
+        $this->assertSame(
+            $json->getUrl(),
+            $api[AServer::API_P_URL]
+        );
+
+        $this->assertSame(
+            $json->getType()->get(),
+            $api[AServer::API_P_TYPE]
+        );
+
+        $this->assertSame(
+            $json->getDatePattern(),
+            $api[AServer::API_P_DATE_PATTERN]
+        );
+
+        $this->assertSame(
+            $json->getNumberPattern(),
+            $api[AServer::API_P_NUMBER_PATTERN]
+        );
     }
 }

@@ -51,6 +51,15 @@ interface IAReport
     public function createXmlNode(\SimpleXMLElement $node): \SimpleXMLElement;
 
     /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @throws \Rebelo\Reports\Report\ReportException
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void;
+
+    /**
      *
      * @since 1.0.0
      */

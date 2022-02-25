@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Parameter;
@@ -494,5 +495,31 @@ class ParameterTest extends TestCase
         $this->expectException(ParameterException::class);
         $type = new Type(Type::P_STRING);
         new Parameter($type, "", "value");
+    }
+
+    /**
+     * @throws \Rebelo\Reports\Report\Parameter\ParameterException
+     */
+    public function testFillApiRequest(): void
+    {
+        $data                              = [];
+        $format                            = "Parameter '%s'";
+        $data[Parameter::API_N_PARAMETERS] = [];
+
+        for ($n = 0; $n < 3; $n++) {
+            $parameter = new Parameter(
+                Type::P_STRING(),
+                \sprintf($format, $n),
+                ""
+            );
+            $parameter->fillApiRequest($data);
+        }
+
+        foreach ($data[Parameter::API_N_PARAMETERS] as $k => $v) {
+            $this->assertSame(
+                \sprintf($format, $k),
+                $v[Parameter::API_P_NAME]
+            );
+        }
     }
 }

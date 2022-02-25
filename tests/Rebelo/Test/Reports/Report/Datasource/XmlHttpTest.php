@@ -23,11 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Datasource;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\Datasource\AServer;
 use Rebelo\Reports\Report\Datasource\DatasourceException;
 use Rebelo\Reports\Report\Datasource\XmlHttp;
 use Rebelo\Reports\Report\Datasource\RequestType;
@@ -104,5 +106,39 @@ class XmlHttpTest extends TestCase
         $this->expectException(DatasourceException::class);
         $xmlHttp = new XmlHttp();
         $xmlHttp->setUrl("https://test.example");
+    }
+
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testFillApiRequest(): void
+    {
+        $data = [];
+        $xmlHttp = new XmlHttp("http://localhost:4999", new RequestType(RequestType::GET));
+        $xmlHttp->setDatePattern("Y-m-d");
+        $xmlHttp->setNumberPattern("0#.##");
+        $xmlHttp->fillApiRequest($data);
+
+        $api = $data[(new \ReflectionClass(XmlHttp::class))->getShortName()];
+
+        $this->assertSame(
+            $xmlHttp->getUrl(),
+            $api[AServer::API_P_URL]
+        );
+
+        $this->assertSame(
+            $xmlHttp->getType()->get(),
+            $api[AServer::API_P_TYPE]
+        );
+
+        $this->assertSame(
+            $xmlHttp->getDatePattern(),
+            $api[AServer::API_P_DATE_PATTERN]
+        );
+
+        $this->assertSame(
+            $xmlHttp->getNumberPattern(),
+            $api[AServer::API_P_NUMBER_PATTERN]
+        );
     }
 }

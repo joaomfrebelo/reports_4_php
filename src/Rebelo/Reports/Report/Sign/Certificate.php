@@ -16,6 +16,18 @@ class Certificate implements IAReport
 {
 
     /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_CERTIFICATE_NAME = "certificateName";
+
+    /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_CERTIFICATE_PASS = "certificatePassword";
+
+    /**
      * The certificate name (alias) in the keystore<br>
      *
      * @var string|null $name
@@ -145,4 +157,17 @@ class Certificate implements IAReport
         }
         return \serialize($str);
     }
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        $data[static::API_P_CERTIFICATE_PASS] = $this->getPassword();
+        $data[static::API_P_CERTIFICATE_NAME] = $this->getName();
+    }
+
 }

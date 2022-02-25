@@ -15,6 +15,11 @@ use Rebelo\Reports\Report\SerializeReportException;
  */
 class Keystore implements IAReport
 {
+    /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_KEY_STORE_PASS = "keyStorePassword";
 
     /**
      * The full path of the key store
@@ -161,5 +166,17 @@ class Keystore implements IAReport
         AReport::cdata($keyStoreNode->addChild("password"), $this->getPassword());
         $this->getCertificate()->createXmlNode($keyStoreNode);
         return $keyStoreNode;
+    }
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        $data[static::API_P_KEY_STORE_PASS] = $this->getPassword();
+        $this->getCertificate()->fillApiRequest($data);
     }
 }

@@ -17,6 +17,36 @@ class Database extends ADatasource
 {
 
     /**
+     * Api node name
+     * @since 3.0.0
+     */
+    const API_N_DATABASE = "database";
+
+    /**
+     * Property name
+     * @since 3.0.0
+     */
+    const API_P_CONN_STRING = "connectionString";
+
+    /**
+     * Property name
+     * @since 3.0.0
+     */
+    const API_P_DRIVER = "driver";
+
+    /**
+     * Property name
+     * @since 3.0.0
+     */
+    const API_P_USER = "user";
+
+    /**
+     * Property name
+     * @since 3.0.0
+     */
+    const API_P_PASS = "password";
+
+    /**
      * The connection string to be used to the driver connect with the database
      * <br>
      * Ex: jdbc:oracle:thin:@//localhost:1521/XE
@@ -50,7 +80,7 @@ class Database extends ADatasource
      * @var string|null $password
      * @since 1.0.0
      */
-    private string|null$password = null;
+    private string|null $password = null;
 
     /**
      * Gets as connectionString
@@ -68,8 +98,8 @@ class Database extends ADatasource
                ->info(\sprintf(
                    __METHOD__ . " get '%s'",
                    $this->connectionString === null
-                                   ? "null"
-                                   : $this->connectionString
+                              ? "null"
+                              : $this->connectionString
                ));
         return $this->connectionString;
     }
@@ -92,8 +122,8 @@ class Database extends ADatasource
                ->debug(\sprintf(
                    __METHOD__ . " set to '%s'",
                    $this->connectionString === null
-                                    ? "null"
-                                    : $this->connectionString
+                               ? "null"
+                               : $this->connectionString
                ));
         return $this;
     }
@@ -114,8 +144,8 @@ class Database extends ADatasource
                ->info(\sprintf(
                    __METHOD__ . " get '%s'",
                    $this->driver === null
-                                   ? "null"
-                                   : $this->driver
+                              ? "null"
+                              : $this->driver
                ));
         return $this->driver;
     }
@@ -146,8 +176,8 @@ class Database extends ADatasource
                ->debug(\sprintf(
                    __METHOD__ . " set to '%s'",
                    $this->driver === null
-                                    ? "null"
-                                    : $this->driver
+                               ? "null"
+                               : $this->driver
                ));
         return $this;
     }
@@ -166,8 +196,8 @@ class Database extends ADatasource
                ->info(\sprintf(
                    __METHOD__ . " get '%s'",
                    $this->user === null
-                                   ? "null"
-                                   : $this->user
+                              ? "null"
+                              : $this->user
                ));
         return $this->user;
     }
@@ -188,8 +218,8 @@ class Database extends ADatasource
                ->debug(\sprintf(
                    __METHOD__ . " set to '%s'",
                    $this->user === null
-                                    ? "null"
-                                    : $this->user
+                               ? "null"
+                               : $this->user
                ));
         return $this;
     }
@@ -208,8 +238,8 @@ class Database extends ADatasource
                ->info(\sprintf(
                    __METHOD__ . " get '%s'",
                    $this->password === null
-                                   ? "null"
-                                   : $this->password
+                              ? "null"
+                              : $this->password
                ));
         return $this->password;
     }
@@ -230,8 +260,8 @@ class Database extends ADatasource
                ->debug(\sprintf(
                    __METHOD__ . " set to '%s'",
                    $this->password === null
-                                    ? "null"
-                                    : $this->password
+                               ? "null"
+                               : $this->password
                ));
         return $this;
     }
@@ -245,14 +275,14 @@ class Database extends ADatasource
         return sprintf(
             "driver: '%s', user: '%s', conn: '%s'",
             $this->driver === null
-                           ? "null"
-                           : $this->driver,
+                ? "null"
+                : $this->driver,
             $this->user === null
-                           ? "null"
-                           : $this->user,
+                ? "null"
+                : $this->user,
             $this->connectionString === null
-                           ? "null"
-                           : $this->connectionString
+                ? "null"
+                : $this->connectionString
         );
     }
 
@@ -292,17 +322,33 @@ class Database extends ADatasource
         AReport::cdata(
             $databaseNode->addChild("user"),
             $this->getUser() === null
-                           ? ""
-                           : $this->getUser()
+                ? ""
+                : $this->getUser()
         );
 
         AReport::cdata(
             $databaseNode->addChild("password"),
             $this->getPassword() === null
-                           ? ""
-                           : $this->getPassword()
+                ? ""
+                : $this->getPassword()
         );
 
         return $databaseNode;
+    }
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        $data[static::API_N_DATABASE]  = [];
+        $db                            = &$data[static::API_N_DATABASE];
+        $db[static::API_P_CONN_STRING] = $this->getConnectionString();
+        $db[static::API_P_DRIVER]      = $this->getDriver();
+        $db[static::API_P_USER]        = $this->getUser();
+        $db[static::API_P_PASS]        = $this->getPassword();
     }
 }

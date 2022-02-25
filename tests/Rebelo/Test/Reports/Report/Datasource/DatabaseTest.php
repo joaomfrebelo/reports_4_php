@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Datasource;
@@ -60,7 +61,7 @@ class DatabaseTest extends TestCase
         $db = new Database();
         $this->assertNull($db->getDriver());
         $this->assertTrue($db->setDriver("driver") instanceof
-            Database);
+                          Database);
         $this->assertEquals("driver", $db->getDriver());
     }
 
@@ -76,7 +77,7 @@ class DatabaseTest extends TestCase
         $db = new Database();
         $this->assertNull($db->getUser());
         $this->assertTrue($db->setUser("user") instanceof
-            Database);
+                          Database);
         $this->assertEquals("user", $db->getUser());
         $db->setUser(null);
         $this->assertNull($db->getUser());
@@ -87,7 +88,7 @@ class DatabaseTest extends TestCase
         $db = new Database();
         $this->assertNull($db->getPassword());
         $this->assertTrue($db->setPassword("password") instanceof
-            Database);
+                          Database);
         $this->assertEquals("password", $db->getPassword());
         $db->setPassword(null);
         $this->assertNull($db->getPassword());
@@ -106,9 +107,9 @@ class DatabaseTest extends TestCase
 
         $db = new Database();
         $db->setConnectionString($conStr)
-            ->setDriver($driver)
-            ->setPassword($pwd)
-            ->setUser($user);
+           ->setDriver($driver)
+           ->setPassword($pwd)
+           ->setUser($user);
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $db->createXmlNode($node);
@@ -118,5 +119,39 @@ class DatabaseTest extends TestCase
         $this->assertEquals($driver, $xml->database->driver);
         $this->assertEquals($pwd, $xml->database->password);
         $this->assertEquals($user, $xml->database->user);
+    }
+
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testFillApiRequest(): void
+    {
+        $data = [];
+        $db   = new Database();
+        $db->setConnectionString("Conn string");
+        $db->setDriver("The driver");
+        $db->setUser("The user");
+        $db->setPassword("The pass");
+        $db->fillApiRequest($data);
+
+        $this->assertSame(
+            $db->getConnectionString(),
+            $data[Database::API_N_DATABASE][Database::API_P_CONN_STRING]
+        );
+
+        $this->assertSame(
+            $db->getDriver(),
+            $data[Database::API_N_DATABASE][Database::API_P_DRIVER]
+        );
+
+        $this->assertSame(
+            $db->getUser(),
+            $data[Database::API_N_DATABASE][Database::API_P_USER]
+        );
+
+        $this->assertSame(
+            $db->getPassword(),
+            $data[Database::API_N_DATABASE][Database::API_P_PASS]
+        );
     }
 }

@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Reports\Config;
@@ -36,7 +37,6 @@ use JetBrains\PhpStorm\Pure;
  */
 class Config
 {
-
     /**
      *
      * The ini properties file path
@@ -45,6 +45,12 @@ class Config
      * @since 1.0.0
      */
     public static string $iniPath = __DIR__ . "/config.properties";
+
+    /**
+     * @var \Logger
+     * @since 3.0.0
+     */
+    public \Logger $log;
 
     /**
      * The java block name in the ini file
@@ -95,6 +101,24 @@ class Config
     const KEY_VERBOSE = "verbose";
 
     /**
+     * The reports API configuration block
+     * @since 3.0.0
+     */
+    const BLOCK_API = "api";
+
+    /**
+     * The REST api endpoint URL
+     * @since 3.0.0
+     */
+    const KEY_ENDPOINT = "endpoint";
+
+    /**
+     * The cache resources definition key
+     * @since 3.0.0
+     */
+    const KEY_CACHE_RESOURCES = "cache_resources";
+
+    /**
      *
      * Self instance
      *
@@ -119,6 +143,12 @@ class Config
     protected static bool $isSetLogConfig = false;
 
     /**
+     * @var bool
+     * @since 3.0.0
+     */
+    protected bool $cacheResources = false;
+
+    /**
      *
      * @throws ConfigException
      * @since 1.0.0
@@ -126,7 +156,8 @@ class Config
     protected function __construct()
     {
         Config::configLog4Php();
-        \Logger::getLogger(__CLASS__)->debug(
+        $this->log = \Logger::getLogger(__CLASS__);
+        $this->log->debug(
             \sprintf(
                 "ini file is going to be set to '%s'",
                 static::$iniPath
@@ -152,6 +183,15 @@ class Config
             );
         }
         $this->ini = $ini;
+
+        if (\array_key_exists(static::BLOCK_API, $this->ini)) {
+            if (\array_key_exists(static::KEY_CACHE_RESOURCES, $this->ini[static::BLOCK_API])) {
+                $cacheResources = $this->ini[static::BLOCK_API][static::KEY_CACHE_RESOURCES];
+                if (\in_array(\strtolower($cacheResources), ["true", "yes", "1"])) {
+                    $this->cacheResources = true;
+                }
+            }
+        }
     }
 
     /**
@@ -181,11 +221,7 @@ class Config
     public function getJavaPath(): string
     {
         if (\array_key_exists(static::BLOCK_JAVA, $this->ini)) {
-            if (\array_key_exists(
-                static::KEY_JAVA_PATH,
-                $this->ini[static::BLOCK_JAVA]
-            )
-            ) {
+            if (\array_key_exists(static::KEY_JAVA_PATH, $this->ini[static::BLOCK_JAVA])) {
                 $path = $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH];
                 if (empty($path) === false) {
                     return $path;
@@ -206,16 +242,14 @@ class Config
     {
         if ("" === $path = \trim($path)) {
             $msg = "Java Virtual Machine PAth must be a non empty string";
-            \Logger::getLogger(\get_class($this))
-                   ->error(sprintf(__METHOD__ . " '%s'", $msg));
+            $this->log->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new ConfigException($msg);
         }
         $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH] = $path;
-        \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(
-                   __METHOD__ . " set to '%s'",
-                   $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH]
-               ));
+        $this->log->debug(\sprintf(
+            __METHOD__ . " set to '%s'",
+            $this->ini[static::BLOCK_JAVA][static::KEY_JAVA_PATH]
+        ));
         return $this;
     }
 
@@ -313,23 +347,18 @@ class Config
      * Set the temp dir
      * @param string $path
      * @return \Rebelo\Reports\Config\Config
-     * @throws ConfigException
      * @since 1.0.0
      */
-    public function setTempDirectory(string $path):Config
+    public function setTempDirectory(string $path): Config
     {
         if ("" === $path = \trim($path)) {
-            $msg = "Path must be an non empty string";
-            \Logger::getLogger(\get_class($this))
-                   ->error(sprintf(__METHOD__ . " '%s'", $msg));
-            throw new ConfigException($msg);
+            $path = \sys_get_temp_dir();
         }
         $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP] = $path;
-        \Logger::getLogger(\get_class($this))
-               ->debug(sprintf(
-                   __METHOD__ . " set to '%s'",
-                   $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP]
-               ));
+        $this->log->debug(\sprintf(
+            __METHOD__ . " set to '%s'",
+            $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP]
+        ));
         return $this;
     }
 
@@ -348,30 +377,25 @@ class Config
                 if (empty($tmp) === false) {
                     if (\is_writable($tmp) == false) {
                         throw new ConfigException(
-                            sprintf("Tmp file '%s' is not writable", $tmp)
+                            \sprintf("Tmp file '%s' is not writable", $tmp)
                         );
                     }
                     return static::cleanLastSlash($tmp);
                 }
             }
         }
-        throw new ConfigException("Tmp file is not properly configured");
+        return static::cleanLastSlash(\sys_get_temp_dir());
     }
 
     /**
-     * Clean the las slash of string (to directory path)
+     * Clean the last slash of string (to directory path)
      * @param string $string
      * @return string
      * @since 1.0.0
      */
     public static function cleanLastSlash(string $string): string
     {
-        $last = \substr($string, -1);
-        $stk  = ["\\", "/"];
-        if (\in_array($last, $stk)) {
-            return \substr($string, 0, strlen($string) - 1);
-        }
-        return $string;
+        return \rtrim($string, " \t\n\r\0\x0B\\/");
     }
 
     /**
@@ -387,13 +411,57 @@ class Config
 
         $logxml = __DIR__ . DIRECTORY_SEPARATOR . "logconfig.xml";
 
-        if (is_file($logxml)) {
+        if (\is_file($logxml)) {
             \Logger::configure($logxml);
             return;
         }
 
         \Logger::getLogger(__CLASS__)->warn(
-            sprintf(__METHOD__ . " log4php log doesn't exist '%s'", $logxml)
+            \sprintf(__METHOD__ . " log4php log doesn't exist '%s'", $logxml)
         );
+    }
+
+    /**
+     *
+     * Get the java jvm path
+     *
+     * @return string
+     * @throws ConfigException
+     * @since 3.0.0
+     */
+    public function getApiEndpoint(): string
+    {
+        if (\array_key_exists(static::BLOCK_API, $this->ini)) {
+            if (\array_key_exists(static::KEY_ENDPOINT, $this->ini[static::BLOCK_API])) {
+                $endPoint = $this->ini[static::BLOCK_API][static::KEY_ENDPOINT];
+                if (empty($endPoint) === false) {
+                    return $endPoint;
+                }
+            }
+        }
+        throw new ConfigException("The api endpoint is not defined in the ini file");
+    }
+
+    /**
+     * Set if resources are to cached.
+     * Only used for API
+     * @param bool $cacheResources
+     * @return \Rebelo\Reports\Config\Config
+     */
+    public function setCacheResources(bool $cacheResources): Config
+    {
+        $this->cacheResources = $cacheResources;
+        return $this;
+    }
+
+    /**
+     * Get if resources are to cached.
+     * Only used for API
+     * @return bool
+     * @since 3.0.0
+     */
+    public function getCacheResources(): bool
+    {
+        return $this->cacheResources;
     }
 }

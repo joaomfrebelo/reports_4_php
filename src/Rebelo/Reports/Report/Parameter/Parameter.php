@@ -17,6 +17,36 @@ class Parameter
 {
 
     /**
+     * Parameters node name
+     * @since 3.0.0
+     */
+    const API_N_PARAMETERS = "parameters";
+
+    /**
+     * Parameter
+     * @since 3.0.0
+     */
+    const API_P_TYPE = "type";
+
+    /**
+     * Parameter
+     * @since 3.0.0
+     */
+    const API_P_NAME = "name";
+
+    /**
+     * Parameter
+     * @since 3.0.0
+     */
+    const API_P_VALUE = "value";
+
+    /**
+     * Parameter
+     * @since 3.0.0
+     */
+    const API_P_FORMAT = "format";
+
+    /**
      * The type of the parameter (java class)
      *
      * @var \Rebelo\Reports\Report\Parameter\Type $type
@@ -73,7 +103,7 @@ class Parameter
             if ($isDate) {
                 $msg = "For type DATE or SQL_DATE must have format defined";
                 \Logger::getLogger(\get_class($this))
-                    ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                       ->error(\sprintf(__METHOD__ . " '%s'", $msg));
                 throw new ParameterException($msg);
             }
         } else {
@@ -82,7 +112,7 @@ class Parameter
             } else {
                 $msg = "Format property is only for DATE and SQL_DATE";
                 \Logger::getLogger(\get_class($this))
-                    ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                       ->error(\sprintf(__METHOD__ . " '%s'", $msg));
                 throw new ParameterException($msg);
             }
         }
@@ -95,10 +125,10 @@ class Parameter
      * @return \Rebelo\Reports\Report\Parameter\Type
      * @since 1.0.0
      */
-    public function getType():Type
+    public function getType(): Type
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " get '%s'", $this->type->get()));
+               ->info(\sprintf(__METHOD__ . " get '%s'", $this->type->get()));
         return $this->type;
     }
 
@@ -111,7 +141,7 @@ class Parameter
     public function getName(): string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " get '%s'", $this->name));
+               ->info(\sprintf(__METHOD__ . " get '%s'", $this->name));
         return $this->name;
     }
 
@@ -124,7 +154,7 @@ class Parameter
     public function getValue(): mixed
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " get '%s'", $this->value));
+               ->info(\sprintf(__METHOD__ . " get '%s'", $this->value));
         return $this->value;
     }
 
@@ -138,7 +168,7 @@ class Parameter
     {
         $this->type = $type;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->type->get()));
+               ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->type->get()));
         return $this;
     }
 
@@ -156,12 +186,12 @@ class Parameter
         if ("" === $name = \trim($name)) {
             $msg = "The name must be a non empty string";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new ParameterException($msg);
         }
         $this->name = $name;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->name));
+               ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->name));
         return $this;
     }
 
@@ -181,16 +211,16 @@ class Parameter
         if ($value === null) {
             $msg = "Parameter value can not be null";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new ParameterException($msg);
         }
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(
-                __METHOD__ . " value is of type '%s', it will converted to string",
-                gettype($value) === "object"
-                        ? get_class($value)
-                : gettype($value)
-            ));
+               ->info(\sprintf(
+                   __METHOD__ . " value is of type '%s', it will converted to string",
+                   gettype($value) === "object"
+                              ? get_class($value)
+                              : gettype($value)
+               ));
         if (\is_scalar($value)) {
             $this->value = match (true) {
                 \is_bool($value) => $value
@@ -203,12 +233,12 @@ class Parameter
         } else {
             $msg = "unknown type to be converted";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new ParameterException($msg);
         }
 
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->value));
+               ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->value));
 
         return $this;
     }
@@ -222,7 +252,7 @@ class Parameter
     public function getFormat(): ?string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " get '%s'", $this->format));
+               ->info(\sprintf(__METHOD__ . " get '%s'", $this->format));
         return $this->format;
     }
 
@@ -230,8 +260,8 @@ class Parameter
      * Sets a new format
      *
      * @param string|null $format
-     * @throws ParameterException
      * @return static
+     * @throws ParameterException
      * @since 1.0.0
      */
     public function setFormat(?string $format): static
@@ -239,7 +269,7 @@ class Parameter
         if ($format !== null && "" === $format = \trim($format)) {
             $msg = "The format must be a non empty string";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new ParameterException($msg);
         }
         $this->format = $format;
@@ -258,11 +288,11 @@ class Parameter
             "{type: '%s', value: '%s', format: '%s'}",
             $this->type->get(),
             $this->value == null
-            ? "null"
-            : $this->value,
+                ? "null"
+                : $this->value,
             $this->format == null
-            ? "null"
-            : $this->format
+                ? "null"
+                : $this->format
         );
     }
 
@@ -278,21 +308,21 @@ class Parameter
         if ($this->getType() === null) {
             $msg = "The parameter data type must be set";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new SerializeReportException($msg);
         }
 
         if (!\is_string($this->getName()) || \trim($this->getName()) === "") {
             $msg = "The parameter name must be set";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new SerializeReportException($msg);
         }
 
         if ($this->getValue() === null) {
             $msg = "The parameter value must be set";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__ . " '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new SerializeReportException($msg);
         }
 
@@ -306,5 +336,21 @@ class Parameter
         if ($this->getFormat() != null) {
             $valueNode->addAttribute("format", $this->getFormat());
         }
+    }
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        $para                               = &$data[static::API_N_PARAMETERS];
+        $index                              = \count($para);
+        $para[$index][static::API_P_NAME]   = $this->getName();
+        $para[$index][static::API_P_TYPE]   = $this->getType()::getName($this->getType()->get());
+        $para[$index][static::API_P_VALUE]  = $this->getValue();
+        $para[$index][static::API_P_FORMAT] = $this->getFormat();
     }
 }
