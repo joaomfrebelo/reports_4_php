@@ -23,12 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
 
 /**
- * Commun interface
+ * Common interface
  * @author João Rebelo
  * @since 1.0.0
  */
@@ -45,9 +46,18 @@ interface IAReport
      *
      * @since 1.0.0
      * @param \SimpleXMLElement $node
-     * @return void
+     * @return \SimpleXMLElement The child node
      */
-    public function createXmlNode(\SimpleXMLElement $node);
+    public function createXmlNode(\SimpleXMLElement $node): \SimpleXMLElement;
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @throws \Rebelo\Reports\Report\ReportException
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void;
 
     /**
      *

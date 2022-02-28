@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rebelo\Reports\Report\Sign;
 
-use Rebelo\Reports\Report\Sign\Certificate;
+use Rebelo\Reports\Config\Config;
+use Rebelo\Reports\Report\IAReport;
 use Rebelo\Reports\Report\AReport;
 use Rebelo\Reports\Report\SerializeReportException;
 
@@ -10,50 +13,54 @@ use Rebelo\Reports\Report\SerializeReportException;
  * Class representing Keystore
  * @since 1.0.0
  */
-class Keystore
-    implements \Rebelo\Reports\Report\IAReport
+class Keystore implements IAReport
 {
+    /**
+     * Api sign property name
+     * @since 3.0.0
+     */
+    const API_P_KEY_STORE_PASS = "keyStorePassword";
 
     /**
      * The full path of the key store
      *
-     * @var string $path
+     * @var string|null $path
      * @since 1.0.0
      */
-    private $path = null;
+    private ?string $path = null;
 
     /**
      * The key store password
      *
-     * @var string $password
+     * @var string|null $password
      * @since 1.0.0
      */
-    private $password = null;
+    private ?string $password = null;
 
     /**
      * The certificate properties
      *
-     * @var \Rebelo\Reports\Report\Sign\Certificate $certificate
+     * @var \Rebelo\Reports\Report\Sign\Certificate|null $certificate
      * @since 1.0.0
      */
-    private $certificate = null;
+    private ?Certificate $certificate = null;
 
     /**
      * @since 1.0.0
      */
     public function __construct()
     {
-        \Rebelo\Reports\Config\Config::configLog4Php();
+        Config::configLog4Php();
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
     }
 
     /**
      * Get the full path of the key store
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
-    public function getPath()
+    public function getPath(): ?string
     {
         return $this->path;
     }
@@ -61,11 +68,11 @@ class Keystore
     /**
      * Se the full path of the key store
      *
-     * @param string $path
-     * @return self
+     * @param string|null $path
+     * @return static
      * @since 1.0.0
      */
-    public function setPath($path)
+    public function setPath(?string $path): static
     {
         $this->path = $path;
         return $this;
@@ -74,10 +81,10 @@ class Keystore
     /**
      * Get the key store password
      *
-     * @return string
+     * @return string|null
      * @since 1.0.0
      */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -85,11 +92,11 @@ class Keystore
     /**
      * Set the key store password
      *
-     * @param string $password
-     * @return self
+     * @param string|null $password
+     * @return static
      * @since 1.0.0
      */
-    public function setPassword($password)
+    public function setPassword(?string $password): static
     {
         $this->password = $password;
         return $this;
@@ -101,7 +108,7 @@ class Keystore
      * @return \Rebelo\Reports\Report\Sign\Certificate|null
      * @since 1.0.0
      */
-    public function getCertificate()
+    public function getCertificate(): ?Certificate
     {
         return $this->certificate;
     }
@@ -109,11 +116,11 @@ class Keystore
     /**
      * Set the certificate properties
      *
-     * @param \Rebelo\Reports\Report\Sign\Certificate $certificate
-     * @return self
+     * @param \Rebelo\Reports\Report\Sign\Certificate|null $certificate
+     * @return static
      * @since 1.0.0
      */
-    public function setCertificate(Certificate $certificate)
+    public function setCertificate(?Certificate $certificate): static
     {
         $this->certificate = $certificate;
         return $this;
@@ -132,27 +139,23 @@ class Keystore
     }
 
     /**
-     *
      * Create the xml node
-     *
      * @param \SimpleXMLElement $node
+     * @return \SimpleXMLElement
      * @throws SerializeReportException
-     * @return void
      */
-    public function createXmlNode(\SimpleXMLElement $node)
+    public function createXmlNode(\SimpleXMLElement $node): \SimpleXMLElement
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
-        if (!\is_string($this->getPath()) || \trim($this->getPath()) === "")
-        {
-            $msg = "The path of the keystore must be setted";
+        if (!\is_string($this->getPath()) || \trim($this->getPath() ?? "") === "") {
+            $msg = "The path of the keystore must be set";
             \Logger::getLogger(\get_class($this))
                 ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new SerializeReportException($msg);
         }
 
-        if ($this->getCertificate() === null)
-        {
-            $msg = "The keystore certificate must be setted";
+        if ($this->getCertificate() === null) {
+            $msg = "The keystore certificate must be set";
             \Logger::getLogger(\get_class($this))
                 ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new SerializeReportException($msg);
@@ -162,6 +165,18 @@ class Keystore
         AReport::cdata($keyStoreNode->addChild("path"), $this->getPath());
         AReport::cdata($keyStoreNode->addChild("password"), $this->getPassword());
         $this->getCertificate()->createXmlNode($keyStoreNode);
+        return $keyStoreNode;
     }
 
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     * @param array $data
+     * @return void
+     * @since 3.0.0
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        $data[static::API_P_KEY_STORE_PASS] = $this->getPassword();
+        $this->getCertificate()->fillApiRequest($data);
+    }
 }

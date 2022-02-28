@@ -23,11 +23,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Datasource;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\Datasource\AServer;
+use Rebelo\Reports\Report\Datasource\DatasourceException;
 use Rebelo\Reports\Report\Datasource\JsonHttps;
 use Rebelo\Reports\Report\Datasource\RequestType;
 
@@ -36,11 +39,13 @@ use Rebelo\Reports\Report\Datasource\RequestType;
  *
  * @author João Rebelo
  */
-class JsonHttpsTest
-    extends TestCase
+class JsonHttpsTest extends TestCase
 {
 
-    public function testSetSetGet() : void
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testSetSetGet()
     {
         $jsonHttps = new JsonHttps();
 
@@ -67,36 +72,72 @@ class JsonHttpsTest
         $this->assertInstanceOf(get_class($jsonHttps), $selfUrl);
         $this->assertEquals($url, $jsonHttps->getUrl());
 
-        $this->assertEquals(RequestType::GET, $jsonHttps->getType()?->get());
+        $this->assertEquals(RequestType::GET, $jsonHttps->getType()->get());
         $typePost = new RequestType(RequestType::POST);
         $selfType = $jsonHttps->setType($typePost);
         $this->assertInstanceOf(get_class($jsonHttps), $selfType);
-        $this->assertEquals($typePost->get(), $jsonHttps->getType()?->get());
-        $typeGet  = new RequestType(RequestType::GET);
+        $this->assertEquals($typePost->get(), $jsonHttps->getType()->get());
+        $typeGet = new RequestType(RequestType::GET);
         $jsonHttps->setType($typeGet);
-        $this->assertEquals($typeGet->get(), $jsonHttps->getType()?->get());
+        $this->assertEquals($typeGet->get(), $jsonHttps->getType()->get());
     }
 
-    public function testInstance() : void
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testInstance()
     {
         $url       = "https://test.example";
         $typePost  = new RequestType(RequestType::POST);
         $jsonHttps = new JsonHttps($url, $typePost);
         $this->assertEquals($url, $jsonHttps->getUrl());
-        $this->assertEquals($typePost->get(), $jsonHttps->getType()?->get());
+        $this->assertEquals($typePost->get(), $jsonHttps->getType()->get());
     }
 
-    public function testWrongSchema() : void
+    public function testWrongSchema()
     {
-        $this->expectException(\Rebelo\Reports\Report\Datasource\DatasourceException::class);
+        $this->expectException(DatasourceException::class);
         new JsonHttps("http://test.example");
     }
 
-    public function testWrongSetSchema() : void
+    public function testWrongSetSchema()
     {
-        $this->expectException(\Rebelo\Reports\Report\Datasource\DatasourceException::class);
+        $this->expectException(DatasourceException::class);
         $jsonHttps = new JsonHttps();
         $jsonHttps->setUrl("http://test.example");
     }
 
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testFillApiRequest(): void
+    {
+        $data = [];
+        $json = new JsonHttps("https://localhost:4999", new RequestType(RequestType::GET));
+        $json->setDatePattern("Y-m-d");
+        $json->setNumberPattern("0#.##");
+        $json->fillApiRequest($data);
+
+        $api = $data[(new \ReflectionClass(JsonHttps::class))->getShortName()];
+
+        $this->assertSame(
+            $json->getUrl(),
+            $api[AServer::API_P_URL]
+        );
+
+        $this->assertSame(
+            $json->getType()->get(),
+            $api[AServer::API_P_TYPE]
+        );
+
+        $this->assertSame(
+            $json->getDatePattern(),
+            $api[AServer::API_P_DATE_PATTERN]
+        );
+
+        $this->assertSame(
+            $json->getNumberPattern(),
+            $api[AServer::API_P_NUMBER_PATTERN]
+        );
+    }
 }

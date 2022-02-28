@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -27,6 +28,8 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Pptx;
 use Rebelo\Reports\Report\JasperFile;
 
@@ -38,23 +41,27 @@ use Rebelo\Reports\Report\JasperFile;
 class PptxTest extends TestCase
 {
 
-    public function testSetGet(): void
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
+    public function testSetGet()
     {
         $pptx = new Pptx();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Pptx", $pptx);
         $this->assertNull($pptx->getJasperFile());
-        $this->assertNull($pptx->getOutputfile());
+        $this->assertNull($pptx->getOutputFile());
         $this->assertNull($pptx->getDatasource());
 
         $pathJasper = "path jasper file";
         $pptx->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $pptx->getJasperFile()?->getPath());
+        $this->assertEquals($pathJasper, $pptx->getJasperFile()->getPath());
 
         $pathOut = "path for output file";
-        $pptx->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $pptx->getOutputfile());
+        $pptx->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $pptx->getOutputFile());
 
-        $pptx->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
+        $pptx->setDatasource(new Database());
         $this->assertInstanceOf(
             "\Rebelo\Reports\Report\Datasource\Database",
             $pptx->getDatasource()
@@ -62,9 +69,7 @@ class PptxTest extends TestCase
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $pptx->createXmlNode($node);
-        if (false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
-            $this->fail("fail load xml string");
-        }
-        $this->assertEquals($pathOut, $xml->pptx->{Pptx::NODE_OUT_FILE});
+        $xml = simplexml_load_string($node->asXML());
+        $this->assertEquals($pathOut, $xml->pptx->{AReport::NODE_OUT_FILE});
     }
 }

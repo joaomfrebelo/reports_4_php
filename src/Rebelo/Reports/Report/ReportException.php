@@ -23,9 +23,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
+
+use JetBrains\PhpStorm\Pure;
 
 /**
  * ReportException
@@ -33,20 +36,18 @@ namespace Rebelo\Reports\Report;
  * @author João Rebelo
  * @since 1.0.0
  */
-class ReportException
-    extends \Exception
+class ReportException extends \Exception
 {
 
     /**
-     * 
-     * @param string $message
-     * @param int $code
-     * @param \Throwable $previous
+     *
+     * @param string          $message
+     * @param int             $code
+     * @param \Throwable|null $previous
      * @since 1.0.0
      */
-    function __construct($message, $code = 0, \Throwable $previous = null)
+    #[Pure] public function __construct(string $message, int $code = 0, \Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
-
 }

@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Xlsx;
 use Rebelo\Reports\Report\JasperFile;
 
@@ -36,27 +38,30 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class XlsxTest
-    extends TestCase
+class XlsxTest extends TestCase
 {
 
-    public function testSetGet() : void
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
+    public function testSetGet()
     {
         $xlsx = new Xlsx();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Xlsx", $xlsx);
         $this->assertNull($xlsx->getJasperFile());
-        $this->assertNull($xlsx->getOutputfile());
+        $this->assertNull($xlsx->getOutputFile());
         $this->assertNull($xlsx->getDatasource());
 
         $pathJasper = "path jasper file";
         $xlsx->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $xlsx->getJasperFile()?->getPath());
+        $this->assertEquals($pathJasper, $xlsx->getJasperFile()->getPath());
 
         $pathOut = "path for output file";
-        $xlsx->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $xlsx->getOutputfile());
+        $xlsx->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $xlsx->getOutputFile());
 
-        $xlsx->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
+        $xlsx->setDatasource(new Database());
         $this->assertInstanceOf(
             "\Rebelo\Reports\Report\Datasource\Database",
             $xlsx->getDatasource()
@@ -64,10 +69,7 @@ class XlsxTest
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $xlsx->createXmlNode($node);
-        if(false === $xml  = simplexml_load_string($node->asXML())){ /** @phpstan-ignore-line */
-            $this->fail("fail load xml string");
-        }
-        $this->assertEquals($pathOut, (string)$xml->xlsx->{Xlsx::NODE_OUT_FILE});
+        $xml = simplexml_load_string($node->asXML());
+        $this->assertEquals($pathOut, $xml->xlsx->{AReport::NODE_OUT_FILE});
     }
-
 }

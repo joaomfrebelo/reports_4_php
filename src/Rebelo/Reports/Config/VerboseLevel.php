@@ -27,13 +27,21 @@ declare(strict_types=1);
 
 namespace Rebelo\Reports\Config;
 
+use Rebelo\Enum\AEnum;
+
 /**
  * Verbose Level to pass as argument to jar Rebelo reports CLI
- *
+ * @method static VerboseLevel OFF()
+ * @method static VerboseLevel FATAL()
+ * @method static VerboseLevel ERROR()
+ * @method static VerboseLevel WARN()
+ * @method static VerboseLevel INFO()
+ * @method static VerboseLevel DEBUG()
+ * @method static VerboseLevel TRACE()
+ * @method static VerboseLevel ALL()
  * @author João Rebelo
  */
-class VerboseLevel
-    extends \Rebelo\Reports\Report\Enum\AEnum
+class VerboseLevel extends AEnum
 {
 
     const OFF   = "OFF";
@@ -48,11 +56,11 @@ class VerboseLevel
     /**
      * Verbose Level to pass as argument to jar Rebelo reports CLI
      * @param string $value
+     * @throws \Rebelo\Enum\EnumException
      * @since 1.0.0
      */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         parent::__construct($value);
     }
-
 }

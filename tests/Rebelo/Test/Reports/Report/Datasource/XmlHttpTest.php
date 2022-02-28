@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -22,11 +23,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Datasource;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\Datasource\AServer;
+use Rebelo\Reports\Report\Datasource\DatasourceException;
 use Rebelo\Reports\Report\Datasource\XmlHttp;
 use Rebelo\Reports\Report\Datasource\RequestType;
 
@@ -37,8 +41,11 @@ use Rebelo\Reports\Report\Datasource\RequestType;
  */
 class XmlHttpTest extends TestCase
 {
-    
-    public function testSetSetGet(): void
+
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testSetSetGet()
     {
         $xmlHttp = new XmlHttp();
 
@@ -65,35 +72,73 @@ class XmlHttpTest extends TestCase
         $this->assertInstanceOf(get_class($xmlHttp), $selfUrl);
         $this->assertEquals($url, $xmlHttp->getUrl());
 
-        $this->assertEquals(RequestType::GET, $xmlHttp->getType()?->get());
+        $this->assertEquals(RequestType::GET, $xmlHttp->getType()->get());
         $typePost = new RequestType(RequestType::POST);
         $selfType = $xmlHttp->setType($typePost);
         $this->assertInstanceOf(get_class($xmlHttp), $selfType);
-        $this->assertEquals($typePost->get(), $xmlHttp->getType()?->get());
+        $this->assertEquals($typePost->get(), $xmlHttp->getType()->get());
         $typeGet  = new RequestType(RequestType::GET);
         $xmlHttp->setType($typeGet);
-        $this->assertEquals($typeGet->get(), $xmlHttp->getType()?->get());
+        $this->assertEquals($typeGet->get(), $xmlHttp->getType()->get());
     }
 
-    public function testInstance(): void
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testInstance()
     {
         $url      = "http://test.example";
         $typePost = new RequestType(RequestType::POST);
         $xmlHttp  = new XmlHttp($url, $typePost);
         $this->assertEquals($url, $xmlHttp->getUrl());
-        $this->assertEquals($typePost->get(), $xmlHttp->getType()?->get());
+        $this->assertEquals($typePost->get(), $xmlHttp->getType()->get());
     }
 
-    public function testWrongSchema(): void
+
+    public function testWrongSchema()
     {
-        $this->expectException(\Rebelo\Reports\Report\Datasource\DatasourceException::class);
+        $this->expectException(DatasourceException::class);
         new XmlHttp("https://test.example");
     }
 
-    public function testWrongSetSchema(): void
+    public function testWrongSetSchema()
     {
-        $this->expectException(\Rebelo\Reports\Report\Datasource\DatasourceException::class);
+        $this->expectException(DatasourceException::class);
         $xmlHttp = new XmlHttp();
         $xmlHttp->setUrl("https://test.example");
+    }
+
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testFillApiRequest(): void
+    {
+        $data = [];
+        $xmlHttp = new XmlHttp("http://localhost:4999", new RequestType(RequestType::GET));
+        $xmlHttp->setDatePattern("Y-m-d");
+        $xmlHttp->setNumberPattern("0#.##");
+        $xmlHttp->fillApiRequest($data);
+
+        $api = $data[(new \ReflectionClass(XmlHttp::class))->getShortName()];
+
+        $this->assertSame(
+            $xmlHttp->getUrl(),
+            $api[AServer::API_P_URL]
+        );
+
+        $this->assertSame(
+            $xmlHttp->getType()->get(),
+            $api[AServer::API_P_TYPE]
+        );
+
+        $this->assertSame(
+            $xmlHttp->getDatePattern(),
+            $api[AServer::API_P_DATE_PATTERN]
+        );
+
+        $this->assertSame(
+            $xmlHttp->getNumberPattern(),
+            $api[AServer::API_P_NUMBER_PATTERN]
+        );
     }
 }

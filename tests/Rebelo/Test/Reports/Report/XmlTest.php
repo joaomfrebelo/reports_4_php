@@ -28,43 +28,44 @@ declare(strict_types=1);
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\Xml;
-use Rebelo\Reports\Report\JasperFile;
 
 /**
  * Class CvsTest
  *
  * @author João Rebelo
  */
-class XmlTest
-    extends TestCase
+class XmlTest extends TestCase
 {
 
-    public function testSetGet() : void
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
+    public function testSetGet()
     {
         $inst = "\Rebelo\Reports\Report\Xml";
         $xml  = new Xml();
         $this->assertInstanceOf($inst, $xml);
         $this->assertNull($xml->getJasperFile());
-        $this->assertNull($xml->getOutputfile());
+        $this->assertNull($xml->getOutputFile());
         $this->assertNull($xml->getDatasource());
-       
-        $pathOut = "path for output file";
-        $xml->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $xml->getOutputfile());
 
-        $xml->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
+        $pathOut = "path for output file";
+        $xml->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $xml->getOutputFile());
+
+        $xml->setDatasource(new Database());
         $this->assertInstanceOf(
             "\Rebelo\Reports\Report\Datasource\Database",
             $xml->getDatasource()
         );
 
-        $node   = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
+        $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $xml->createXmlNode($node);
-        if(false === $xmlStr = simplexml_load_string($node->asXML())){ /** @phpstan-ignore-line */
-            $this->fail("fail load xml string");
-        }
-        $this->assertEquals($pathOut, (string)$xmlStr->xml->{Xml::NODE_OUT_FILE});
+        $xmlStr = simplexml_load_string($node->asXML());
+        $this->assertEquals($pathOut, $xmlStr->xml->{AReport::NODE_OUT_FILE});
     }
-
 }

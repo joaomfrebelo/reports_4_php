@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:ns="urn:rebelo.reports.core.parse.pojo" 
+           xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" 
+           xmlns:doc="urn:schemas-basda-org:schema-extensions:documentation" 
+           xmlns="RReports:1.1" attributeFormDefault="unqualified" 
+           elementFormDefault="qualified" id="RReports_CLI" 
+           targetNamespace="urn:rebelo.reports.core.parse.pojo" 
+           version="1.1" 
+           vc:minVersion="1.1" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:xsi="http://www.w3.org/2009/XMLSchema/XMLSchema">
+    <xs:element name="rreport">
+        <xs:annotation>
+            <xs:documentation>
+                <doc:Title>Rebelo Reports CLI</doc:Title>
+                <doc:Subject>Rebelo Reports CLI, data schema</doc:Subject>
+                <doc:Copyright>AGPL</doc:Copyright>
+                <doc:Version>
+                    <doc:Number>1.0</doc:Number>
+                    <doc:Status>Beta</doc:Status>
+                </doc:Version>
+                <doc:Author>João M F Rebelo</doc:Author>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="jasperfile" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The full path for the Jasper reports file,
+                            or the relative path to jasperFileBaseDir
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="copies" type="xs:positiveInteger"></xs:attribute>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="reporttype" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The type of report that should be generated.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element ref="ns:pdf" />
+                            <xs:element ref="ns:csv" />
+                            <xs:element ref="ns:html" />
+                            <xs:element ref="ns:xls" />
+                            <xs:element ref="ns:xml" />
+                            <xs:element ref="ns:rtf" />
+                            <xs:element ref="ns:text" />
+                            <xs:element ref="ns:pptx" />
+                            <xs:element ref="ns:xlsx" />
+                            <xs:element ref="ns:docx" />
+                            <xs:element ref="ns:odt" />
+                            <xs:element ref="ns:ods" />
+                            <xs:element ref="ns:json" />
+                            <xs:element ref="ns:print" />
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="datasource" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Define the datasource for the report
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element ref="ns:database" />
+                            <xs:element ref="ns:jsonhttp" />
+                            <xs:element ref="ns:jsonhttps" />
+                            <xs:element ref="ns:xmlhttp" />
+                            <xs:element ref="ns:xmlhttps" />
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="parameters" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The parameters to be passed to the jasper report
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="ns:parameter" minOccurs="0" maxOccurs="unbounded" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="database">
+        <xs:annotation>
+            <xs:documentation>
+                Use database as report datasource
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="connectionString" type="xs:string" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The connection string to be used to the driver connect with the database
+                            Ex: jdbc:oracle:thin:@//localhost:1521/XE
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="driver" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The driver class name to be use to connect to the database
+                            Ex: oracle.jdbc.OracleDriver
+                            EX: com.microsoft.sqlserver.jdbc.SQLServerDriver
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="user" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The username to connect to the database
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The password to connect to the database
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="jsonhttp" type="ns:jsonserver">
+        <xs:annotation>
+            <xs:documentation>
+                Use json over http as datasource
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="jsonhttps" type="ns:jsonserver">
+        <xs:annotation>
+            <xs:documentation>
+                Use json over https as datasource
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="xmlhttp" type="ns:xmlserver">
+        <xs:annotation>
+            <xs:documentation>
+                Use xml over http as datasource
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="xmlhttps" type="ns:xmlserver">
+        <xs:annotation>
+            <xs:documentation>
+                Use xml over https as datasource
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="parameters">
+        <xs:annotation>
+            <xs:documentation>
+                Parameters to be passed to the Jasper Report
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ns:parameter" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="parameter">
+        <xs:annotation>
+            <xs:documentation>
+                Parameter to be passed to the Jasper Report
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="type" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The type of the parameter (java class)
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="string" />
+                            <xs:enumeration value="boolean" />
+                            <xs:enumeration value="bool" />
+                            <xs:enumeration value="double" />
+                            <xs:enumeration value="float" />
+                            <xs:enumeration value="integer" />
+                            <xs:enumeration value="long" />
+                            <xs:enumeration value="short" />
+                            <xs:enumeration value="bigdecimal" />
+                            <xs:enumeration value="date" />
+                            <xs:enumeration value="time" />
+                            <xs:enumeration value="sqltime" />
+                            <xs:enumeration value="sqldate" />
+                            <xs:enumeration value="timestamp" />
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The name of the parameter
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="value" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The value of the parameter,
+                            the attribute "format" is the date formate
+                            for SimpleDateFormat, and only where the parameter type
+                            is "date", for other types must be empty
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                        <xs:attribute name="format" type="xs:string" />
+                    </xs:extension>
+                </xs:simpleContent>
+                </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="pdf">
+        <xs:annotation>
+            <xs:documentation>Export the report to a PDF file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="sign" type="ns:sign" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The PDF digital signature properties</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="csv">
+        <xs:annotation>
+            <xs:documentation>Export the report to a CVS file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="html">
+        <xs:annotation>
+            <xs:documentation>Export the report to a HTML file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="xls">
+        <xs:annotation>
+            <xs:documentation>Export the report to a xls file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="xml">
+        <xs:annotation>
+            <xs:documentation>Export the report to a XML file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="rtf">
+        <xs:annotation>
+            <xs:documentation>Export the report to a RTF file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="text">
+        <xs:annotation>
+            <xs:documentation>Export the report to a TEXT file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="pptx">
+        <xs:annotation>
+            <xs:documentation>Export the report to a PPTX file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="xlsx">
+        <xs:annotation>
+            <xs:documentation>Export the report to a XLSX file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="docx">
+        <xs:annotation>
+            <xs:documentation>Export the report to a DOCX file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="odt">
+        <xs:annotation>
+            <xs:documentation>Export the report to a ODT file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="ods">
+        <xs:annotation>
+            <xs:documentation>Export the report to a ODS file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="json">
+        <xs:annotation>
+            <xs:documentation>Export the report to a JSON file</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="outputfile" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The full path of the output file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="print">
+        <xs:annotation>
+            <xs:documentation>Print the report (printer)</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="printer" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>The printer name. A empty string will 
+                            resault in default printer selection</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="jsonserver">
+        <xs:sequence>
+            <xs:element name="url" type="xs:string" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The server URL</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The type of the request POST or GET</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="GET" />
+                        <xs:enumeration value="POST" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="datePattern" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The Date pattern in the datasource values</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="numberPattern" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The number pattern in the datasource values</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="xmlserver">
+        <xs:sequence>
+            <xs:element name="url" type="xs:string" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The server URL</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The type of the request POST or GET</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="GET" />
+                        <xs:enumeration value="POST" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="datePattern" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The Date pattern in the datasource values</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="numberPattern" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The number pattern in the datasource values</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="sign">
+        <xs:annotation>
+            <xs:documentation>The pdf digital signature properties</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="keystore" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The java key store where the certificates are</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="path" minOccurs="1" maxOccurs="1" type="xs:string">
+                            <xs:annotation>
+                                <xs:documentation>The full path of the key store</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="password" minOccurs="1" maxOccurs="1" type="xs:string">
+                            <xs:annotation>
+                                <xs:documentation>The key store password</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="certificate">
+                            <xs:annotation>
+                                <xs:documentation>The certificate properties</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string">
+                                        <xs:annotation>
+                                            <xs:documentation>The certificate name (alias) in the keystore</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="password" minOccurs="1" maxOccurs="1" type="xs:string">
+                                        <xs:annotation>
+                                            <xs:documentation>The certificate password</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="level" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The siganute certification level</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="CERTIFIED_NO_CHANGES_ALLOWED"></xs:enumeration>
+                        <xs:enumeration value="CERTIFIED_FORM_FILLING"></xs:enumeration>
+                        <xs:enumeration value="CERTIFIED_FORM_FILLING_AND_ANNOTATIONS"></xs:enumeration>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The type of certificate</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="SELF"></xs:enumeration>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="rectangle" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The visibility and position of the signature image rectangle</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="visible" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>Define if the signature is visible or not</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="true" />
+                                    <xs:enumeration value="false" />
+                                    <xs:enumeration value="on" />
+                                    <xs:enumeration value="off" />
+                                    <xs:enumeration value="yes" />
+                                    <xs:enumeration value="no" />
+                                    <xs:enumeration value="1" />
+                                    <xs:enumeration value="0" />
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="position" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>Position of the rectangle image signature (Java Rectangle class cordenates)</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="x" type="xs:integer">
+                                        <xs:annotation>
+                                            <xs:documentation>axial coordinate (x)</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="y" type="xs:integer">
+                                        <xs:annotation>
+                                            <xs:documentation>ordinate coordinate (y) </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="width" type="xs:integer">
+                                        <xs:annotation>
+                                            <xs:documentation>the rectangle with</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="height" type="xs:integer">
+                                        <xs:annotation>
+                                            <xs:documentation>The rectangle height</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="rotation">
+                                        <xs:annotation>
+                                            <xs:documentation>The rectangle rotation: 0 , 90 , 180 or 270</xs:documentation>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:integer">
+                                                <xs:enumeration value="0" />
+                                                <xs:enumeration value="90" />
+                                                <xs:enumeration value="180" />
+                                                <xs:enumeration value="270" />
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="location" minOccurs="0" maxOccurs="1" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The legend 'Location' to be write in the signaute</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="reazon" minOccurs="0" maxOccurs="1" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The legend 'Reazon' to be write in the signaute</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

@@ -29,17 +29,20 @@ namespace Rebelo\Test\Reports\Report\Sign;
 
 use PHPUnit\Framework\TestCase;
 use Rebelo\Reports\Report\Sign\Certificate;
+use Rebelo\Reports\Report\Sign\SignException;
 
 /**
  * Class CertificateTest
  *
  * @author João Rebelo
  */
-class CertificateTest
-    extends TestCase
+class CertificateTest extends TestCase
 {
 
-    public function testSetGet() : void
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
+    public function testSetGet()
     {
         $cert = new Certificate();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Sign\Certificate", $cert);
@@ -56,22 +59,24 @@ class CertificateTest
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $cert->createXmlNode($node);
-        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
-            $this->fail("Fail load xml string");
-        }
+        $xml  = simplexml_load_string($node->asXML());
         $this->assertEquals($name, $xml->certificate->name);
         $this->assertEquals($pwd, $xml->certificate->password);
     }
 
-    public function testCertNameEmpty() : void
+
+    public function testCertNameEmpty()
     {
-        $this->expectException(\Rebelo\Reports\Report\Sign\SignException::class);
+        $this->expectException(SignException::class);
         $cert = new Certificate();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Sign\Certificate", $cert);
         $cert->setName("");
     }
 
-    public function testSetPwdNull() : void
+    /**
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
+    public function testSetPwdNull()
     {
         $cert = new Certificate();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Sign\Certificate", $cert);
@@ -82,13 +87,14 @@ class CertificateTest
         $cert->setName($name);
         $this->assertEquals($name, $cert->getName());
 
+        $pwd = null;
+        $cert->setPassword($pwd);
+        $this->assertNull($cert->getPassword());
+
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $cert->createXmlNode($node);
-        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
-            $this->fail("Fail load xml string");
-        }
+        $xml  = simplexml_load_string($node->asXML());
         $this->assertEquals($name, $xml->certificate->name);
         $this->assertEquals("", $xml->certificate->password);
     }
-
 }

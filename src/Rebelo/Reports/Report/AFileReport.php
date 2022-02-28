@@ -23,25 +23,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
 
 /**
  * Description of AFileReport
  *
- * Abstarct class for reports that will be exported to a file.<br>
+ * Abstract class for reports that will be exported to a file.<br>
  * Ex: pdf, xml, doc, etc.
  *
  * @author João Rebelo
  * @since 1.0.0
  */
-abstract class AFileReport
-    extends AReport
+abstract class AFileReport extends AReport
 {
 
     /**
-     * Abstarct class for reports that will be exported to a file.<br>
+     * Abstract class for reports that will be exported to a file.<br>
      * Ex: pdf, xml, doc, etc.
      * @since 1.0.0
      */
@@ -53,10 +53,10 @@ abstract class AFileReport
     /**
      * The full or relative path of the output file.
      *
-     * @var string|null $outputfile
+     * @var string|null $outputFile
      * @since 1.0.0
      */
-    private $outputfile = null;
+    private ?string $outputFile = null;
 
     /**
      * Gets the full or relative path of the output file.
@@ -64,49 +64,48 @@ abstract class AFileReport
      * @return string|null
      * @since 1.0.0
      */
-    public function getOutputfile()
+    public function getOutputFile(): ?string
     {
         \Logger::getLogger(\get_class($this))
-            ->info(\sprintf(__METHOD__ . " getted '%s'", $this->outputfile));
-        return $this->outputfile;
+            ->info(\sprintf(__METHOD__ . " get '%s'", $this->outputFile));
+        return $this->outputFile;
     }
 
     /**
      * Sets the full or relative path of the output file.
      *
-     * @param string $outputfile
-     * @return self
+     * @param string $outPutFile
+     * @return static
+     * @throws \Rebelo\Reports\Report\ReportException
      * @since 1.0.0
      */
-    public function setOutputfile($outputfile)
+    public function setOutputFile(string $outPutFile): static
     {
-        if (!is_string($outputfile) || trim($outputfile) === "")
-        {
+        if ("" === $outPutFile = \trim($outPutFile)) {
             $msg = "the output file path must be a non empty string";
             \Logger::getLogger(\get_class($this))
                 ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new ReportException($msg);
         }
-        $this->outputfile = $outputfile;
+        $this->outputFile = $outPutFile;
         \Logger::getLogger(\get_class($this))
-            ->debug(\sprintf(__METHOD__ . " setted to '%s'", $this->outputfile));
+            ->debug(\sprintf(__METHOD__ . " set to '%s'", $this->outputFile));
         return $this;
     }
 
     /**
-     * Create the xml commom nodes of all File exporters
+     * Create the xml common nodes of all File exporters
      * @since 1.0.0
      *
-     * @param \SimpleXMLElement $node The node whre will be add the node of this class
+     * @param \SimpleXMLElement $node The node where will be add the node of this class
      * @return \SimpleXMLElement The add node to be possible the manipulation
      * @throws SerializeReportException
      */
-    public function createXmlNode(\SimpleXMLElement $node)
+    public function createXmlNode(\SimpleXMLElement $node): \SimpleXMLElement
     {
         \Logger::getLogger(\get_class($this))->debug(__METHOD__);
-        if ($this->getOutputfile() === null)
-        {
-            $msg = "The output file path must be setted to be possible the "
+        if ($this->getOutputFile() === null) {
+            $msg = "The output file path must be set to be possible the "
                 . "xml serialization";
             \Logger::getLogger(\get_class($this))
                 ->error(\sprintf(__METHOD__ . " '%s'", $msg));
@@ -118,9 +117,8 @@ abstract class AFileReport
         $AFileNode = $node->addChild($nodeName);
         AReport::cdata(
             $AFileNode->addChild(static::NODE_OUT_FILE),
-            $this->getOutputfile()
+            $this->getOutputFile()
         );
         return $AFileNode;
     }
-
 }

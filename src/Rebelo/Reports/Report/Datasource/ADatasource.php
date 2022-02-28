@@ -23,9 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Report\Datasource;
+
+use Rebelo\Reports\Config\Config;
+use Rebelo\Reports\Report\IAReport;
 
 /**
  * Abstract class of datasource
@@ -33,18 +37,16 @@ namespace Rebelo\Reports\Report\Datasource;
  * @author João Rebelo
  * @since 1.0.0
  */
-abstract class ADatasource
-    implements \Rebelo\Reports\Report\IAReport
+abstract class ADatasource implements IAReport
 {
 
     /**
      *
      * @since 1.0.0
      */
-    function __construct()
+    public function __construct()
     {
-        \Rebelo\Reports\Config\Config::configLog4Php();
-        \Logger::getLogger(\get_class($this))->debug("Instanciating");
+        Config::configLog4Php();
+        \Logger::getLogger(\get_class($this))->debug("New instance");
     }
-
 }

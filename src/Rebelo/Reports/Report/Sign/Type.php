@@ -23,43 +23,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Report\Sign;
 
+use Rebelo\Enum\AEnum;
+
 /**
  * Type of certificate
- *
+ * @method static Type SELF_SIGNED()
  * @author João Rebelo
  * @since 1.0.0
  */
-class Type
-    extends \Rebelo\Reports\Report\Enum\AEnum
+class Type extends AEnum
 {
 
     /**
-     * Self sign cerificate
+     * Self sign certificate
      * @since 1.0.0
      */
     const SELF_SIGNED = "SELF";
 
-    /**
-     * 
-     * @param string $value
-     */
     public function __construct($value)
     {
         parent::__construct($value);
     }
-
-    /**
-     * Get the enum string value
-     * @return string
-     */
-    public function get()
-    {
-        return (string)parent::get();
-    }
-
-    
 }

@@ -27,24 +27,23 @@ declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
 
+use JetBrains\PhpStorm\Pure;
+
 /**
  * Description of ExecException
  *
  * @author João Rebelo
  */
-class ExecException
-    extends \Exception
+class ExecException extends \Exception
 {
 
     /**
-     * 
-     * @param string $message
-     * @param int $code
-     * @param \Throwable $previous
+     * @param string          $message
+     * @param int             $code
+     * @param \Throwable|NULL $previous
      */
-    public function __construct($message, $code = 0, \Throwable $previous = NULL)
+    #[Pure] public function __construct(string $message, int $code = 0, \Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
-
 }

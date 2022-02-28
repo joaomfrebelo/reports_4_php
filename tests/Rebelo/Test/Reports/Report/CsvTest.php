@@ -23,12 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\AReport;
 use Rebelo\Reports\Report\Csv;
+use Rebelo\Reports\Report\Datasource\Database;
 use Rebelo\Reports\Report\JasperFile;
 
 /**
@@ -36,27 +39,30 @@ use Rebelo\Reports\Report\JasperFile;
  *
  * @author João Rebelo
  */
-class CsvTest
-    extends TestCase
+class CsvTest extends TestCase
 {
 
-    public function testSetGet() : void
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
+    public function testSetGet()
     {
         $csv = new Csv();
         $this->assertInstanceOf("\Rebelo\Reports\Report\Csv", $csv);
         $this->assertNull($csv->getJasperFile());
-        $this->assertNull($csv->getOutputfile());
+        $this->assertNull($csv->getOutputFile());
         $this->assertNull($csv->getDatasource());
 
         $pathJasper = "path jasper file";
         $csv->setJasperFile(new JasperFile($pathJasper));
-        $this->assertEquals($pathJasper, $csv->getJasperFile()?->getPath());
+        $this->assertEquals($pathJasper, $csv->getJasperFile()->getPath());
 
         $pathOut = "path for output file";
-        $csv->setOutputfile($pathOut);
-        $this->assertEquals($pathOut, $csv->getOutputfile());
+        $csv->setOutputFile($pathOut);
+        $this->assertEquals($pathOut, $csv->getOutputFile());
 
-        $csv->setDatasource(new \Rebelo\Reports\Report\Datasource\Database());
+        $csv->setDatasource(new Database());
         $this->assertInstanceOf(
             "\Rebelo\Reports\Report\Datasource\Database",
             $csv->getDatasource()
@@ -64,10 +70,7 @@ class CsvTest
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $csv->createXmlNode($node);
-        if(false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
-            $this->fail("fail load xml string");
-        }
-        $this->assertEquals($pathOut, $xml->csv->{Csv::NODE_OUT_FILE});
+        $xml  = simplexml_load_string($node->asXML());
+        $this->assertEquals($pathOut, $xml->csv->{AReport::NODE_OUT_FILE});
     }
-
 }

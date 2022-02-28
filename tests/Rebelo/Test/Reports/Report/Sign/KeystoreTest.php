@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -22,11 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Sign;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\SerializeReportException;
 use Rebelo\Reports\Report\Sign\Keystore;
 use Rebelo\Reports\Report\Sign\Certificate;
 
@@ -38,7 +41,11 @@ use Rebelo\Reports\Report\Sign\Certificate;
 class KeystoreTest extends TestCase
 {
 
-    public function testSetGet(): void
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     */
+    public function testSetGet()
     {
         $inst = "\Rebelo\Reports\Report\Sign\Keystore";
         $key  = new Keystore();
@@ -69,11 +76,9 @@ class KeystoreTest extends TestCase
         $this->assertInstanceOf($inst, $setPath);
         $this->assertEquals($path, $key->getPath());
 
-        $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
+        $node     = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $key->createXmlNode($node);
-        if (false === $xml  = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
-            $this->fail("Fail load xml string");
-        }
+        $xml      = simplexml_load_string($node->asXML());
         $this->assertEquals($path, $xml->keystore->path);
         $this->assertEquals($pwd, $xml->keystore->password);
         $nodeCert = $xml->keystore->certificate;
@@ -81,9 +86,9 @@ class KeystoreTest extends TestCase
         $this->assertEquals($certPwd, $nodeCert->password);
     }
 
-    public function testCreateNodeNullCert(): void
+    public function testCreateNodeNullCert()
     {
-        $this->expectException(\Rebelo\Reports\Report\SerializeReportException::class);
+        $this->expectException(SerializeReportException::class);
         $key  = new Keystore();
         $key->setPassword("pwd");
         $key->setPath("path");
@@ -91,9 +96,9 @@ class KeystoreTest extends TestCase
         $key->createXmlNode($node);
     }
 
-    public function testCreateNodeNullPath(): void
+    public function testCreateNodeNullPath()
     {
-        $this->expectException(\Rebelo\Reports\Report\SerializeReportException::class);
+        $this->expectException(SerializeReportException::class);
         $key  = new Keystore();
         $key->setPassword("pwd");
         $key->setCertificate(new Certificate());

@@ -23,11 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Reports\Report;
-
-use Rebelo\Reports\Report\ExecException;
 
 /**
  * Description of ExecReturn
@@ -44,7 +43,7 @@ class ExecReturn
     const NO_ERROR = 0;
 
     /**
-     * unedefined error
+     * undefined error
      */
     const UNDEFINED = 1;
 
@@ -69,22 +68,22 @@ class ExecReturn
     const IS_NOT_READABLE = 5;
 
     /**
-     * Unknow option
+     * Unknown option
      */
-    const UNKNOW_OPTION = 6;
+    const UNKNOWN_OPTION = 6;
 
     /**
-     * Error generating RRreport
+     * Error generating RReport
      */
     const ERROR_GENERATE_REPORT = 7;
 
     /**
-     * Error generating RRreport
+     * Error generating RReport
      */
     const REPORT_PROPERTIES_ERROR = 8;
 
     /**
-     * RRebelo report datasource defenitions error
+     * RRebelo report datasource definitions error
      */
     const REBELO_REPORT_DATASOURCE_ERROR = 9;
 
@@ -124,7 +123,7 @@ class ExecReturn
     const CLI_DEL_FILE_ERROR = 16;
 
     /**
-     * Pasing a argument in main method that not exist
+     * Passing a argument in main method that not exist
      */
     const UNMATCHED_ARGUMENT = 17;
 
@@ -135,22 +134,22 @@ class ExecReturn
 
     /**
      * Return code from the Rebelo Report CLI
-     * @var int
+     * @var int|null
      * @since 1.0.0
      */
-    private $code = null;
+    private ?int $code = null;
 
     /**
      * Return message from the Rebelo Report CLI
      * @var array
      * @since 1.0.0
      */
-    private $messages = array();
+    private array $messages = array();
 
     /**
-     * The return propertie from the cli exec<br>
+     * The return properties from the cli exec<br>
      * execution of Rebelo_reports CLI
-     * @param int $code
+     * @param int    $code
      * @param array $messages
      * @since 1.0.0
      */
@@ -166,17 +165,15 @@ class ExecReturn
      * @return int
      * @since 1.0.0
      */
-    public function getCode()
+    public function getCode(): int
     {
         \Logger::getLogger(\get_class($this))
-            ->info(
-                sprintf(
-                    __METHOD__ . " getted '%s'",
-                    $this->code === null
+            ->info(sprintf(
+                __METHOD__ . " get '%s'",
+                $this->code === null
                         ? "null"
-                    : $this->code
-                )
-            );
+                : $this->code
+            ));
 
         return $this->code;
     }
@@ -186,10 +183,10 @@ class ExecReturn
      * @return array
      * @since 1.0.0
      */
-    public function getMessages()
+    public function getMessages(): array
     {
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__ . " getted '%s'", "... String"));
+            ->info(sprintf(__METHOD__ . " get '%s'", "... String"));
         return $this->messages;
     }
 
@@ -197,49 +194,33 @@ class ExecReturn
      * Set the exit code
      *
      * @param int $code
-     * @return $this
+     * @return static
      */
-    public function setCode($code)
+    public function setCode(int $code): static
     {
-        if (\is_int($code) == false)
-        {
-            $msg = "Return code must be intger";
-            \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
-            throw new ExecException($msg);
-        }
         $this->code = $code;
         \Logger::getLogger(\get_class($this))
-            ->debug(sprintf(__METHOD__ . " setted to '%s'", strval($this->code)));
+            ->debug(sprintf(__METHOD__ . " set to '%s'", \strval($this->code)));
         return $this;
     }
 
     /**
      *
-     * Set the cmd messeges
+     * Set the cmd messages
      *
      * @param array $messages
-     * @return $this
+     * @return \Rebelo\Reports\Report\ExecReturn
      */
-    public function setMessages($messages)
+    public function setMessages(array $messages): static
     {
-        if (\is_array($messages) == false)
-        {
-            $msg = "Messages must be an array";
-            \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__ . " '%s'", $msg));
-            throw new ExecException($msg);
-        }
         $this->messages = $messages;
         \Logger::getLogger(\get_class($this))
-            ->debug(
-                sprintf(
-                    __METHOD__ . " setted to '%s'",
-                    \count($this->messages) === 0
+            ->debug(sprintf(
+                __METHOD__ . " set to '%s'",
+                \count($this->messages) === 0
                         ? "empty array"
-                    : "...string"
-                )
-            );
+                : "...string"
+            ));
         return $this;
     }
 
@@ -251,9 +232,8 @@ class ExecReturn
      * @return string
      * @since 1.0.0
      */
-    public function messagesToString()
+    public function messagesToString(): string
     {
         return join("; ", $this->messages);
     }
-
 }

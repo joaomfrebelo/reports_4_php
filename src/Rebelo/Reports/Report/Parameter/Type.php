@@ -23,46 +23,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Reports\Report\Parameter;
 
+use Rebelo\Enum\AEnum;
+
 /**
  * Description of Type
- *
+ * @method static Type P_STRING()
+ * @method static Type P_BOOL()
+ * @method static Type P_BOOLEAN()
+ * @method static Type P_DOUBLE()
+ * @method static Type P_FLOAT()
+ * @method static Type P_INTEGER()
+ * @method static Type P_LONG()
+ * @method static Type P_SHORT()
+ * @method static Type P_BIGDECIMAL()
+ * @method static Type P_DATE()
+ * @method static Type P_TIME()
+ * @method static Type P_SQL_TIME()
+ * @method static Type P_SQL_DATE()
+ * @method static Type P_TIMESTAMP()
  * @author João Rebelo
  */
-class Type
-    extends \Rebelo\Reports\Report\Enum\AEnum
+class Type extends AEnum
 {
 
-    const P_STRING     = "string";
-    const P_BOOL       = "bool";
-    const P_BOOLEAN    = "boolean";
-    const P_DOUBLE     = "double";
-    const P_FLOAT      = "float";
-    const P_INTEGER    = "integer";
-    const P_LONG       = "long";
-    const P_SHORT      = "short";
+    const P_STRING = "string";
+    const P_BOOL = "bool";
+    const P_BOOLEAN = "boolean";
+    const P_DOUBLE = "double";
+    const P_FLOAT = "float";
+    const P_INTEGER = "integer";
+    const P_LONG = "long";
+    const P_SHORT = "short";
     const P_BIGDECIMAL = "bigdecimal";
-    const P_DATE       = "date";
+    const P_DATE = "date";
+    const P_TIME = "time";
+    const P_SQL_TIME = "sqltime";
+    const P_SQL_DATE = "sqldate";
+    const P_TIMESTAMP = "timestamp";
 
-    /**
-     * 
-     * @param string $value
-     */
     public function __construct($value)
     {
         parent::__construct($value);
     }
-
-    /**
-     * get the string value of enum
-     * @return string
-     */
-    public function get()
-    {
-        return (string)parent::get();
-    }
-
 }

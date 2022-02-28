@@ -23,7 +23,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace Rebelo\Reports\Report\Datasource;
 
@@ -33,30 +34,28 @@ namespace Rebelo\Reports\Report\Datasource;
  * @author João Rebelo
  * @since 1.0.0
  */
-abstract class AServerHttp
-    extends AServer
+abstract class AServerHttp extends AServer
 {
 
     /**
      *
-     * @param string $url The server url
-     * @param \Rebelo\Reports\Report\Datasource\RequestType $type
+     * @param string|null                                        $url The server url
+     * @param \Rebelo\Reports\Report\Datasource\RequestType|null $type
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
      * @since 1.0.0
      */
-    public function __construct($url = null, RequestType $type = null)
+    public function __construct(?string $url = null, RequestType $type = null)
     {
         parent::__construct($type);
 
         $this->setUrl($url);
         \Logger::getLogger(\get_class($this))
-            ->debug(
-                \sprintf(
-                    "Url setted to '%s' in construct",
-                    $this->url === null
+            ->debug(\sprintf(
+                "Url set to '%s' in construct",
+                $this->url === null
                         ? "null"
-                    : $this->url
-                )
-            );
+                : $this->url
+            ));
     }
 
     /**
@@ -65,16 +64,14 @@ abstract class AServerHttp
      * The server URL
      *
      * @param string|null $url
-     * @return self
+     * @return static
      * @throws DatasourceException
      * @since 1.0.0
      */
-    public function setUrl($url)
+    public function setUrl(?string $url): static
     {
-        if ($url !== null)
-        {
-            if (strtolower(parse_url($url, PHP_URL_SCHEME)) !== "http")/** @phpstan-ignore-line */
-            {
+        if ($url !== null) {
+            if (\strtolower(\parse_url($url, PHP_URL_SCHEME)) !== "http") {
                 $msg = sprintf(
                     __METHOD__ . " url must be http but '%s' was passed",
                     parse_url($url, PHP_URL_SCHEME)
@@ -89,13 +86,10 @@ abstract class AServerHttp
         \Logger::getLogger(\get_class($this))
             ->debug(
                 \sprintf(
-                    __METHOD__ . " setted to '%s'",
-                    $this->url === null
-                        ? "null"
-                    : $this->url
+                    __METHOD__ . " set to '%s'",
+                    $this->url === null ? "null" : $this->url
                 )
             );
         return $this;
     }
-
 }

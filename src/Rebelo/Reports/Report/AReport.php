@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -6,7 +7,13 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace Rebelo\Reports\Report;
+
+use Rebelo\Reports\Config\Config;
+use Rebelo\Reports\Report\Datasource\ADatasource;
+use Rebelo\Reports\Report\Parameter\Parameter;
 
 /**
  *
@@ -17,12 +24,44 @@ namespace Rebelo\Reports\Report;
 abstract class AReport implements IAReport
 {
 
-    use \Rebelo\Reports\Config\XmlSchema;
+    protected \Logger $logger;
+
+    /**
+     * The report type api request node
+     * @since 3.0.0
+     */
+    const API_N_REPORT_TYPE = "reportType";
+
+    /**
+     * Property name
+     * @since 3.0.0
+     */
+    const API_P_ENCODING = "encoding";
+
+    /**
+     * Property name
+     * @since 3.0.0
+     */
+    const API_P_AFTER_PRINT = "afterPrintOperations";
+
+    /**
+     * Cut the paper after print the document
+     * @since 3.0.0
+     */
+    const AFTER_PRINT_CUT_PAPER = 1;
+
+    /**
+     * Open the cash drawer after print the document
+     * @since 3.0.0
+     */
+    const AFTER_PRINT_OPEN_CASH_DRAWER = 2;
+
     /**
      * Schema (XDS) file location
      * @since 1.0.0
      */
-    const SCHEMA_LOCATION = "https://raw.githubusercontent.com/joaomfrebelo/reports_core/master/src/main/resources/schema_1_1.xsd";
+    const SCHEMA_LOCATION = "https://raw.githubusercontent.com"
+                            . "/joaomfrebelo/reports_core/master/src/main/resources/schema_1_1.xsd";
 
     /**
      * Schema namespace
@@ -43,7 +82,7 @@ abstract class AReport implements IAReport
      * @var \Rebelo\Reports\Report\JasperFile|null $jasperfile
      * @since 1.0.0
      */
-    protected $jasperfile = null;
+    protected ?JasperFile $jasperfile = null;
 
     /**
      * Define the datasource for the report
@@ -51,7 +90,7 @@ abstract class AReport implements IAReport
      * @var \Rebelo\Reports\Report\Datasource\ADatasource|null $datasource
      * @since 1.0.0
      */
-    protected $datasource = null;
+    protected ?Datasource\ADatasource $datasource = null;
 
     /**
      * The parameters to be passed to the jasper report
@@ -59,12 +98,33 @@ abstract class AReport implements IAReport
      * @var \Rebelo\Reports\Report\Parameter\Parameter[] $parameters
      * @since 1.0.0
      */
-    protected $parameters = array();
+    protected array $parameters = [];
+
+    /**
+     * The report encoding
+     * @var string
+     * @since 3.0.0
+     */
+    protected string $encoding = "UTF-8";
+
+    /**
+     * The operations to be done after print
+     * @var int Bitwise
+     * @since 3.0.0
+     */
+    protected int $afterPrintOperations = 0;
+
+    /**
+     * @var \Rebelo\Reports\Report\Metadata|null
+     * @since 3.0.0
+     */
+    protected ?Metadata $metadata = null;
 
     public function __construct()
     {
-        \Rebelo\Reports\Config\Config::configLog4Php();
-        \Logger::getLogger(\get_class($this))->debug(__METHOD__);
+        Config::configLog4Php();
+        $this->logger = \Logger::getLogger(\get_class($this));
+        $this->logger->debug(__METHOD__);
     }
 
     /**
@@ -75,9 +135,9 @@ abstract class AReport implements IAReport
      * @return \Rebelo\Reports\Report\JasperFile|null
      * @since 1.0.0
      */
-    public function getJasperFile()
+    public function getJasperFile(): ?JasperFile
     {
-        \Logger::getLogger(\get_class($this))->debug(__METHOD__);
+        $this->logger->debug(__METHOD__);
         return $this->jasperfile;
     }
 
@@ -85,17 +145,20 @@ abstract class AReport implements IAReport
      * Sets a new jasperfile
      *
      * The full or relative path for the Jasper reports file.<br>
-     * When use relative path jasperBaseDir mus be setted
+     * When use relative path jasperBaseDir mus be set
      *
      * @param \Rebelo\Reports\Report\JasperFile $jasperfile
-     * @return self
+     * @return static
      * @since 1.0.0
      */
-    public function setJasperFile(\Rebelo\Reports\Report\JasperFile $jasperfile)
+    public function setJasperFile(JasperFile $jasperfile): static
     {
         $this->jasperfile = $jasperfile;
-        \Logger::getLogger(\get_class($this))->debug(
-            sprintf(__METHOD__." seted to '%s'", $this->jasperfile->__toString())
+        $this->logger->debug(
+            sprintf(
+                __METHOD__ . " set to '%s'",
+                $this->jasperfile->__toString()
+            )
         );
         return $this;
     }
@@ -108,9 +171,9 @@ abstract class AReport implements IAReport
      * @return \Rebelo\Reports\Report\Datasource\ADatasource|null
      * @since 1.0.0
      */
-    public function getDatasource()
+    public function getDatasource(): ?Datasource\ADatasource
     {
-        \Logger::getLogger(\get_class($this))->debug(__METHOD__);
+        $this->logger->debug(__METHOD__);
         return $this->datasource;
     }
 
@@ -119,15 +182,18 @@ abstract class AReport implements IAReport
      *
      * Define the datasource for the report
      *
-     * @param \Rebelo\Reports\Report\Datasource\ADatasource $datasource
-     * @return self
+     * @param \Rebelo\Reports\Report\Datasource\ADatasource
+     * @return static
      * @since 1.0.0
      */
-    public function setDatasource(\Rebelo\Reports\Report\Datasource\ADatasource $datasource)
+    public function setDatasource(ADatasource $datasource): static
     {
         $this->datasource = $datasource;
-        \Logger::getLogger(\get_class($this))->debug(
-            sprintf(__METHOD__." seted to '%s'", $this->datasource->__toString())
+        $this->logger->debug(
+            sprintf(
+                __METHOD__ . " set to '%s'",
+                $this->datasource->__toString()
+            )
         );
         return $this;
     }
@@ -137,44 +203,126 @@ abstract class AReport implements IAReport
      *
      * The parameters to be passed to the jasper report
      *
-     * @return int parameter index
      * @param \Rebelo\Reports\Report\Parameter\Parameter $parameter
+     * @return int parameter index
      * @since 1.0.0
      */
-    public function addToParameter(\Rebelo\Reports\Report\Parameter\Parameter $parameter)
+    public function addToParameter(Parameter $parameter): int
     {
         if (\count($this->parameters) == 0) {
             $index = 0;
         } else {
-// The index if obtaining this way because you can unset a key
+            // The index if obtaining this way because you can unset a key
             $keys  = \array_keys($this->parameters);
             $index = $keys[\count($keys) - 1] + 1;
         }
 
         $this->parameters[$index] = $parameter;
-        \Logger::getLogger(\get_class($this))->debug(
+        $this->logger->debug(
             sprintf(
-                __METHOD__." seted to '%s' with index '%s'",
-                $parameter->__toString(), $index
+                __METHOD__ . " set to '%s' with index '%s'",
+                $parameter->__toString(),
+                $index
             )
         );
         return $index;
     }
 
     /**
-     * Verify if the index/key is setted in the parameters satck
+     * The encoding
+     * @return string
+     * @since 3.0.0
+     */
+    public function getEncoding(): string
+    {
+        $this->logger->debug(__METHOD__);
+        return $this->encoding;
+    }
+
+    /**
+     * The encoding
+     * @param string $encoding
+     * @since 3.0.0
+     */
+    public function setEncoding(string $encoding): void
+    {
+        $this->encoding = $encoding;
+        $this->logger->debug(
+            \sprintf(
+                __METHOD__ . " set to '%s'",
+                $encoding
+            )
+        );
+    }
+
+    /**
+     * Bitwise of after print operations
+     * @return int
+     * @since 3.0.0
+     */
+    public function getAfterPrintOperations(): int
+    {
+        $this->logger->debug(__METHOD__);
+        return $this->afterPrintOperations;
+    }
+
+    /**
+     * Bitwise of after print operations
+     * @param int $afterPrintOperations
+     * @since 3.0.0
+     */
+    public function setAfterPrintOperations(int $afterPrintOperations): void
+    {
+        $this->afterPrintOperations = $afterPrintOperations;
+        $this->logger->debug(
+            \sprintf(
+                __METHOD__ . " set to '%s'",
+                $afterPrintOperations
+            )
+        );
+    }
+
+    /**
+     * @return \Rebelo\Reports\Report\Metadata|null
+     */
+    public function getMetadata(): ?Metadata
+    {
+        return $this->metadata;
+    }
+
+    /**
+     * @param \Rebelo\Reports\Report\Metadata|null $metadata
+     * @return AReport
+     */
+    public function setMetadata(?Metadata $metadata): AReport
+    {
+        $this->metadata = $metadata;
+        $this->logger->debug(
+            \sprintf(
+                __METHOD__ . " set to '%s'",
+                $metadata ?? "null"
+            )
+        );
+        return $this;
+    }
+
+    /**
+     * Verify if the index/key is set in the parameters satck
      *
      * @param int $index
      * @return bool
      * @since 1.0.0
      */
-    public function issetParameters($index)
+    public function issetParameters(int $index): bool
     {
         $isset = isset($this->parameters[$index]);
-        \Logger::getLogger(\get_class($this))->debug(
+        $this->logger->debug(
             sprintf(
-                __METHOD__." getted '%s' for index '%s'",
-                $isset ? "true" : "false", $index
+                __METHOD__ . " get '%s' for index '%s'",
+                $isset
+                    ? "true"
+                    : "false",
+                $index
             )
         );
         return $isset;
@@ -187,19 +335,20 @@ abstract class AReport implements IAReport
      *
      * @param int $index
      * @return void
+     * @throws \Rebelo\Reports\Report\ReportException
      * @since 1.0.0
      */
-    public function unsetParameters($index)
+    public function unsetParameters(int $index): void
     {
         if (\array_key_exists($index, $this->parameters)) {
-            \Logger::getLogger(\get_class($this))->debug(
-                sprintf(__METHOD__." parameter index '%s' unseted ", $index)
+            $this->logger->debug(
+                sprintf(__METHOD__ . " parameter index '%s' unset ", $index)
             );
             unset($this->parameters[$index]);
             return;
         }
         $msg = sprintf("Index '%s' is not defined in parameters stack", $index);
-        \Logger::getLogger(\get_class($this))->debug($msg);
+        $this->logger->debug($msg);
         throw new ReportException($msg);
     }
 
@@ -211,9 +360,9 @@ abstract class AReport implements IAReport
      * @return \Rebelo\Reports\Report\Parameter\Parameter[]
      * @since 1.0.0
      */
-    public function getParameters()
+    public function getParameters(): array
     {
-        \Logger::getLogger(\get_class($this))->debug(__METHOD__);
+        $this->logger->debug(__METHOD__);
         return $this->parameters;
     }
 
@@ -221,19 +370,14 @@ abstract class AReport implements IAReport
      *
      * Enclose the string in CDATA
      * @see https://stackoverflow.com/a/33407070/6397645
-     * @param string $value
+     * @param \SimpleXMLElement $node
+     * @param string            $value
      * @return \SimpleXMLElement
      */
-    public static function cdata(\SimpleXMLElement $node, $value)
+    public static function cdata(\SimpleXMLElement $node, string $value): \SimpleXMLElement
     {
-        if (null === $base = dom_import_simplexml($node)) {
-            throw new SerializeReportException("Fail creating dom object");
-        }
-
-        if (null === $docOwner = $base->ownerDocument) {
-            throw new SerializeReportException("Fail creating owner dom object");
-        }
-
+        $base     = \dom_import_simplexml($node);
+        $docOwner = $base->ownerDocument;
         $base->appendChild($docOwner->createCDATASection($value));
         return $node;
     }
@@ -245,79 +389,67 @@ abstract class AReport implements IAReport
      *
      * @return \SimpleXMLElement
      * @throws SerializeReportException
+     * @throws \Exception
      */
     public function serializeToSimpleXmlElement(): \SimpleXMLElement
     {
-        \Logger::getLogger(\get_class($this))->debug(__METHOD__);
+        $this->logger->debug(__METHOD__);
 
         if ($this->getJasperFile() === null) {
             $msg = "JasperFile class not defined";
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__." '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " '%s'", $msg));
             throw new SerializeReportException($msg);
         }
 
-        if ($this->getDatasource() === null) {
-            $msg = "datasource not defined";
-            \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__." '%s'", $msg));
-            throw new SerializeReportException($msg);
-        }
-
-        libxml_use_internal_errors(true);
+        \libxml_use_internal_errors(true);
 
         $base = '<?xml version="1.0" encoding="UTF-8" ?>';
-        $base .= '<rreport xmlns="'.static::SCHEMA_NS.'" ';
+        $base .= '<rreport xmlns="' . static::SCHEMA_NS . '" ';
         $base .= 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ';
-        $base .= 'xsi:schemaLocation="urn:RReports_CLI:1.1 '.static::SCHEMA_LOCATION.'">';
+        $base .= 'xsi:schemaLocation="urn:RReports_CLI:1.1 ' . static::SCHEMA_LOCATION . '">';
         $base .= '</rreport>';
 
-        $rreportNode    = new \SimpleXMLElement($base);
+        $rreportNode = new \SimpleXMLElement($base);
         $this->getJasperFile()->createXmlNode($rreportNode);
         $reportTypeNode = $rreportNode->addChild("reporttype");
         $this->createXmlNode($reportTypeNode);
         $datasourceNode = $rreportNode->addChild("datasource");
-        $this->getDatasource()->createXmlNode($datasourceNode);/** @phpstan-ignore-line */
+        $this->getDatasource()->createXmlNode($datasourceNode);
         if (\count($this->parameters) > 0) {
             $parametersNode = $rreportNode->addChild("parameters");
 
             foreach ($this->getParameters() as $param) {
-                /* @var $param Rebelo\Reports\Report\Parameter\Parameter */
                 $param->createXmlNode($parametersNode);
             }
         }
 
-        $this->validateXml($rreportNode);
         return $rreportNode;
     }
 
     /**
-     * Valiate the xml schema
+     * Validate the xml schema
      *
      * @param \SimpleXMLElement $simpleXMLElement
-     * @param array $errors passed has reference to get the error stack if exists
      * @throws SerializeReportException
-     * @return void
      */
-    public function validateXml(\SimpleXMLElement $simpleXMLElement,
-                                array &$errors = [])
+    public function validateXml(\SimpleXMLElement $simpleXMLElement)
     {
-        \Logger::getLogger(\get_class($this))->debug(__METHOD__);
+        $this->logger->debug(__METHOD__);
         libxml_use_internal_errors(true);
-        if (false === $xml = $simpleXMLElement->asXML()) {
-            throw new SerializeReportException("xml to string on validation fail");
-        }
+        $xml = $simpleXMLElement->asXML();
 
         $xmlDoc = new \DOMDocument();
         $xmlDoc->loadXML($xml);
-        if ($xmlDoc->schemaValidateSource($this->getSchema()) === false) {
-            $msg = "";
-            $errors = libxml_get_errors();
-            foreach ($errors as $e) {
-                $msg .= $e->message."; ";
+        if ($xmlDoc->schemaValidate(static::SCHEMA_LOCATION) === false) {
+            $errorStack = \libxml_get_errors();
+            $msg        = "";
+            foreach ($errorStack as $error) {
+                $msg .= $error->message . ";";
             }
+
             \Logger::getLogger(\get_class($this))
-                ->error(\sprintf(__METHOD__." Errors '%s'", $msg));
+                   ->error(\sprintf(__METHOD__ . " Errors '%s'", $msg));
             throw new SerializeReportException($msg);
         }
     }
@@ -325,39 +457,73 @@ abstract class AReport implements IAReport
     /**
      * Serialize the xml to a string
      * @return string
+     * @throws \Rebelo\Reports\Report\SerializeReportException
      */
-    public function serializeToString()
+    public function serializeToString(): string
     {
-        \Logger::getLogger(\get_class($this))->debug(__METHOD__);
+        $this->logger->debug(__METHOD__);
 
-        if (false === $str = $this->serializeToSimpleXmlElement()->asXML()) {
-            throw new SerializeReportException("xml to string fail");
-        }
-        return $str;
+        return $this->serializeToSimpleXmlElement()->asXML();
     }
 
     /**
      * Serialize the xml to a file
      * @param string $path
      * @return void
+     * @throws \Rebelo\Reports\Report\SerializeReportException
      * @since 1.0.0
      */
-    public function serializeToFile($path)
+    public function serializeToFile(string $path): void
     {
-        if (\trim($path) === "") {
+        if ("" === $path = \trim($path)) {
             $msg = "path must be a string";
             \Logger::getLogger(\get_class($this))
-                ->error(sprintf(__METHOD__." '%s'", $msg));
+                   ->error(sprintf(__METHOD__ . " '%s'", $msg));
             throw new SerializeReportException($msg);
         }
         \Logger::getLogger(\get_class($this))
-            ->info(sprintf(__METHOD__." file path is '%s'", $path));
+               ->info(sprintf(__METHOD__ . " file path is '%s'", $path));
         $this->serializeToSimpleXmlElement()->asXML($path);
         if (\is_file($path) === false) {
-            $msg = sprintf(__METHOD__." File '%s' was not created", $path);
+            $msg = sprintf(__METHOD__ . " File '%s' was not created", $path);
             \Logger::getLogger(\get_class($this))
-                ->error($msg);
+                   ->error($msg);
             throw new SerializeReportException($msg);
         }
+    }
+
+    /**
+     * Fill the array that will be used to make the request to the Rest API
+     *
+     * @param array $data
+     * @return void
+     * @throws \Rebelo\Reports\Cache\CacheException
+     * @throws \Rebelo\Reports\Config\ConfigException
+     * @throws \Rebelo\Reports\Report\ReportException
+     */
+    public function fillApiRequest(array &$data): void
+    {
+        $reflection                             = new \ReflectionClass($this);
+        $data[static::API_N_REPORT_TYPE]        = \strtoupper($reflection->getShortName());
+        $data[Parameter::API_N_PARAMETERS]      = [];
+        $data[ReportResources::API_N_RESOURCES] = [];
+        $data[static::API_P_AFTER_PRINT]        = $this->getAfterPrintOperations();
+        $data[static::API_P_ENCODING]           = $this->getEncoding();
+
+        $this->jasperfile?->fillApiRequest($data);
+        $this->datasource?->fillApiRequest($data);
+
+        foreach ($this->parameters as $parameter) {
+            $parameter->fillApiRequest($data);
+        }
+
+        $this->getMetadata()?->fillApiRequest($data);
+
+        if (!($this instanceof Pdf)) {
+            return;
+        }
+
+        $this->getSign()?->fillApiRequest($data);
+        $this->getPdfProperties()?->fillApiRequest($data);
     }
 }

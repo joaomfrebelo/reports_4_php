@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -22,11 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 declare(strict_types=1);
 
 namespace Rebelo\Test\Reports\Report\Datasource;
 
 use PHPUnit\Framework\TestCase;
+use Rebelo\Reports\Report\Datasource\Database;
 
 /**
  * Class AServer
@@ -36,75 +39,119 @@ use PHPUnit\Framework\TestCase;
 class DatabaseTest extends TestCase
 {
 
-    public function testSetGetConnectionString(): void
+    public function testSetGetConnectionString()
     {
         $inst = "\Rebelo\Reports\Report\Datasource\Database";
-        $db   = new \Rebelo\Reports\Report\Datasource\Database();
+        $db   = new Database();
         $this->assertInstanceOf($inst, $db);
         $this->assertNull($db->getConnectionString());
         $this->assertTrue(
-            $db->setConnectionString("conection") instanceof
-            \Rebelo\Reports\Report\Datasource\Database
+            $db->setConnectionString("connection") instanceof Database
         );
-        $this->assertEquals("conection", $db->getConnectionString());
+        $this->assertEquals("connection", $db->getConnectionString());
+        $db->setConnectionString(null);
+        $this->assertNull($db->getConnectionString());
     }
 
-    public function testSetDriver(): void
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testSetDriver()
     {
-        $db = new \Rebelo\Reports\Report\Datasource\Database();
+        $db = new Database();
         $this->assertNull($db->getDriver());
-        $this->assertTrue(
-            $db->setDriver("driver") instanceof
-            \Rebelo\Reports\Report\Datasource\Database
-        );
+        $this->assertTrue($db->setDriver("driver") instanceof
+                          Database);
         $this->assertEquals("driver", $db->getDriver());
     }
 
-    public function testSetUser(): void
+    public function testSetDriverEmptyString()
     {
-        $db = new \Rebelo\Reports\Report\Datasource\Database();
+        $this->expectException("\Rebelo\Reports\Report\Datasource\DatasourceException");
+        $db = new Database();
+        $db->setDriver("");
+    }
+
+    public function testSetUser()
+    {
+        $db = new Database();
         $this->assertNull($db->getUser());
-        $this->assertTrue(
-            $db->setUser("user") instanceof
-            \Rebelo\Reports\Report\Datasource\Database
-        );
+        $this->assertTrue($db->setUser("user") instanceof
+                          Database);
         $this->assertEquals("user", $db->getUser());
+        $db->setUser(null);
+        $this->assertNull($db->getUser());
     }
 
-    public function testSetPassword(): void
+    public function testSetPassword()
     {
-        $db = new \Rebelo\Reports\Report\Datasource\Database();
+        $db = new Database();
         $this->assertNull($db->getPassword());
-        $this->assertTrue(
-            $db->setPassword("password") instanceof
-            \Rebelo\Reports\Report\Datasource\Database
-        );
+        $this->assertTrue($db->setPassword("password") instanceof
+                          Database);
         $this->assertEquals("password", $db->getPassword());
+        $db->setPassword(null);
+        $this->assertNull($db->getPassword());
     }
 
-    public function testCreateXmlNode(): void
+    /**
+     * @throws \Rebelo\Reports\Report\SerializeReportException
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testCreateXmlNode()
     {
-        $conStr = "connstr";
+        $conStr = "connStr";
         $driver = "MySql";
         $pwd    = "pwd";
         $user   = "nobody";
 
-        $db = new \Rebelo\Reports\Report\Datasource\Database();
+        $db = new Database();
         $db->setConnectionString($conStr)
-            ->setDriver($driver)
-            ->setPassword($pwd)
-            ->setUser($user);
+           ->setDriver($driver)
+           ->setPassword($pwd)
+           ->setUser($user);
 
         $node = new \SimpleXMLElement("<root></root>", LIBXML_NOCDATA);
         $db->createXmlNode($node);
 
-        if (false === $xml = simplexml_load_string($node->asXML())) { /** @phpstan-ignore-line */
-            $this->fail("Fail loadinf xml string");
-        }
-
+        $xml = simplexml_load_string($node->asXML());
         $this->assertEquals($conStr, $xml->database->connectionString);
         $this->assertEquals($driver, $xml->database->driver);
         $this->assertEquals($pwd, $xml->database->password);
         $this->assertEquals($user, $xml->database->user);
+    }
+
+    /**
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     */
+    public function testFillApiRequest(): void
+    {
+        $data = [];
+        $db   = new Database();
+        $db->setConnectionString("Conn string");
+        $db->setDriver("The driver");
+        $db->setUser("The user");
+        $db->setPassword("The pass");
+        $db->fillApiRequest($data);
+
+        $this->assertSame(
+            $db->getConnectionString(),
+            $data[Database::API_N_DATABASE][Database::API_P_CONN_STRING]
+        );
+
+        $this->assertSame(
+            $db->getDriver(),
+            $data[Database::API_N_DATABASE][Database::API_P_DRIVER]
+        );
+
+        $this->assertSame(
+            $db->getUser(),
+            $data[Database::API_N_DATABASE][Database::API_P_USER]
+        );
+
+        $this->assertSame(
+            $db->getPassword(),
+            $data[Database::API_N_DATABASE][Database::API_P_PASS]
+        );
     }
 }
