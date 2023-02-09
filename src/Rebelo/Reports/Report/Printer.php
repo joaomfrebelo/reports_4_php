@@ -54,7 +54,7 @@ class Printer extends AReport
      * Gets as printer<br>
      * If printer name is empty or null will print in the default printer
      *
-     * The printer name.
+     * The printer names.
      *
      * @return string|null
      * @since 1.0.0

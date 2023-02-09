@@ -31,13 +31,13 @@ namespace Rebelo\Reports\Report;
 /**
  * Class representing Ods report
  *
- * Properties file to export the report to a Ods file
+ * Properties file to export the report to an Ods file
  */
 class Ods extends AFileReport
 {
 
     /**
-     * Properties file to export the report to a Ods file
+     * Properties file to export the report to an Ods file
      * @since 1.0.0
      */
     public function __construct()

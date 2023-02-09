@@ -45,9 +45,8 @@ class PrinterTest extends TestCase
      */
     public function testSetGet()
     {
-        $inst    = "\Rebelo\Reports\Report\Printer";
         $printer = new Printer();
-        $this->assertInstanceOf($inst, $printer);
+        $this->assertInstanceOf(\Rebelo\Reports\Report\Printer::class, $printer);
         $this->assertNull($printer->getJasperFile());
         $this->assertEquals("", $printer->getPrinter());
         $this->assertNull($printer->getDatasource());

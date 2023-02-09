@@ -82,21 +82,21 @@ class Sign implements IAReport
     private ?Rectangle $rectangle = null;
 
     /**
-     * The legend 'Location' to be write in the signature
+     * The legend 'Location' to be written in the signature
      *
      * @var string|null $location
      */
     private ?string $location = null;
 
     /**
-     * The legend 'Reason' to be write in the signature
+     * The legend 'Reason' to be written in the signature
      *
      * @var string|null $reason
      */
     private ?string $reason = null;
 
     /**
-     * The legend 'Contact' to be write in the signature (Only for API)
+     * The legend 'Contact' to be written in the signature (Only for API)
      *
      * @var string|null $contact
      */
@@ -268,7 +268,7 @@ class Sign implements IAReport
     /**
      * Gets as location
      *
-     * The legend 'Location' to be write in the signature
+     * The legend 'Location' to be written in the signature
      *
      * @return string|null
      * @since 1.0.0
@@ -286,7 +286,7 @@ class Sign implements IAReport
     }
 
     /**
-     * Set the legend 'Location' to be write in the signature
+     * Set the legend 'Location' to be written in the signature
      *
      * @param string|null $location
      * @return static
@@ -308,7 +308,7 @@ class Sign implements IAReport
     /**
      * Gets as reason
      *
-     * The legend 'Reason' to be write in the signature
+     * The legend 'Reason' to be written in the signature
      *
      * @return string|null
      * @since 1.0.0
@@ -328,7 +328,7 @@ class Sign implements IAReport
     /**
      * Sets a new reason
      *
-     * The legend 'Reason' to be write in the signature
+     * The legend 'Reason' to be written in the signature
      *
      * @param string|null $reason
      * @return static
@@ -350,7 +350,7 @@ class Sign implements IAReport
     /**
      * Gets as contact
      *
-     * The legend 'Contact' to be write in the signature
+     * The legend 'Contact' to be written in the signature
      *
      * @return string|null
      * @since 1.0.0
@@ -370,7 +370,7 @@ class Sign implements IAReport
     /**
      * Sets a new contact
      *
-     * The legend 'Contact' to be write in the signature
+     * The legend 'Contact' to be written in the signature
      *
      * @param string|null $contact
      * @return static

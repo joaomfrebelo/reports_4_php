@@ -197,7 +197,7 @@ class JasperFile implements IAReport
     /**
      * Serialize the node
      *
-     * @param \SimpleXMLElement $node The node where will be add this child
+     * @param \SimpleXMLElement $node The node where will be added this child
      * @return \SimpleXMLElement
      * @throws SerializeReportException
      * @since 1.0.0

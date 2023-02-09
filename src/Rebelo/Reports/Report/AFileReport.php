@@ -97,7 +97,7 @@ abstract class AFileReport extends AReport
      * Create the xml common nodes of all File exporters
      * @since 1.0.0
      *
-     * @param \SimpleXMLElement $node The node where will be add the node of this class
+     * @param \SimpleXMLElement $node The node where will be added the node of this class
      * @return \SimpleXMLElement The add node to be possible the manipulation
      * @throws SerializeReportException
      */

@@ -182,7 +182,7 @@ abstract class AReport implements IAReport
      *
      * Define the datasource for the report
      *
-     * @param \Rebelo\Reports\Report\Datasource\ADatasource
+     * @param \Rebelo\Reports\Report\Datasource\ADatasource $datasource
      * @return static
      * @since 1.0.0
      */

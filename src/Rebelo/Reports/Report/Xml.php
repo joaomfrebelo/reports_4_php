@@ -31,13 +31,13 @@ namespace Rebelo\Reports\Report;
 /**
  * Class representing Xml report
  *
- * Properties file to export the report to a XML file
+ * Properties file to export the report to an XML file
  */
 class Xml extends AFileReport
 {
 
     /**
-     * Properties file to export the report to a XML file
+     * Properties file to export the report to an XML file
      * @since 1.0.0
      */
     public function __construct()

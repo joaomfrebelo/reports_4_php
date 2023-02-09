@@ -96,10 +96,11 @@ class Request
     /**
      * Get report in bulk
      * @param array $dataStack Array of report array data to convert to json
-     * @param array $errors    Get client request errors
+     * @param array $errors Get client request errors
      * @return \Rebelo\Reports\Report\Api\ReportResponse[]
      * @throws \Rebelo\Enum\EnumException
      * @throws \Rebelo\Reports\Config\ConfigException
+     * @throws \ReflectionException
      * @since 3.0.0
      */
     public function bulkReportRequest(array $dataStack, array &$errors = []): array
@@ -161,6 +162,7 @@ class Request
      * @throws \Rebelo\Enum\EnumException
      * @throws \Rebelo\Reports\Config\ConfigException
      * @throws \Rebelo\Test\Reports\Api\RequestException
+     * @throws \ReflectionException
      * @since 3.0.0
      */
     public function requestReport(array $data): ReportResponse
@@ -168,9 +170,9 @@ class Request
         $response = $this->request(Action::REPORT(), $data);
         return new ReportResponse(
             new Status($response["status"]),
-            $response["message"],
-            $response["duration"],
-            $response["report"]
+            $response["message"] ?? "",
+            $response["duration"] ?? "",
+            $response["report"] ?? ""
         );
     }
 
@@ -181,6 +183,7 @@ class Request
      * @throws \Rebelo\Enum\EnumException
      * @throws \Rebelo\Reports\Config\ConfigException
      * @throws \Rebelo\Test\Reports\Api\RequestException
+     * @throws \ReflectionException
      * @since 3.0.0
      */
     public function sendPrinterCommand(Action $action): Response

@@ -54,6 +54,7 @@ class Status extends AEnum
     /**
      * @param string $value
      * @throws \Rebelo\Enum\EnumException
+     * @throws \ReflectionException
      */
     public function __construct(string $value)
     {

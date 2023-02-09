@@ -123,7 +123,7 @@ class ExecReturn
     const CLI_DEL_FILE_ERROR = 16;
 
     /**
-     * Passing a argument in main method that not exist
+     * Passing an argument in main method that not exist
      */
     const UNMATCHED_ARGUMENT = 17;
 

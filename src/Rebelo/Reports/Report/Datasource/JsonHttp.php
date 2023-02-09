@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Rebelo\Reports\Report\Datasource;
 
 /**
- * Jsonhttp
+ * JsonHttp
  *
  * Use json over http as datasource
  * @since 1.0.0

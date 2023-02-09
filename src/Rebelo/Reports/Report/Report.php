@@ -568,7 +568,7 @@ class Report
      */
     protected function checkTmp(AReport $report): void
     {
-        // Some times in windows (?? other so) block the deletion in RReports cli
+        // Sometimes in windows (?? other so) block the deletion in RReports cli
         // even with all stream closed this is only to guaranty that we have the right file
         if ($report instanceof AFileReport) {
             if (\is_file($report->getOutputFile() . ".tmp")) {
@@ -590,6 +590,8 @@ class Report
      * @throws \Rebelo\Reports\Config\ConfigException
      * @throws \Rebelo\Reports\Report\ReportException
      * @throws \Rebelo\Test\Reports\Api\RequestException
+     * @throws \Rebelo\Reports\Cache\CacheException
+     * @throws \ReflectionException
      */
     public function invokeApi(AReport $report): ?string
     {
@@ -599,6 +601,11 @@ class Report
         $report->fillApiRequest($data);
 
         $request = new Request();
+
+        if($data[AReport::API_N_REPORT_TYPE] === "PRINTER"){
+            $data[AReport::API_N_REPORT_TYPE] = "PRINT";
+        }
+
         $response = $request->requestReport($data);
 
         if ($response->getStatus()->isNotEqual(Status::OK)) {
@@ -615,12 +622,14 @@ class Report
     /**
      * Get reports in bulk
      * @param \Rebelo\Reports\Report\AReport[] $reports
-     * @param array                            $reportErrors Get report errors
-     * @param array                            $clientErrors Get request http client errors
+     * @param array $reportErrors Get report errors
+     * @param array $clientErrors Get request http client errors
      * @return string[] The reposts as base64 encoded string
      * @throws \Rebelo\Enum\EnumException
      * @throws \Rebelo\Reports\Config\ConfigException
      * @throws \Rebelo\Reports\Report\ReportException
+     * @throws \Rebelo\Reports\Cache\CacheException
+     * @throws \ReflectionException
      */
     public function invokeApiBulk(array $reports, array &$reportErrors = [], array &$clientErrors = []): array
     {

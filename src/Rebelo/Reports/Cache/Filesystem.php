@@ -93,7 +93,7 @@ class Filesystem implements ICache
         if (\is_dir($cacheDir) === false) {
             if (\mkdir($cacheDir) === false) {
                 $msg = \sprintf("Fail to create cache directory '%s'", $cacheDir);
-                \Logger::getLogger(__CLASS__)->log->debug($msg);
+                \Logger::getLogger(__CLASS__)->debug($msg);
                 throw new CacheException($msg);
             }
         }
@@ -106,9 +106,18 @@ class Filesystem implements ICache
      * @return void
      * @throws \Rebelo\Reports\Cache\CacheException
      * @throws \Rebelo\Reports\Config\ConfigException
+     * @throws \Exception
      */
     private function init(): void
     {
+
+        $dir = Config::getInstance()->getTempDirectory() . DIRECTORY_SEPARATOR . Filesystem::DIR;
+
+        if(!\is_dir($dir)){
+            if(!\mkdir($dir, 0777, true)){
+                throw new \Exception("Fail to create cache dir '$dir'");
+            }
+        }
 
         $this->log->debug(
             \sprintf("Initiate cache for '%s'", $this->path)
@@ -252,6 +261,13 @@ class Filesystem implements ICache
     public static function clearCache(): void
     {
         $dir = Config::getInstance()->getTempDirectory() . DIRECTORY_SEPARATOR . Filesystem::DIR;
+
+        if(!\is_dir($dir)){
+            if(!\mkdir($dir, 0777, true)){
+                throw new \Exception("Fail to create cache dir '$dir'");
+            }
+        }
+
         if (false === $scan = \scandir($dir)) {
             throw new \Exception("Fail to scan cache dir to delete old files");
         }

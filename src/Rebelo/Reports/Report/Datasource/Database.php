@@ -57,7 +57,7 @@ class Database extends ADatasource
     private ?string $connectionString = null;
 
     /**
-     * The driver class name to be use to connect to the database
+     * The driver class name to be used to connect to the database
      *  Ex: oracle.jdbc.OracleDriver
      *  EX: com.microsoft.sqlserver.jdbc.SQLServerDriver
      *
@@ -131,7 +131,7 @@ class Database extends ADatasource
     /**
      * Gets as driver
      *
-     * The driver class name to be use to connect to the database
+     * The driver class name to be used to connect to the database
      *  Ex: oracle.jdbc.OracleDriver
      *  EX: com.microsoft.sqlserver.jdbc.SQLServerDriver
      *
@@ -153,7 +153,7 @@ class Database extends ADatasource
     /**
      * Sets a new driver
      *
-     * The driver class name to be use to connect to the database
+     * The driver class name to be used to connect to the database
      *  Ex: oracle.jdbc.OracleDriver
      *  EX: com.microsoft.sqlserver.jdbc.SQLServerDriver
      *

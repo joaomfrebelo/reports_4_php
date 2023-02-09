@@ -68,6 +68,7 @@ class Action extends AEnum
     /**
      * @param string $value
      * @throws \Rebelo\Enum\EnumException
+     * @throws \ReflectionException
      * @since  3.0.0
      */
     public function __construct(string $value)

@@ -63,6 +63,7 @@ class Level extends AEnum
      *
      * @param String $level One of the constants of Level
      * @throws \Rebelo\Enum\EnumException
+     * @throws \ReflectionException
      * @since 1.0.0
      */
     public function __construct(string $level)

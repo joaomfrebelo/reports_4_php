@@ -116,7 +116,7 @@ class Certificate implements IAReport
     {
         $this->password = $password;
         //The password that is passed to the log is a md5 hash in order of the
-        //password no be not known, how ever in memory is the password that
+        //password no be not known, however in memory is the password that
         //has been set
         \Logger::getLogger(\get_class($this))
             ->debug(\sprintf(

@@ -50,7 +50,8 @@ abstract class AResponse
         protected Status $status,
         protected string $message,
         protected string $duration
-    ) {
+    )
+    {
         $this-> log = \Logger::getLogger(\get_class($this));
         $this->log->debug(__METHOD__);
         $this->log->debug(

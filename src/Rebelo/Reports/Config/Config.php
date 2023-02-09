@@ -375,7 +375,7 @@ class Config
             if (\array_key_exists(static::KEY_TMP, $this->ini[static::BLOCK_SYSTEM])) {
                 $tmp = $this->ini[static::BLOCK_SYSTEM][static::KEY_TMP];
                 if (empty($tmp) === false) {
-                    if (\is_writable($tmp) == false) {
+                    if (!\is_writable($tmp)) {
                         throw new ConfigException(
                             \sprintf("Tmp file '%s' is not writable", $tmp)
                         );
@@ -443,7 +443,7 @@ class Config
     }
 
     /**
-     * Set if resources are to cached.
+     * Set if resources are to be cached.
      * Only used for API
      * @param bool $cacheResources
      * @return \Rebelo\Reports\Config\Config
@@ -455,7 +455,7 @@ class Config
     }
 
     /**
-     * Get if resources are to cached.
+     * Get if resources are to be cached.
      * Only used for API
      * @return bool
      * @since 3.0.0

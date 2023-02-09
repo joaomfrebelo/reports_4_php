@@ -53,10 +53,12 @@ class RequestTest extends TestCase
      * @throws \Rebelo\Reports\Config\ConfigException
      * @throws \Rebelo\Test\Reports\Api\RequestException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \ReflectionException
      */
     public function testSendPrinterCommand()
     {
         $response = (new Request())->sendPrinterCommand(Action::CUT());
         $this->assertSame(Status::OK, $response->getStatus()->get());
     }
+
 }

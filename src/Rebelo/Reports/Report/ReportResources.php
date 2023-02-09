@@ -83,7 +83,7 @@ class ReportResources
 
     /**
      * The resource name,
-     * is the name of the file that will be create and
+     * is the name of the file that will be created and
      * loaded by the report (Ex: subreport.jasper)
      * @return string
      */
@@ -102,7 +102,7 @@ class ReportResources
     }
 
     /**
-     * @param string $name The name of the file that will be create and loaded by the report (Ex: subreport.jasper)
+     * @param string $name The name of the file that will be created and loaded by the report (Ex: subreport.jasper)
      * @param string $path The path of the resource file
      * @return \Rebelo\Reports\Report\ReportResources
      * @throws \Rebelo\Reports\Report\ReportException

@@ -41,6 +41,7 @@ use Rebelo\Reports\Report\Ods;
 use Rebelo\Reports\Report\Odt;
 use Rebelo\Reports\Report\PdfProperties;
 use Rebelo\Reports\Report\Pptx;
+use Rebelo\Reports\Report\Printer;
 use Rebelo\Reports\Report\Report;
 use Rebelo\Reports\Report\Pdf;
 use Rebelo\Reports\Report\ReportException;
@@ -90,7 +91,16 @@ class ReportTest extends TestCase
             if (\in_array($fileName, [".", ".."])) {
                 continue;
             }
-            \unlink($genDir . DIRECTORY_SEPARATOR . $fileName);
+            $path = $genDir . DIRECTORY_SEPARATOR . $fileName;
+            if (\is_dir($path)) {
+                $scanDir = \scandir($path);
+                foreach ($scanDir as $file) {
+                    if (\in_array($file, [".", ".."])) continue;
+                    \unlink($path . DIRECTORY_SEPARATOR . $file);
+                }
+            } elseif (\is_file($path)) {
+                \unlink($path);
+            }
         }
 
         static::$properties = \parse_ini_file(
@@ -114,7 +124,7 @@ class ReportTest extends TestCase
      * @throws \Rebelo\Reports\Report\ExecException
      * @throws \Rebelo\Reports\Report\ReportException
      */
-    public function testSetGet()
+    public function testSetGet(): void
     {
 
         Config::getInstance()->setTempDirectory(TEST_RESOURCES_DIR);
@@ -177,12 +187,13 @@ class ReportTest extends TestCase
     }
 
     /**
-     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
      * @throws \Rebelo\Enum\EnumException
-     * @throws \Rebelo\Reports\Report\Sign\SignException
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
      * @throws \Rebelo\Reports\Report\ExecException
-     * @throws \Rebelo\Reports\Report\ReportException
      * @throws \Rebelo\Reports\Report\Parameter\ParameterException
+     * @throws \Rebelo\Reports\Report\ReportException
+     * @throws \Rebelo\Reports\Report\Sign\SignException
+     * @throws \ReflectionException
      */
     public function testGenerate()
     {
@@ -290,7 +301,7 @@ class ReportTest extends TestCase
             $this->assertEquals("application/pdf", $mime);
         } else {
             \Logger::getLogger(\get_class($this))
-                   ->warn(__METHOD__ . " mime type not checked in the the test because fileinfo ext is not active");
+                ->warn(__METHOD__ . " mime type not checked in the the test because fileinfo ext is not active");
         }
     }
 
@@ -301,6 +312,7 @@ class ReportTest extends TestCase
      * @throws \Rebelo\Reports\Report\Parameter\ParameterException
      * @throws \Rebelo\Reports\Report\Sign\SignException
      * @throws \Rebelo\Reports\Report\ExecException
+     * @throws \ReflectionException
      */
     public function testMultipleInOne()
     {
@@ -406,10 +418,12 @@ class ReportTest extends TestCase
 
         $report = new Report();
         $report->setTmpDir($genDir . DIRECTORY_SEPARATOR . uniqid());
-        $exit = $report->generateMultipleInOne([
-                                                   $pdf,
-                                                   $pdf_2,
-                                               ]);
+        $exit = $report->generateMultipleInOne(
+            [
+                $pdf,
+                $pdf_2,
+            ]
+        );
 
         $this->assertEquals(0, $exit->getCode());
 
@@ -419,7 +433,7 @@ class ReportTest extends TestCase
             $this->assertEquals("application/pdf", $mime);
         } else {
             \Logger::getLogger(\get_class($this))
-                   ->warn(__METHOD__ . " mime type not checked in the the test because fileinfo ext is not active");
+                ->warn(__METHOD__ . " mime type not checked in the the test because fileinfo ext is not active");
         }
     }
 
@@ -430,6 +444,7 @@ class ReportTest extends TestCase
      * @throws \Rebelo\Reports\Report\Parameter\ParameterException
      * @throws \Rebelo\Reports\Report\ReportException
      * @throws \Rebelo\Reports\Report\Sign\SignException
+     * @throws \ReflectionException
      */
     public function getReportStackForGenerator(): array
     {
@@ -618,7 +633,7 @@ class ReportTest extends TestCase
      * @throws \ReflectionException
      * @throws \Exception
      */
-    public function testGenerateApi()
+    public function testGenerateApi(): void
     {
         $genDir = TEST_RESOURCES_DIR . DIRECTORY_SEPARATOR . "Generate";
         foreach ($this->getReportStackForGenerator() as $instance) {
@@ -628,8 +643,8 @@ class ReportTest extends TestCase
             $generated = $report->invokeApi($instance);
 
             $outFile = $genDir
-                       . DIRECTORY_SEPARATOR
-                       . \join("", [
+                . DIRECTORY_SEPARATOR
+                . \join("", [
                     "report_api_",
                     \date("Ymd\THis"),
                     ".",
@@ -680,8 +695,9 @@ class ReportTest extends TestCase
      * @throws \Rebelo\Reports\Report\ReportException
      * @throws \Rebelo\Reports\Report\Sign\SignException
      * @throws \ReflectionException
+     * @throws \Rebelo\Reports\Cache\CacheException
      */
-    public function testGenerateBulkApi()
+    public function testGenerateBulkApi(): void
     {
         $genDir       = TEST_RESOURCES_DIR . DIRECTORY_SEPARATOR . "Generate";
         $reportErrors = [];
@@ -700,8 +716,8 @@ class ReportTest extends TestCase
 
         foreach ($reportStack as $k => $report) {
             $outFile = $genDir
-                       . DIRECTORY_SEPARATOR
-                       . \join("", [
+                . DIRECTORY_SEPARATOR
+                . \join("", [
                     "report_api_bulk_",
                     \date("Ymd\THis"),
                     ".",
@@ -721,8 +737,10 @@ class ReportTest extends TestCase
      * @throws \Rebelo\Reports\Report\Parameter\ParameterException
      * @throws \Rebelo\Reports\Report\ReportException
      * @throws \Rebelo\Reports\Report\Sign\SignException
+     * @throws \Rebelo\Reports\Cache\CacheException
+     * @throws \ReflectionException
      */
-    public function testGenerateBulkApiSomeWithError()
+    public function testGenerateBulkApiSomeWithError(): void
     {
         $reportErrors = [];
         $clientErrors = [];
@@ -826,8 +844,8 @@ class ReportTest extends TestCase
         $this->assertNotEmpty($report);
 
         $outFile = $genDir
-                   . DIRECTORY_SEPARATOR
-                   . \join("", [
+            . DIRECTORY_SEPARATOR
+            . \join("", [
                 "report_api_resources_",
                 \date("Ymd\THis"),
                 ".pdf",
@@ -846,6 +864,7 @@ class ReportTest extends TestCase
      * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
      * @throws \Rebelo\Reports\Report\ReportException
      * @throws \Rebelo\Test\Reports\Api\RequestException
+     * @throws \Rebelo\Reports\Cache\CacheException
      */
     public function testGenerateWithProperties(): void
     {
@@ -863,10 +882,9 @@ class ReportTest extends TestCase
         $pdfProperties->setPermissions(PdfProperties::ALLOW_PRINTING);
         $pdfProperties->setUserPassword("user password");
         $pdfProperties->setOwnerPassword("owner password");
-        $pdfProperties->setJavascript('app.alert({
-                                      cMsg: "Test embedded JavaScript",
-                                      cTitle: "Reports API tests"
-                                      });');
+        $pdfProperties->setJavascript(
+            'app.alert({cMsg: "Test embedded JavaScript", cTitle: "Reports API tests"});'
+        );
 
         $db = new Database();
         $db->setPassword($dsPwd);
@@ -884,8 +902,8 @@ class ReportTest extends TestCase
         $this->assertNotEmpty($report);
 
         $outFile = $genDir
-                   . DIRECTORY_SEPARATOR
-                   . \join("", [
+            . DIRECTORY_SEPARATOR
+            . \join("", [
                 "report_api_properties_",
                 \date("Ymd\THis"),
                 ".pdf",
@@ -894,5 +912,122 @@ class ReportTest extends TestCase
         \file_put_contents($outFile, \base64_decode($report));
 
         $this->assertTrue(\is_file($outFile));
+    }
+
+    /**
+     * @throws \Rebelo\Reports\Cache\CacheException
+     * @throws \Rebelo\Test\Reports\Api\RequestException
+     * @throws \Rebelo\Reports\Report\Datasource\DatasourceException
+     * @throws \Rebelo\Enum\EnumException
+     * @throws \Rebelo\Reports\Config\ConfigException
+     * @throws \Rebelo\Reports\Report\Parameter\ParameterException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Rebelo\Reports\Report\ReportException
+     * @throws \ReflectionException
+     */
+    public function testApiPrinter(): void
+    {
+        $dsConStr  = "jdbc:mysql://" . static::$properties[static::DB_SERVER] . "/sakila";
+        $dsDriver  = "com.mysql.jdbc.Driver";
+        $dsUser    = static::$properties[static::DB_USER];
+        $dsPwd     = static::$properties[static::DB_PASSWORD];
+        $jsPath    = TEST_RESOURCES_DIR . DIRECTORY_SEPARATOR . "sakila.jasper";
+        $jsCopies  = 4;
+
+        $parameters = [
+            [
+                "type" => ParameterType::P_STRING(),
+                "name" => "P_STRING",
+                "value" => "Parameter String",
+                "format" => null],
+            [
+                "type" => ParameterType::P_BOOLEAN(),
+                "name" => "P_BOOLEAN",
+                "value" => "true",
+                "format" => null],
+            [
+                "type" => ParameterType::P_DATE(),
+                "name" => "P_DATE",
+                "value" => "1969-10-05",
+                "format" => "yyyy-MM-dd",
+            ],
+            [
+                "type" => ParameterType::P_DOUBLE(),
+                "name" => "P_DOUBLE",
+                "value" => "9.99",
+            ],
+            [
+                "type" => ParameterType::P_FLOAT(),
+                "name" => "P_FLOAT",
+                "value" => "0.999",
+            ],
+            [
+                "type" => ParameterType::P_INTEGER(),
+                "name" => "P_INTEGER",
+                "value" => "999",
+            ],
+            [
+                "type" => ParameterType::P_LONG(),
+                "name" => "P_LONG",
+                "value" => "999",
+            ],
+            [
+                "type" => ParameterType::P_SHORT(),
+                "name" => "P_SHORT",
+                "value" => "9",
+            ],
+            [
+                "type" => ParameterType::P_BIGDECIMAL(),
+                "name" => "P_BIG_DECIMAL",
+                "value" => "9999.49",
+            ],
+            [
+                "type" => ParameterType::P_INTEGER(),
+                "name" => "CHARACTER_WIDTH",
+                "value" => "9",
+            ],
+            [
+                "type" => ParameterType::P_TIMESTAMP(),
+                "name" => "P_TIMESTAMPT",
+                "value" => "1969-10-05 09:00:00",
+            ],
+            [
+                "type" => ParameterType::P_SQL_DATE(),
+                "name" => "P_SQL_DATE",
+                "value" => "1969-10-05",
+                "format" => "yyyy-MM-dd",
+            ],
+            [
+                "type" => ParameterType::P_SQL_TIME(),
+                "name" => "P_SQL_TIME",
+                "value" => "09:19:29",
+            ],
+        ];
+
+        $printer = new Printer();
+
+        $ds = new Database();
+        $ds->setConnectionString($dsConStr);
+        $ds->setDriver($dsDriver);
+        $ds->setUser($dsUser);
+        $ds->setPassword($dsPwd);
+        $printer->setDatasource($ds);
+
+        $jf = new JasperFile($jsPath, $jsCopies);
+        $printer->setJasperFile($jf);
+
+        foreach ($parameters as $paramProp) {
+            $param = new Parameter(
+                $paramProp["type"],
+                $paramProp["name"],
+                $paramProp["value"],
+                $paramProp["format"] ?? null
+            );
+            $printer->addToParameter($param);
+        }
+
+        $report = (new Report())->invokeApi($printer);
+
+        $this->assertEmpty($report);
     }
 }

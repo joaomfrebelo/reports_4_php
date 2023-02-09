@@ -147,7 +147,7 @@ class Pdf extends AFileReport
     /**
      * Create the xml common nodes of pdf exporter
      *
-     * @param \SimpleXMLElement $node $node The node where will be add the pdf node
+     * @param \SimpleXMLElement $node $node The node where will be added the pdf node
      * @return \SimpleXMLElement The pdf node added to the parent to be possible the manipulation
      * @throws \Rebelo\Reports\Report\SerializeReportException
      * @since 1.0.0
